@@ -12,6 +12,7 @@ interface ILoginCard {
   error: string
   setIsEmailSent: (isEmailSent: boolean) => void
   setError: (error: string) => void
+  redirectUrl: string
 }
 
 export const LoginCard: FC<ILoginCard> = ({
@@ -22,7 +23,8 @@ export const LoginCard: FC<ILoginCard> = ({
   isLoading,
   error,
   setIsEmailSent,
-  setError
+  setError,
+  redirectUrl
 }) => {
   const handleTryAgain = () => {
     setIsEmailSent(false)
@@ -55,7 +57,7 @@ export const LoginCard: FC<ILoginCard> = ({
             <form onSubmit={handleSubmit} className="space-y-4">
               <button
                 type="button"
-                onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                onClick={() => signIn('google', { redirectUrl })}
                 disabled={isLoading}
                 className="w-full h-11 xs:h-12 border border-slate-300 dark:border-border-dark bg-white dark:bg-bg-dark text-text-light dark:text-text-dark font-sora font-bold text-[13px] xs:text-sm flex items-center justify-center gap-3 hover:bg-surface-light dark:hover:bg-surface-dark active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
               >
