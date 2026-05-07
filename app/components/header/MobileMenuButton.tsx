@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useAppDispatch } from '@/app/lib/redux/store'
-import { setOpenMobileNavigation } from '@/app/lib/redux/features/appSlice'
+import { setOpenMobileNavigation } from '@/app/lib/redux/slices/appSlice'
 import { Menu } from 'lucide-react'
 
 const MobileMenuButton = () => {

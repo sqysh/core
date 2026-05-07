@@ -136,3 +136,28 @@ export function getQuarterlyDates(): string[] {
     new Date(2027, 0, 15) // Jan 15
   ].map((d) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))
 }
+
+export function getAnnualBillingAnchor(month: number, day: number): number {
+  const today = new Date()
+  let anchor = new Date(today.getFullYear(), month - 1, day)
+  if (anchor <= today) {
+    anchor = new Date(today.getFullYear() + 1, month - 1, day)
+  }
+  return Math.floor(anchor.getTime() / 1000)
+}
+
+export function getQuarterlyBillingAnchor(): number {
+  const today = new Date()
+  const year = today.getFullYear()
+
+  const quarters = [
+    new Date(year, 0, 1),
+    new Date(year, 3, 1),
+    new Date(year, 6, 1),
+    new Date(year, 9, 1),
+    new Date(year + 1, 0, 1)
+  ]
+
+  const next = quarters.find((q) => q > today)!
+  return Math.floor(next.getTime() / 1000)
+}

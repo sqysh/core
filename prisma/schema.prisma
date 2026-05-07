@@ -95,91 +95,108 @@ model VerificationToken {
 }
 
 model User {
-  id                         String                     @id @default(cuid())
-  createdAt                  DateTime                   @default(now())
-  updatedAt                  DateTime                   @updatedAt
-  name                       String
-  email                      String                     @unique
-  secondaryEmail             String?                    @unique
-  phone                      String?
-  company                    String
-  chapterId                  String
-  emailVerified              DateTime?
-  expiresAt                  DateTime?
-  image                      String?
-  interests                  String[]
-  isActive                   Boolean                    @default(true)
-  isPublic                   Boolean                    @default(true)
-  joinedAt                   DateTime?
-  lastLoginAt                DateTime?
-  membershipStatus           MembershipStatus           @default(PENDING)
-  profileImage               String?
-  profileImageFilename       String?
-  role                       String
-  location                   String?                    @default("")
-  tempId                     String                     @default("")
-  isAdmin                    Boolean                    @default(false)
-  isMembership               Boolean                    @default(false)
-  isSuperUser                Boolean                    @default(false)
-  bio                        String?                    @default("")
-  businessLicenseNumber      String?                    @default("")
-  isLicensed                 Boolean?                   @default(false)
-  industry                   String                     @default("")
-  title                      String?                    @default("")
-  website                    String?                    @default("")
-  yearsInBusiness            String?                    @default("")
-  hasCompletedApplication    Boolean                    @default(false)
-  rejectedAt                 String?                    @default("")
-  rejectionReason            String?                    @default("")
-  backgroundCheckCompletedAt String?                    @default("")
-  finalDecisionAt            String?                    @default("")
-  initialReviewCompletedAt   String?                    @default("")
-  rejectedStep               String?                    @default("")
-  isBackgroudCheckCompleted  Boolean                    @default(false)
-  isInitialReviewCompleted   Boolean                    @default(false)
-  signals                    Json?                      @default("[]")
-  isFinalDecisionMade        Boolean                    @default(false)
-  isRejected                 Boolean                    @default(false)
-  askMeAbout                 Json?
-  careerAchievements         Json?
-  collage                    Json?
-  coverImage                 String?
-  coverImageFilename         String?
-  facebookUrl                String?
-  goal                       String?
-  learningGoals              String[]
-  linkedInUrl                String?
-  podcasts                   Json?
-  portfolioUrl               String?
-  posts                      Json?
-  professionalAssociations   Json?
-  professionalBooks          Json?
-  servicesOffered            Json?
-  sideProjects               Json?
-  skills                     String[]
-  threadsUrl                 String?
-  xUrl                       String?
-  youtubeUrl                 String?
-  weeklyTreasureWishlist     String?
-  hasAnnualSubscription      Boolean                    @default(false)
-  hasQuarterlySubscription   Boolean                    @default(false)
-  stripeCustomerId           String?
-  annualSubscriptionId       String?
-  quarterlySubscriptionId    String?
-  accounts                   Account[]
-  givenCredits               Anchor[]                   @relation("AnchorGiver")
-  receivedCredits            Anchor[]                   @relation("AnchorReceiver")
-  logs                       Log[]
-  receivedMeetings           Parley[]                   @relation("ParleyRecipient")
-  requestedMeetings          Parley[]                   @relation("ParleyRequester")
-  sessions                   Session[]
-  giver                      TreasureMap[]              @relation("TreasureMapGiver")
-  receiver                   TreasureMap[]              @relation("TreasureMapReceiver")
-  reporter                   SuspiciousActivityReport[] @relation("ReportedBy")
-  chapter                    Chapter                    @relation(fields: [chapterId], references: [id])
-  presenterQueue             PresenterQueue?
-  signOutEvents              SignOutEvent[]
-  visitorInvites             Visitor[]                  @relation("VisitorInvites")
+  // ── Identity ──────────────────────────────────────────────────────────────
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  secondaryEmail String?   @unique
+  phone          String?
+  image          String?
+  role           String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  emailVerified  DateTime?
+  expiresAt      DateTime?
+  lastLoginAt    DateTime?
+  joinedAt       DateTime?
+
+  // ── Membership ────────────────────────────────────────────────────────────
+  chapterId        String
+  membershipStatus MembershipStatus @default(PENDING)
+  isActive         Boolean          @default(true)
+  isPublic         Boolean          @default(true)
+  isAdmin          Boolean          @default(false)
+  isMembership     Boolean          @default(false)
+  isSuperUser      Boolean          @default(false)
+
+  // ── Application ───────────────────────────────────────────────────────────
+  hasCompletedApplication    Boolean  @default(false)
+  businessLicenseNumber      String?  @default("")
+  isLicensed                 Boolean? @default(false)
+  isBackgroudCheckCompleted  Boolean  @default(false)
+  isInitialReviewCompleted   Boolean  @default(false)
+  isFinalDecisionMade        Boolean  @default(false)
+  isRejected                 Boolean  @default(false)
+  backgroundCheckCompletedAt String?  @default("")
+  initialReviewCompletedAt   String?  @default("")
+  finalDecisionAt            String?  @default("")
+  rejectedAt                 String?  @default("")
+  rejectedStep               String?  @default("")
+  rejectionReason            String?  @default("")
+  signals                    Json?    @default("[]")
+
+  // ── Profile ───────────────────────────────────────────────────────────────
+  bio                  String? @default("")
+  industry             String  @default("")
+  title                String? @default("")
+  company              String
+  website              String? @default("")
+  location             String? @default("")
+  yearsInBusiness      String? @default("")
+  profileImage         String?
+  profileImageFilename String?
+  coverImage           String?
+  coverImageFilename   String?
+  goal                 String?
+  tempId               String  @default("")
+
+  // ── Social ────────────────────────────────────────────────────────────────
+  facebookUrl  String?
+  linkedInUrl  String?
+  threadsUrl   String?
+  xUrl         String?
+  youtubeUrl   String?
+  portfolioUrl String?
+
+  // ── Professional ──────────────────────────────────────────────────────────
+  askMeAbout               Json?
+  careerAchievements       Json?
+  collage                  Json?
+  interests                String[]
+  learningGoals            String[]
+  podcasts                 Json?
+  posts                    Json?
+  professionalAssociations Json?
+  professionalBooks        Json?
+  servicesOffered          Json?
+  sideProjects             Json?
+  skills                   String[]
+  weeklyTreasureWishlist   String?
+
+  // ── Billing ───────────────────────────────────────────────────────────────
+  stripeCustomerId         String?
+  hasAnnualSubscription    Boolean @default(false)
+  hasQuarterlySubscription Boolean @default(false)
+  annualSubscriptionId     String?
+  quarterlySubscriptionId  String?
+
+  // ── Relations ─────────────────────────────────────────────────────────────
+  chapter           Chapter                    @relation(fields: [chapterId], references: [id])
+  accounts          Account[]
+  sessions          Session[]
+  logs              Log[]
+  orders            Order[]
+  paymentMethods    PaymentMethod[]
+  presenterQueue    PresenterQueue?
+  signOutEvents     SignOutEvent[]
+  visitorInvites    Visitor[]                  @relation("VisitorInvites")
+  givenCredits      Anchor[]                   @relation("AnchorGiver")
+  receivedCredits   Anchor[]                   @relation("AnchorReceiver")
+  requestedMeetings Parley[]                   @relation("ParleyRequester")
+  receivedMeetings  Parley[]                   @relation("ParleyRecipient")
+  giver             TreasureMap[]              @relation("TreasureMapGiver")
+  receiver          TreasureMap[]              @relation("TreasureMapReceiver")
+  reporter          SuspiciousActivityReport[] @relation("ReportedBy")
 }
 
 model Parley {
@@ -389,6 +406,7 @@ model VisitorDay {
   createdAt        DateTime @default(now())
   presenterName    String?
   presenterCompany String?
+  reactionCount    Int      @default(0)
 
   @@unique([chapterId, date])
   @@index([chapterId])
@@ -420,4 +438,56 @@ model Visitor {
 
   invitedById String
   invitedBy   User   @relation("VisitorInvites", fields: [invitedById], references: [id])
+}
+
+model Order {
+  id                 String      @id @default(cuid())
+  userId             String
+  chapterId          String
+  type               OrderType
+  status             OrderStatus
+  amount             Decimal     @db.Decimal(10, 2)
+  stripeCustomerId   String?
+  stripeSubId        String?
+  stripePriceId      String?
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelledAt        DateTime?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([chapterId])
+  @@index([stripeSubId])
+}
+
+model PaymentMethod {
+  id                    String   @id @default(cuid())
+  userId                String
+  stripePaymentMethodId String   @unique
+  brand                 String // visa, mastercard, amex etc
+  last4                 String
+  expMonth              Int
+  expYear               Int
+  isDefault             Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+enum OrderType {
+  ANNUAL
+  QUARTERLY
+}
+
+enum OrderStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  INCOMPLETE
 }

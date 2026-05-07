@@ -4,13 +4,11 @@ import { useState } from 'react'
 import QuickActions from '../dashboard/QuickActions'
 import Link from 'next/link'
 import PresenterSchedule from '../PresentersSchedule'
-import { ScheduledPresenter } from '@/types/presenter-queue'
 import { MemberList } from '../dashboard/MemberList'
-import { LinkedRecord } from '@/types/common'
 import LinkedRecordModal from '../modals/LinkedRecordModal'
 import { HistoryTabs } from '../dashboard/HistoryTabs'
 import { GmailPrompt } from '../dashboard/GmailPrompt'
-import MembershipSetup from '../dashboard/MembershipSetup'
+// import MembershipSetup from '../dashboard/MembershipSetup'
 import FadeUp from '../common/FadeUp'
 import { SectionLabel } from '../common/SectionLabel'
 import { Greeting } from '../dashboard/Greeting'
@@ -18,54 +16,11 @@ import { GmailConfirmation } from '../dashboard/GmailConfirmation'
 import { ActivityStats } from '../dashboard/ActivityStats'
 import { EventButton } from '../dashboard/EventButton'
 import { EventsList } from '../dashboard/EventsList'
-import { TEvent } from '@/types/event'
 import VisitorPanel from '../dashboard/VisitorPanel'
-import { Visitor } from '@/types/visitor'
 import { useSession } from 'next-auth/react'
 import { PrimaryEmailPrompt } from '../dashboard/PrimaryEmailPrompt'
+import { MemberDashboardProps } from '@/types/dashboard.types'
 
-export interface ActivityItem {
-  id: string
-  type: 'MEETING' | 'REFERRAL' | 'CLOSED'
-  label: string
-  timeAgo: string
-  clientPhone?: string
-  businessValue?: number
-}
-
-interface DashboardStats {
-  parleyThisWeek: number
-  treasureMapsThisWeek: number
-  anchorsThisWeek: number
-  totalParleys: number
-  totalTreasureMaps: number
-  totalAnchors: number
-  closedAmountThisWeek: string
-  totalClosedAmount: string
-}
-
-export interface MemberDashboardProps {
-  currentUser: {
-    id?: string
-    name: string
-    initials: string
-    email: string
-    secondaryEmail?: string
-    hasAnnualSubscription?: boolean
-    hasQuarterlySubscription?: boolean
-    weeklyTreasureWishlist?: string
-  }
-  members: any
-  stats: DashboardStats
-  recentActivity: ActivityItem[]
-  schedule: ScheduledPresenter[]
-  linkedRecord: LinkedRecord
-  events: TEvent[]
-  visitors: Visitor[]
-  closestVisitorDay: string
-}
-
-// ─── Main dashboard ────────────────────────────────────────────────────────────
 export default function DashboardClient({
   currentUser,
   members,
@@ -75,7 +30,8 @@ export default function DashboardClient({
   linkedRecord,
   events,
   visitors,
-  closestVisitorDay
+  closestVisitorDay,
+  membership
 }: MemberDashboardProps) {
   const session = useSession()
   const signedInWith = session.data.user.signedInWith
@@ -131,12 +87,9 @@ export default function DashboardClient({
         </FadeUp>
 
         {/* ── Membership setup ── */}
-        <FadeUp delay={0.15} className="pt-6">
-          <MembershipSetup
-            hasAnnual={currentUser.hasAnnualSubscription}
-            hasQuarterly={currentUser.hasQuarterlySubscription}
-          />
-        </FadeUp>
+        {/* <FadeUp delay={0.15} className="pt-6">
+          <MembershipSetup membership={membership} />
+        </FadeUp> */}
 
         {/* ── Onboarding preview ── */}
         <FadeUp delay={0.15} className="pt-6">

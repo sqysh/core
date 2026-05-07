@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 import { store, useToastSelector } from '@/app/lib/redux/store'
-import { hideToast } from '@/app/lib/redux/features/toastSlice'
+import { hideToast } from '@/app/lib/redux/slices/toastSlice'
 
 const TOAST_STYLES = {
   success: {

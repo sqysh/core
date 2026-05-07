@@ -1,26 +1,26 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { fadeInUp } from '@/app/lib/constants/motion'
 import LaunchAppButton from '../common/LaunchAppButton'
 import Marquee from 'react-fast-marquee'
 
-const StepMarquee = () => {
-  const logos = [
-    { name: 'Sqysh', src: '/logos/company1.png' },
-    { name: 'Saltwater Bookkeepping', src: '/logos/company2.png' },
-    { name: 'Century21', src: '/logos/company3.png' },
-    { name: 'Eastern Bank', src: '/logos/company4.png' },
-    { name: 'Touchstone Closing & Escrow', src: '/logos/company5.png' },
-    { name: 'Boys & Girls Club of Lynn', src: '/logos/company6.png' },
-    { name: 'The Drummlin Group', src: '/logos/company7.png' },
-    { name: 'Zellik Insurance', src: '/logos/company8.png' },
-    { name: 'CrossCountry Mortgage LLC', src: '/logos/company9.png' },
-    { name: 'Northwestern Mutual', src: '/logos/company10.png' },
-    { name: 'Commonwealth Payroll & HR', src: '/logos/company11.png' },
-    { name: 'Prudential Life Insurance', src: '/logos/company12.png' },
-    { name: 'Finneran & Nicholson', src: '/logos/company13.png' }
-  ]
+export const logos = [
+  { name: 'Sqysh', src: '/logos/company1.png' },
+  { name: 'Saltwater Bookkeepping', src: '/logos/company2.png' },
+  { name: 'Century21', src: '/logos/company3.png' },
+  { name: 'Eastern Bank', src: '/logos/company4.png' },
+  { name: 'Touchstone Closing & Escrow', src: '/logos/company5.png' },
+  { name: 'Boys & Girls Club of Lynn', src: '/logos/company6.png' },
+  { name: 'The Drummlin Group', src: '/logos/company7.png' },
+  { name: 'Zellik Insurance', src: '/logos/company8.png' },
+  { name: 'CrossCountry Mortgage LLC', src: '/logos/company9.png' },
+  { name: 'Northwestern Mutual', src: '/logos/company10.png' },
+  { name: 'Commonwealth Payroll & HR', src: '/logos/company11.png' },
+  { name: 'Prudential Life Insurance', src: '/logos/company12.png' },
+  { name: 'Finneran & Nicholson', src: '/logos/company13.png' }
+]
 
+const StepMarquee = () => {
   const allLogos = [...logos, ...logos, ...logos]
 
   return (
@@ -41,7 +41,7 @@ const StepMarquee = () => {
 const HeroSection: FC<{ isVisible: boolean }> = ({ isVisible }) => {
   return (
     <motion.section
-      className="mt-[-74px] py-16 md:py-28 flex flex-col items-center justify-center text-white overflow-hidden relative bg-no-repeat bg-cover bg-center w-full min-h-screen"
+      className="-mt-18.5 py-16 md:py-28 flex flex-col items-center justify-center text-white overflow-hidden relative bg-no-repeat bg-cover bg-center w-full min-h-screen"
       initial="hidden"
       animate={isVisible ? 'visible' : 'hidden'}
       style={{ backgroundImage: `url('/images/hero.png')` }}

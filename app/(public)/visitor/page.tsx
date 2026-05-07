@@ -1,13 +1,12 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import VisitorDayClient from './VisitorDayClient'
+import VisitorClient from './VisitorClient'
 
 export interface GroupStats {
   totalRevenue: number
   totalParleys: number
   totalReferrals: number
-  reactionCount: number
 }
 
 export async function getGroupStats(): Promise<{
@@ -16,32 +15,25 @@ export async function getGroupStats(): Promise<{
   error?: string
 }> {
   try {
-    const today = new Date()
-    // const start = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    // const end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
-
-    const [anchors, totalParleys, totalReferrals, visitorDay] = await Promise.all([
-      prisma.anchor.findMany({ select: { businessValue: true } }).catch(() => []),
-      prisma.parley.count({ where: { status: { not: 'CANCELLED' } } }).catch(() => 0),
-      prisma.treasureMap.count({}).catch(() => 0),
-      prisma.visitorDay
-        .findFirst({
-          // where: { date: { gte: start, lt: end } },
-          select: { reactionCount: true }
+    const [anchors, totalParleys, totalReferrals] = await Promise.all([
+      prisma.anchor
+        .findMany({
+          select: { businessValue: true }
         })
-        .catch(() => null)
+        .catch(() => []),
+      prisma.parley
+        .count({
+          where: { status: { not: 'CANCELLED' } }
+        })
+        .catch(() => 0),
+      prisma.treasureMap.count({}).catch(() => 0)
     ])
 
     const totalRevenue = anchors.map((a) => parseFloat(String(a.businessValue))).reduce((sum, val) => sum + val, 0)
 
     return {
       success: true,
-      data: {
-        totalRevenue,
-        totalParleys,
-        totalReferrals,
-        reactionCount: visitorDay?.reactionCount ?? 0
-      }
+      data: { totalRevenue, totalParleys, totalReferrals }
     }
   } catch (err) {
     console.error('[getGroupStats]', err)
@@ -51,15 +43,13 @@ export async function getGroupStats(): Promise<{
 
 export default async function VisitorDayPage() {
   const result = await getGroupStats()
-
   return (
-    <VisitorDayClient
+    <VisitorClient
       date="Thursday, May 7th"
       presenterName="Zach Ayvazian"
       presenterCompany="SureWay AI"
       presenterBio="Zach Ayvazian builds custom automations that free service businesses from the admin work that's quietly running them — from speed-to-lead systems to document automation and billing workflows."
       stats={result.data}
-      initialReactionCount={result.data?.reactionCount ?? 0}
     />
   )
 }

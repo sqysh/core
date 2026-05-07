@@ -52,7 +52,8 @@ export async function getDashboardData() {
       totalAnchorsData,
       events,
       visitors,
-      closestVisitorDay
+      closestVisitorDay,
+      membershipData
     ] = await Promise.all([
       prisma.parley.count({
         where: {
@@ -108,7 +109,30 @@ export async function getDashboardData() {
           }
         }
       }),
-      getClosestVisitorDay()
+      getClosestVisitorDay(),
+      await prisma.user
+        .findUnique({
+          where: { id: user.id },
+          select: {
+            orders: {
+              where: { status: 'ACTIVE' },
+              select: { type: true, currentPeriodEnd: true }
+            },
+            paymentMethods: {
+              where: { isDefault: true },
+              select: {
+                id: true,
+                brand: true,
+                last4: true,
+                expMonth: true,
+                expYear: true,
+                stripePaymentMethodId: true
+              },
+              take: 1
+            }
+          }
+        })
+        .catch(() => null)
     ])
 
     const anchorsThisWeek = anchorsThisWeekData.length
@@ -228,7 +252,12 @@ export async function getDashboardData() {
           ...e,
           createdAt: e.createdAt.toISOString()
         })),
-        closestVisitorDay
+        closestVisitorDay,
+        membership: {
+          annualOrder: membershipData?.orders.find((o) => o.type === 'ANNUAL') ?? null,
+          quarterlyOrder: membershipData?.orders.find((o) => o.type === 'QUARTERLY') ?? null,
+          paymentMethod: membershipData?.paymentMethods[0] ?? null
+        }
       }
     }
   } catch (error) {

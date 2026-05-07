@@ -1,5 +1,5 @@
 import getCurrentPageId from '@/app/lib/utils/common/getCurrentPageId'
-import { setCloseMobileNavigation } from '@/app/lib/redux/features/appSlice'
+import { setCloseMobileNavigation } from '@/app/lib/redux/slices/appSlice'
 import { RootState, useAppDispatch, useAppSelector } from '@/app/lib/redux/store'
 import useCustomPathname from '@/hooks/useCustomPathname'
 import { motion, AnimatePresence } from 'framer-motion'

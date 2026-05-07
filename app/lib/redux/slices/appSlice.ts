@@ -7,6 +7,7 @@ export interface AppStatePayload {
   isNavigationCollapsed: boolean
   actionDropdown: boolean
   itemAction: string | null
+  isDark: boolean
 }
 
 const initialAppState: AppStatePayload = {
@@ -15,7 +16,8 @@ const initialAppState: AppStatePayload = {
   navigationDrawer: false,
   isNavigationCollapsed: false,
   actionDropdown: false,
-  itemAction: null
+  itemAction: null,
+  isDark: false
 }
 
 export const appSlice = createSlice({
@@ -57,6 +59,9 @@ export const appSlice = createSlice({
     },
     setCloseActionDropdownSubmenu: (state) => {
       state.itemAction = null
+    },
+    setIsDark: (state, { payload }) => {
+      state.isDark = payload
     }
   }
 })
@@ -75,5 +80,6 @@ export const {
   setCloseActionDropdown,
   setOpenActionDropdownSubmenu,
   setCloseActionDropdownSubmenu,
-  setToggleActionDropdown
+  setToggleActionDropdown,
+  setIsDark
 } = appSlice.actions

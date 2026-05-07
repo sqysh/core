@@ -7,10 +7,7 @@ import NavigationDrawer from './components/NavigationDrawer'
 import { store } from './lib/redux/store'
 import { Provider } from 'react-redux'
 import { usePathname } from 'next/navigation'
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+import { ThemeProvider } from './lib/providers/theme'
 
 const showLink = (path: string) =>
   ![
@@ -29,15 +26,14 @@ export default function RootLayoutWrapper({ children }) {
   const path = usePathname()
 
   return (
-    <Elements stripe={stripePromise}>
-      <Provider store={store}>
+    <Provider store={store}>
+      <ThemeProvider>
         <Toast />
         <NavigationDrawer />
-
         {showLink(path) && <Header />}
         {children}
         {showLink(path) && <Footer />}
-      </Provider>
-    </Elements>
+      </ThemeProvider>
+    </Provider>
   )
 }

@@ -2,8 +2,8 @@
 
 import validateApplicationForm from '@/app/lib/validations/validateApplicationForm'
 import { createUser } from '@/app/lib/actions/createUser'
-import { createFormActions } from '@/app/lib/redux/features/formSlice'
-import { showToast } from '@/app/lib/redux/features/toastSlice'
+import { createFormActions } from '@/app/lib/redux/slices/formSlice'
+import { showToast } from '@/app/lib/redux/slices/toastSlice'
 import { store, useAppSelector } from '@/app/lib/redux/store'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 import { RootState, useAppDispatch, useAppSelector } from '../lib/redux/store'
-import { setCloseNavigationDrawer } from '../lib/redux/features/appSlice'
+import { setCloseNavigationDrawer } from '../lib/redux/slices/appSlice'
 
 const NavigationDrawer = () => {
   const pathname = usePathname()

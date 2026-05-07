@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/lib/auth'
 import DashboardClient from '@/app/components/pages/DashboardClient'
-import { getDashboardData } from '@/app/lib/actions/getDashboardData'
-import { getPresenterSchedule } from '@/app/lib/actions/presenter-queue/getPresenterSchedule'
-import { getLinkedRecord } from '@/app/lib/actions/getLinkedRecord'
+import { getDashboardPageData } from '@/app/lib/actions/dashboard/getDashboardPageData'
 
 export default async function DashboardPage({
   searchParams
@@ -15,11 +13,7 @@ export default async function DashboardPage({
 
   const { action, id } = await searchParams
 
-  const [result, schedule, linkedRecord] = await Promise.all([
-    getDashboardData(),
-    getPresenterSchedule(),
-    action && id ? getLinkedRecord(action, id) : Promise.resolve(null)
-  ])
+  const result = await getDashboardPageData(action, id)
 
   if (!result.success || !result.data) {
     return (
@@ -31,7 +25,18 @@ export default async function DashboardPage({
     )
   }
 
-  const { currentUser, members, stats, recentActivity } = result.data
+  const {
+    currentUser,
+    members,
+    stats,
+    recentActivity,
+    events,
+    visitors,
+    closestVisitorDay,
+    schedule,
+    linkedRecord,
+    membership
+  } = result.data
 
   return (
     <DashboardClient
@@ -41,9 +46,10 @@ export default async function DashboardPage({
       recentActivity={recentActivity}
       schedule={schedule.data}
       linkedRecord={linkedRecord}
-      events={result.data.events}
-      visitors={result.data.visitors}
-      closestVisitorDay={result.data.closestVisitorDay}
+      events={events}
+      visitors={visitors}
+      closestVisitorDay={closestVisitorDay}
+      membership={membership}
     />
   )
 }
