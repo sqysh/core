@@ -128,6 +128,13 @@ function MemberCard({ member, checkedIn, t }: { member: Member; checkedIn: boole
   )
 }
 
+function speak(name: string) {
+  const utterance = new SpeechSynthesisUtterance(`Thank you for checking in, ${name}`)
+  utterance.rate = 0.9
+  utterance.pitch = 1
+  window.speechSynthesis.speak(utterance)
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function AttendanceClient({
@@ -159,8 +166,9 @@ export default function AttendanceClient({
     })
 
     const channel = pusher.subscribe('meeting-attendance')
-    channel.bind('check-in', (data: { userId: string; emoji: string; count: number }) => {
+    channel.bind('check-in', (data: { userId: string; emoji: string; count: number; name: string }) => {
       setCheckedInIds((prev) => new Set([...prev, data.userId]))
+      speak(data.name.split(' ')[0]) // just first name
     })
 
     const reactionChannel = pusher.subscribe('visitor-reactions')
