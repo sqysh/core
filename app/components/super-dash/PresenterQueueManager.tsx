@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { QueueMember } from '@/types/presenter-queue'
 import { addToQueue } from '@/app/lib/actions/presenter-queue/addToQueue'

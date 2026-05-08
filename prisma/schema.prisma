@@ -58,6 +58,7 @@ enum EventOrg {
   NORTH_SHORE_LATINO
   BOYS_AND_GIRLS_CLUB
   TOUCHSTONE
+  OTHER
 }
 
 model Account {
@@ -289,15 +290,16 @@ model Chapter {
 }
 
 model Event {
-  id           String   @id @default(cuid())
+  id           String      @id @default(cuid())
   org          EventOrg
   name         String
   description  String?
   externalLink String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   chapterId    String
-  chapter      Chapter  @relation(fields: [chapterId], references: [id])
+  chapter      Chapter     @relation(fields: [chapterId], references: [id])
+  status       EventStatus @default(UPCOMING)
 }
 
 model Newsletter {

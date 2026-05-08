@@ -84,7 +84,7 @@ export function MeetingRow({
       <div className="flex flex-wrap gap-1.5 flex-1">
         {members.map((member) => (
           <MemberChip
-            key={member.id}
+            key={`${row.id}-${member.id}`}
             member={member}
             attended={row.attendedIds.includes(member.id)}
             checkedInTime={row.checkedInTimes[member.id]}

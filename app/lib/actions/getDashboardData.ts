@@ -3,6 +3,7 @@ import { auth } from '../auth'
 import { getInitials } from '../utils/common/getInitials'
 import { timeAgo } from '../utils/time.utils'
 import { getClosestVisitorDay } from './visitor-day/getClosestVisitorDay'
+import { chapterId } from '../constants/api/chapterId'
 
 export async function getDashboardData() {
   try {
@@ -92,11 +93,16 @@ export async function getDashboardData() {
           name: true,
           description: true,
           externalLink: true,
-          createdAt: true
+          createdAt: true,
+          status: true
         }
       }),
       prisma.visitor.findMany({
-        orderBy: { createdAt: 'desc' },
+        where: {
+          chapterId,
+          visitDate: { gte: new Date() }
+        },
+        orderBy: { visitDate: 'asc' },
         select: {
           id: true,
           firstName: true,

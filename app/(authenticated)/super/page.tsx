@@ -47,6 +47,7 @@ export default async function SuperDashPage() {
       dates={dates}
       startIndex={startIndex}
       chapter={result.data.chapter}
+      events={result.data.events}
     />
   )
 }

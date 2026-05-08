@@ -22,7 +22,8 @@ const showLink = (path: string) =>
     '/visitor-day',
     '/visitor',
     '/attendance',
-    '/check-in'
+    '/check-in',
+    '/events'
   ].some((str) => path.includes(str))
 
 export default function RootLayoutWrapper({ children }) {

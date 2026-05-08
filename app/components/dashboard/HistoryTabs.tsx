@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { ActivityItem } from '../pages/DashboardClient'
+import { ActivityItem } from '../../(authenticated)/dashboard/DashboardClient'
 import { formatPhone } from '@/app/lib/utils/phone.utils'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────

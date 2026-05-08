@@ -41,33 +41,35 @@ export function EventsList({ events }: { events: TEvent[] }) {
 
   return (
     <ul className="border border-border-light dark:border-border-dark divide-y divide-border-light dark:divide-border-dark">
-      {events.map((event) => (
-        <li key={event.id} className="overflow-hidden">
-          {event.externalLink ? (
-            <a
-              href={event.externalLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-surface-light dark:hover:bg-surface-dark transition-colors"
-            >
-              <div className="flex-1 min-w-0 overflow-hidden">
-                <MarqueeContent event={event} />
+      {events
+        .filter((e) => e.status === 'UPCOMING')
+        .map((event) => (
+          <li key={event.id} className="overflow-hidden">
+            {event.externalLink ? (
+              <a
+                href={event.externalLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-surface-light dark:hover:bg-surface-dark transition-colors"
+              >
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <MarqueeContent event={event} />
+                </div>
+                <ExternalLink
+                  size={11}
+                  className="text-primary-light dark:text-primary-dark shrink-0"
+                  aria-hidden="true"
+                />
+              </a>
+            ) : (
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <MarqueeContent event={event} />
+                </div>
               </div>
-              <ExternalLink
-                size={11}
-                className="text-primary-light dark:text-primary-dark shrink-0"
-                aria-hidden="true"
-              />
-            </a>
-          ) : (
-            <div className="flex items-center gap-3 px-4 py-3">
-              <div className="flex-1 min-w-0 overflow-hidden">
-                <MarqueeContent event={event} />
-              </div>
-            </div>
-          )}
-        </li>
-      ))}
+            )}
+          </li>
+        ))}
     </ul>
   )
 }

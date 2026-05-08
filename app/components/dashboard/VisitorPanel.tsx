@@ -8,6 +8,7 @@ import { CreateVisitorModal } from '../modals/CreateVisitorModal'
 import { Visitor } from '@/types/visitor'
 import { useRouter } from 'next/navigation'
 import useSoundEffect from '@/hooks/useSoundEffect'
+import Link from 'next/link'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -148,8 +149,6 @@ export default function VisitorPanel({
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
     <>
       <AnimatePresence>
@@ -210,8 +209,21 @@ export default function VisitorPanel({
             <p className="text-xs font-nunito text-muted-light dark:text-muted-dark leading-relaxed">
               Bringing a guest to Visitor Day? Log them here so the group knows who to expect.
             </p>
+            <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark mt-2">
+              Next Visitor Day · <span className="text-primary-light dark:text-primary-dark">September 24th, 2026</span>
+            </p>
           </div>
         )}
+
+        {/* View past */}
+        <div className="px-4 py-3 border-t border-border-light dark:border-border-dark">
+          <Link
+            href="/visitors"
+            className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+          >
+            View Past →
+          </Link>
+        </div>
       </div>
     </>
   )

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/lib/auth'
-import DashboardClient from '@/app/components/pages/DashboardClient'
+import DashboardClient from '@/app/(authenticated)/dashboard/DashboardClient'
 import { getDashboardPageData } from '@/app/lib/actions/dashboard/getDashboardPageData'
 
 export default async function DashboardPage({

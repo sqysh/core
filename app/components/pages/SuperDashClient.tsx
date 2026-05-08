@@ -1,7 +1,7 @@
 'use client'
 
 import { Users, Activity, DollarSign, Clock, LogOut, LayoutDashboard, Logs } from 'lucide-react'
-import { SuperUserDashboardData } from '@/app/lib/actions/super-user/superUserActions'
+import { SuperUserDashboardData, SuperUserEvent } from '@/app/lib/actions/super-user/superUserActions'
 import { signOut } from 'next-auth/react'
 import PresenterQueueManager from '../super-dash/PresenterQueueManager'
 import { AnchorsPanel } from '../super-dash/AnchorsPanel'
@@ -20,6 +20,7 @@ import { ChapterSettingsPanel } from '../super-dash/ChapterSettingsPanel'
 import { Chapter } from '@/types/user'
 import { QueueMember } from '@/types/presenter-queue'
 import { VisitorPanel } from '../super-dash/VisitorPanel'
+import { EventsPanel } from '../super-dash/EventsPanel'
 
 type TSuperDashClient = {
   data: SuperUserDashboardData
@@ -30,6 +31,7 @@ type TSuperDashClient = {
   dates: string[]
   startIndex: number
   chapter: Chapter
+  events: SuperUserEvent[]
 }
 
 const sharedBtnStyles = `shrink-0 mt-1 flex items-center gap-2 h-9 px-4 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-f10 font-mono tracking-[0.15em] uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark`
@@ -42,7 +44,8 @@ export default function SuperDashClient({
   visitorDays,
   dates,
   startIndex,
-  chapter
+  chapter,
+  events
 }: TSuperDashClient) {
   const router = useRouter()
   const { stats, members, applicants, parleys, referrals, anchors, visitors } = data
@@ -123,6 +126,9 @@ export default function SuperDashClient({
           </div>
           <div className="flex flex-col gap-5">
             <FadeUp delay={0.2}>
+              <EventsPanel events={events} />
+            </FadeUp>
+            <FadeUp delay={0.22}>
               <Face2FacePanel parleys={parleys} />
             </FadeUp>
             <FadeUp delay={0.24}>

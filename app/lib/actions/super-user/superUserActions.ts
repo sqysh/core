@@ -6,6 +6,7 @@ import { chapterId } from '../../constants/api/chapterId'
 import { createLog } from '../../utils/api/createLog'
 import { Chapter } from '@/types/user'
 import { Visitor } from '@/types/visitor'
+import { EventOrg, EventStatus } from '@prisma/client'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 export type SuperUserMember = {
@@ -90,6 +91,17 @@ export type SuperUserDashboardData = {
   anchors: SuperUserAnchor[]
   chapter: Chapter
   visitors: Visitor[]
+  events: SuperUserEvent[]
+}
+
+export interface SuperUserEvent {
+  id: string
+  name: string
+  org: EventOrg
+  description?: string | null
+  externalLink?: string | null
+  status: EventStatus
+  createdAt: string
 }
 
 export async function getSuperUserDashboardData(): Promise<
@@ -109,7 +121,8 @@ export async function getSuperUserDashboardData(): Promise<
       chapter,
       meetingsTotal,
       referralsOpen,
-      anchorsAllTime
+      anchorsAllTime,
+      events
     ] = await Promise.all([
       prisma.user
         .findMany({
@@ -266,6 +279,22 @@ export async function getSuperUserDashboardData(): Promise<
           where: { chapterId },
           select: { businessValue: true }
         })
+        .catch(() => []),
+
+      prisma.event
+        .findMany({
+          where: { chapterId },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            name: true,
+            org: true,
+            description: true,
+            externalLink: true,
+            status: true,
+            createdAt: true
+          }
+        })
         .catch(() => [])
     ])
 
@@ -347,7 +376,11 @@ export async function getSuperUserDashboardData(): Promise<
           createdAt: v.createdAt,
           invitedBy: v.invitedBy ? { name: v.invitedBy.name } : null
         })),
-        chapter: { ...chapter, id: chapterId }
+        chapter: { ...chapter, id: chapterId },
+        events: (events ?? []).map((e) => ({
+          ...e,
+          createdAt: e.createdAt.toISOString()
+        }))
       }
     }
   } catch (error) {

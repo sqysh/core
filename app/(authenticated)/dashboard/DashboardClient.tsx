@@ -1,24 +1,24 @@
 'use client'
 
 import { useState } from 'react'
-import QuickActions from '../dashboard/QuickActions'
+import QuickActions from '../../components/dashboard/QuickActions'
 import Link from 'next/link'
-import PresenterSchedule from '../PresentersSchedule'
-import { MemberList } from '../dashboard/MemberList'
-import LinkedRecordModal from '../modals/LinkedRecordModal'
-import { HistoryTabs } from '../dashboard/HistoryTabs'
-import { GmailPrompt } from '../dashboard/GmailPrompt'
+import PresenterSchedule from '../../components/PresentersSchedule'
+import { MemberList } from '../../components/dashboard/MemberList'
+import LinkedRecordModal from '../../components/modals/LinkedRecordModal'
+import { HistoryTabs } from '../../components/dashboard/HistoryTabs'
+import { GmailPrompt } from '../../components/dashboard/GmailPrompt'
 // import MembershipSetup from '../dashboard/MembershipSetup'
-import FadeUp from '../common/FadeUp'
-import { SectionLabel } from '../common/SectionLabel'
-import { Greeting } from '../dashboard/Greeting'
-import { GmailConfirmation } from '../dashboard/GmailConfirmation'
-import { ActivityStats } from '../dashboard/ActivityStats'
-import { EventButton } from '../dashboard/EventButton'
-import { EventsList } from '../dashboard/EventsList'
-import VisitorPanel from '../dashboard/VisitorPanel'
+import FadeUp from '../../components/common/FadeUp'
+import { SectionLabel } from '../../components/common/SectionLabel'
+import { Greeting } from '../../components/dashboard/Greeting'
+import { GmailConfirmation } from '../../components/dashboard/GmailConfirmation'
+import { ActivityStats } from '../../components/dashboard/ActivityStats'
+import { EventButton } from '../../components/dashboard/EventButton'
+import { EventsList } from '../../components/dashboard/EventsList'
+import VisitorPanel from '../../components/dashboard/VisitorPanel'
 import { useSession } from 'next-auth/react'
-import { PrimaryEmailPrompt } from '../dashboard/PrimaryEmailPrompt'
+import { PrimaryEmailPrompt } from '../../components/dashboard/PrimaryEmailPrompt'
 import { MemberDashboardProps } from '@/types/dashboard.types'
 
 export default function DashboardClient({
@@ -84,6 +84,12 @@ export default function DashboardClient({
           <SectionLabel>Events</SectionLabel>
           <EventButton />
           <EventsList events={events} />
+          <Link
+            href="/events"
+            className="mt-2 inline-flex items-center gap-1.5 text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+          >
+            View Past →
+          </Link>
         </FadeUp>
 
         {/* ── Membership setup ── */}
@@ -111,7 +117,7 @@ export default function DashboardClient({
           </div>
         </FadeUp>
 
-        {/* ── History ── */}
+        {/* ── Visitors ── */}
         <FadeUp delay={0.15} className="pt-6">
           <SectionLabel>Visitors</SectionLabel>
           <VisitorPanel visitors={visitors} closestVisitorDay={closestVisitorDay} />

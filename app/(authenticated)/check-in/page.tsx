@@ -8,7 +8,8 @@ export default async function CheckInPage({ searchParams }: { searchParams: Prom
   const session = await auth()
 
   if (!session?.user) {
-    redirect('/auth/login?callbackUrl=/check-in')
+    const callbackUrl = date ? `/check-in?date=${date}` : '/check-in'
+    redirect(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
   }
 
   // Run check-in server-side on page load
