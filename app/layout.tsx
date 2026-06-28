@@ -1,5 +1,4 @@
 import './globals.css'
-import { auth } from './lib/auth'
 import { SessionProvider } from 'next-auth/react'
 import { Sora } from 'next/font/google'
 import { metadata as siteMetadata } from './metadata'
@@ -21,8 +20,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth()
-
   return (
     <html lang="en">
       <head>
@@ -30,7 +27,7 @@ export default async function RootLayout({
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
       </head>
       <body className={`${sora.variable} antialiased`}>
-        <SessionProvider session={session}>
+        <SessionProvider>
           <RootLayoutWrapper>{children}</RootLayoutWrapper>
         </SessionProvider>
       </body>

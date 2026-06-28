@@ -13,7 +13,7 @@ const DELAY_MS = 1000
 
 async function sendPresenterQueue(req: NextRequest) {
   const BASE_URL =
-    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
   const normalizedUrl = `${BASE_URL}/api/cron/presenter-queue`
 
   try {
@@ -93,7 +93,7 @@ async function sendPresenterQueue(req: NextRequest) {
         batch.map(async (member) => {
           try {
             const result = await resend.emails.send({
-              from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+              from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
               to: member.email,
               subject: `Presenter Schedule — This Week & Upcoming`,
               html: presenterQueueTemplate(

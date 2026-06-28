@@ -10,8 +10,7 @@ import { adminVisitorNotificationTemplate } from '../../email-templates/admin-vi
 import { calculateExpiresAt } from '../../utils/date.utils'
 import { resend } from '../../resend'
 
-const BASE_URL =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
 
 export async function createUser(input: CreateUserInput): Promise<CreateUserResponse> {
   try {
@@ -75,13 +74,13 @@ export async function createUser(input: CreateUserInput): Promise<CreateUserResp
 
     await Promise.all([
       resend.emails.send({
-        from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+        from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
         to: 'sqysh@sqysh.io',
         subject: `New Application — ${user.name}`,
         html: adminVisitorNotificationTemplate('Sqysh', user.name, user.email, `${BASE_URL}/super`)
       }),
       resend.emails.send({
-        from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+        from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
         to: user.email,
         subject: `We received your application — Coastal Referral Exchange`,
         html: applicationConfirmationTemplate(user.name.split(' ')[0], user.id, `${BASE_URL}/application/${user.id}`)

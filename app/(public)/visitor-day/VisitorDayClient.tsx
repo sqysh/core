@@ -293,7 +293,7 @@ export default function VisitorDayTV({
           {/* QR Code */}
           <div className={`border ${t.border} p-4 flex flex-col items-center gap-3`}>
             <QRCodeSVG
-              value="https://coastal-referral-exchange.com/visitor"
+              value="https://coastalreferralxchange.com/visitor"
               size={280}
               bgColor="transparent"
               fgColor={dark ? '#f8fafc' : '#0f172a'}

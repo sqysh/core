@@ -1,5 +1,5 @@
 {
-  "name": "coastal-referral-exchange",
+  "name": "coastalreferralxchange",
   "version": "1.12.4",
   "private": true,
   "scripts": {
@@ -27,7 +27,7 @@
     "framer-motion": "^12.4.3",
     "jspdf": "^4.0.0",
     "lucide-react": "^0.511.0",
-    "next": "^16.1.6",
+    "next": "^16.2.9",
     "next-auth": "^5.0.0-beta.30",
     "pusher": "^5.3.2",
     "pusher-js": "^8.4.0",

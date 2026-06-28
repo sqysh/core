@@ -89,11 +89,11 @@ export async function createFace2Face(data: CreateFace2FaceInputs) {
 
   // Notify recipient
   const baseUrl =
-    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
   const emailHtml = face2faceRequestTemplate(face2face.requester.name, face2face.recipient.name, `${baseUrl}/dashboard`)
 
   await resend.emails.send({
-    from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+    from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
     to: [face2face.recipient.email],
     subject: `${face2face.requester.name} logged a Face-2-Face meeting with you`,
     html: emailHtml

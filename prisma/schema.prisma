@@ -416,6 +416,45 @@ model Attendance {
   @@index([userId])
 }
 
+model PhraseGame {
+  id        String @id @default(cuid())
+  chapterId String
+
+  status GameStatus @default(LOBBY)
+  phrase String // the full answer, UPPERCASE
+  hint   String
+
+  revealed String @default("") // letters revealed so far, e.g. "AETR"
+  guessed  String @default("") // every letter tried (hit or miss), e.g. "AETRZX"
+
+  turnIndex Int     @default(0) // position in the turn order (see GamePlayer.turnOrder)
+  scoreA    Int     @default(0)
+  scoreB    Int     @default(0)
+  winner    String? // "A" | "B" | "TIE" | null
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players GamePlayer[]
+
+  @@index([chapterId, status])
+}
+
+model GamePlayer {
+  id        String   @id @default(cuid())
+  gameId    String
+  userId    String
+  name      String // snapshot of user.name at draft time
+  team      String // "A" | "B"
+  turnOrder Int // global alternating order: A0=0, B0=1, A1=2, B1=3...
+  createdAt DateTime @default(now())
+
+  game PhraseGame @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+  @@index([gameId])
+}
+
 enum MembershipStatus {
   PENDING
   ACTIVE
@@ -472,4 +511,10 @@ enum OrderStatus {
   CANCELLED
   PAST_DUE
   INCOMPLETE
+}
+
+enum GameStatus {
+  LOBBY // members gathered, teams not drafted yet
+  PLAYING // teams drafted, in progress
+  FINISHED // phrase solved
 }

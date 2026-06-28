@@ -12,7 +12,7 @@ export async function sendMemberEmail({ to, from, message }: { to: string; from:
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
   await resend.emails.send({
-    from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+    from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
     to: [to],
     subject: `Message from ${from} — Coastal Referral Exchange`,
     html: memberMessageTemplate(from, message)

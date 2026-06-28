@@ -60,7 +60,7 @@ export const coreTemplate = (memberName: string) => {
                     <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px; line-height: 1.5;">
                       Log a 1-on-1 meeting with a fellow member
                     </p>
-                    <a href="https://coastal-referral-exchange.com/dashboard?action=f2f"
+                    <a href="https://coastalreferralxchange.com/dashboard?action=f2f"
                        style="display: inline-block; background-color: #0284c7; color: #ffffff; text-decoration: none; padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
                       Log Face-2-Face →
                     </a>
@@ -81,7 +81,7 @@ export const coreTemplate = (memberName: string) => {
                     <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px; line-height: 1.5;">
                       Pass business to a fellow member
                     </p>
-                    <a href="https://coastal-referral-exchange.com/dashboard?action=referral"
+                    <a href="https://coastalreferralxchange.com/dashboard?action=referral"
                        style="display: inline-block; background-color: #0891b2; color: #ffffff; text-decoration: none; padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
                       Give a Referral →
                     </a>
@@ -102,7 +102,7 @@ export const coreTemplate = (memberName: string) => {
                     <p style="margin: 0 0 12px 0; color: #64748b; font-size: 13px; line-height: 1.5;">
                       Thank a member for business that closed
                     </p>
-                    <a href="https://coastal-referral-exchange.com/dashboard?action=closed"
+                    <a href="https://coastalreferralxchange.com/dashboard?action=closed"
                        style="display: inline-block; background-color: #059669; color: #ffffff; text-decoration: none; padding: 10px 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
                       Log Closed Business →
                     </a>

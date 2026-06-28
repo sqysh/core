@@ -471,7 +471,7 @@ export default function AttendanceClient({
           {/* QR Code */}
           <div className={`border ${t.border} p-3 flex flex-col items-center gap-2`}>
             <QRCodeSVG
-              value="https://coastal-referral-exchange.com/check-in"
+              value="https://coastalreferralxchange.com/check-in"
               size={200}
               bgColor="transparent"
               fgColor={dark ? '#f8fafc' : '#0f172a'}

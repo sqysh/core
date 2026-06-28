@@ -14,7 +14,7 @@ export const magicLinkConfig: EmailConfig = {
   sendVerificationRequest: async ({ identifier: email, url }) => {
     try {
       const result = await resend.emails.send({
-        from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+        from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
         to: email,
         subject: 'Click Here to Sign In - Coastal Referral Exchange',
         html: magicLinkTemplate(url)

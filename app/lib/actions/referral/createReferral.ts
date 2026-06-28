@@ -9,8 +9,7 @@ import referralNotificationTemplate from '../../email-templates/referral-notific
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const BASE_URL =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
 
 export async function createReferral(data: {
   clientName: string
@@ -91,7 +90,7 @@ export async function createReferral(data: {
     const giverName = session.user.name
 
     resend.emails.send({
-      from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+      from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
       to: [receiver.email],
       subject: `${giverName} sent you a referral`,
       html: referralNotificationTemplate(giverName, `${BASE_URL}/dashboard?id=${referral.id}&action=referral`)

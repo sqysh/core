@@ -44,18 +44,18 @@ export async function updateUserStatus(userId: string, membershipStatus: 'ACTIVE
   await prisma.user.update({ where: { id: userId }, data: updateData })
 
   const baseUrl =
-    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
 
   if (membershipStatus === 'ACTIVE') {
     await resend.emails.send({
-      from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+      from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
       to: [existingUser.email],
       subject: "You've been accepted — welcome to Coastal Referral Exchange",
       html: memberAcceptedTemplate(existingUser.name.split(' ')[0], `${baseUrl}/login`)
     })
   } else {
     await resend.emails.send({
-      from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+      from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
       to: [existingUser.email],
       subject: 'Your application to Coastal Referral Exchange',
       html: memberRejectedTemplate(existingUser.name.split(' ')[0])

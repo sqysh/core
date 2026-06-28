@@ -51,14 +51,14 @@ export async function createAnchor(data: {
   // Only notify if giver is an internal member
   if (!isExternal && giver) {
     const baseUrl =
-      process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastal-referral-exchange.com'
+      process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
     const emailHtml = closedBusinessNotificationTemplate(
       session.user.name,
       `${baseUrl}/dashboard?id=${anchor.id}&action=closed`
     )
 
     await resend.emails.send({
-      from: `Coastal Referral Exchange <noreply@coastal-referral-exchange.com>`,
+      from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
       to: [giver.email],
       subject: `${session.user.name} thanked you for closed business`,
       html: emailHtml

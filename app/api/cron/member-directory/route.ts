@@ -32,7 +32,7 @@ async function sendDirectoryReminders(req: NextRequest) {
       const batchPromises = batch.map(async (user) => {
         try {
           const result = await resend.emails.send({
-            from: 'Coastal Referral Exchange <noreply@coastal-referral-exchange.com>',
+            from: 'Coastal Referral Exchange <noreply@coastalreferralxchange.com>',
             to: user.email,
             subject: 'CORE Member Directory — Latest Roster',
             html: memberDirectoryTemplate(user.name.split(' ')[0] || user.email.split('@')[0])

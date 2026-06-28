@@ -24,7 +24,7 @@ export default async function sendRendezvousUpdate() {
       const batchPromises = batch.map(async (user) => {
         try {
           const result = await resend.emails.send({
-            from: 'Sqysh @ CORE <changelog@coastal-referral-exchange.com>',
+            from: 'Sqysh @ CORE <changelog@coastalreferralxchange.com>',
             to: user.email,
             subject: 'Rendezvous Calendar Updated Through June 1st',
             html: rendezvousUpdateTemplate()

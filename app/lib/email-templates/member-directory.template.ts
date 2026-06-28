@@ -61,7 +61,7 @@ export const memberDirectoryTemplate = (memberName: string) => `
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center" style="padding: 4px 0 28px 0;">
-                    <a href="https://coastal-referral-exchange.com/api/pdf/member-directory" style="display: inline-block; background-color: #0f3460; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 14px;" class="button-bg">
+                    <a href="https://coastalreferralxchange.com/api/pdf/member-directory" style="display: inline-block; background-color: #0f3460; color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 14px;" class="button-bg">
                       Open Member Directory
                     </a>
                   </td>

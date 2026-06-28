@@ -123,7 +123,7 @@ export async function createVisitor(input: CreateVisitorInput): Promise<{
 
     const emailResult = await resend.emails
       .send({
-        from: 'Coastal Referral Exchange <noreply@coastal-referral-exchange.com>',
+        from: 'Coastal Referral Exchange <noreply@coastalreferralxchange.com>',
         to: email.trim(),
         bcc: session.user.email,
         subject: `You're invited to CORE on ${dateLabel}`,

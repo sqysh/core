@@ -39,7 +39,7 @@ async function sendCoreReminders(req: NextRequest) {
       const batchPromises = batch.map(async (user) => {
         try {
           const result = await resend.emails.send({
-            from: 'Coastal Referral Exchange <noreply@coastal-referral-exchange.com>',
+            from: 'Coastal Referral Exchange <noreply@coastalreferralxchange.com>',
             to: user.email,
             subject: 'Log Your Activities',
             html: coreTemplate(user.name.split(' ')[0] || user.email.split('@')[0])

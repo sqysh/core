@@ -24,5 +24,5 @@ export async function getTodayAttendance(): Promise<string[]> {
 
   if (!meeting) return []
 
-  return meeting.attendances.map((a) => a.user.id)
+  return meeting.attendances.map((a: { user: { id: any } }) => a.user.id)
 }

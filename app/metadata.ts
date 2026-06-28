@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.coastal-referral-exchange.com'),
+  metadataBase: new URL('https://www.coastalreferralxchange.com'),
   title: 'CORE - Professional Networking & Business Connections',
   description:
     'Discover meaningful connections with a fresh take on networking. Match, collaborate, and grow your influence on a platform built for real interactions. Join professionals building authentic business relationships.',
@@ -97,14 +97,14 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: 'https://www.coastal-referral-exchange.com'
+    canonical: 'https://www.coastalreferralxchange.com'
   },
 
   openGraph: {
     title: 'CORE - Professional Networking & Business Connections',
     description:
       'Discover meaningful connections with a fresh take on networking. Match, collaborate, and grow your influence on a platform built for real interactions.',
-    url: 'https://www.coastal-referral-exchange.com',
+    url: 'https://www.coastalreferralxchange.com',
     siteName: 'CORE',
     images: [
       {
