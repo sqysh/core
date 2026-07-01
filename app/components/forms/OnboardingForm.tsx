@@ -7,18 +7,20 @@ import { CreditCard, Lock, Loader2 } from 'lucide-react'
 import { createOnboardingSubscriptions } from '@/app/lib/actions/stripe/createOnboardingSubscriptions'
 import Pusher from 'pusher-js'
 import { useSession } from 'next-auth/react'
+import { RootState, useAppSelector } from '@/app/lib/redux/store'
 
 export default function OnboardingForm() {
   const router = useRouter()
   const stripe = useStripe()
   const elements = useElements()
   const session = useSession()
-  const userId = session.data.user.id
+  const userId = session.data?.user?.id
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [cardComplete, setCardComplete] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [statusText, setStatusText] = useState('Processing…')
+  const isDark = useAppSelector((state: RootState) => state.app.isDark)
 
   const hasRouted = useRef(false)
 
@@ -120,7 +122,7 @@ export default function OnboardingForm() {
                 base: {
                   fontSize: '15px',
                   fontFamily: 'Nunito, sans-serif',
-                  color: 'var(--color-text-light, #0f172a)',
+                  color: isDark ? '#f8fafc' : '#0f172a',
                   '::placeholder': { color: '#94a3b8' },
                   iconColor: '#94a3b8'
                 },

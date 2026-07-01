@@ -46,7 +46,9 @@ async function seed() {
       membershipStatus: 'ACTIVE',
       stripeCustomerId: null,
       hasAnnualSubscription: false,
-      hasQuarterlySubscription: false
+      hasQuarterlySubscription: false,
+      annualSubscriptionId: null,
+      quarterlySubscriptionId: null
     },
     create: {
       name: TEST_USER.name,

@@ -352,13 +352,45 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     select: { id: true, type: true, userId: true, user: { select: { name: true } } }
   })
 
-  if (!order) {
-    await createLog('error', 'handleInvoicePaymentSucceeded — no order found for subscription', {
-      subId,
-      invoiceId: invoice.id
-    })
-    return
+  // ── Card propagation — runs even if the order row isn't created yet ──
+  // (invoice.payment_succeeded can arrive before customer.subscription.created)
+  // We detect "annual" from the invoice's price, not the order, so a webhook
+  // race can't skip it.
+  const priceId = inv.lines?.data?.[0]?.price?.id ?? inv.lines?.data?.[0]?.pricing?.price_details?.price
+  if (priceId === ANNUAL_PRICE_ID) {
+    try {
+      const customerId = inv.customer as string
+      const pms = await stripe.paymentMethods.list({ customer: customerId, type: 'card', limit: 1 })
+      const pmId = pms.data[0]?.id ?? null
+
+      await createLog('info', 'card propagation check', {
+        action: 'CARD_PROPAGATION_CHECK',
+        customerId,
+        pmId,
+        hadOrder: !!order
+      })
+
+      if (customerId && pmId) {
+        await stripe.customers.update(customerId, {
+          invoice_settings: { default_payment_method: pmId }
+        })
+        const subs = await stripe.subscriptions.list({ customer: customerId, limit: 10 })
+        for (const sub of subs.data) {
+          if (!sub.default_payment_method) {
+            await stripe.subscriptions.update(sub.id, { default_payment_method: pmId })
+          }
+        }
+        await createLog('info', 'card propagated', { action: 'CARD_PROPAGATED', customerId, pmId })
+      }
+    } catch (err) {
+      await createLog('error', 'Card propagation failed', {
+        action: 'CARD_PROPAGATION_FAILED',
+        error: err instanceof Error ? err.message : String(err)
+      })
+    }
   }
+
+  if (!order) return // order not created yet (webhook race); subscription.created will handle it
 
   const lineItem = invoice.lines.data[0] as any
   const currentPeriodStart = lineItem?.period?.start ? new Date(lineItem.period.start * 1000) : null
@@ -384,6 +416,62 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     amount: (invoice.amount_paid / 100).toFixed(2),
     periodEnd: currentPeriodEnd
   })
+
+  // ── Propagate the card so the quarterly can charge on its billing date ──
+  // Onboarding pays the annual on-session; the quarterly is anchored forward
+  // with no card. When the ANNUAL invoice succeeds, set the customer default so
+  // the quarterly (which charges "default payment method") can collect later.
+  // Fully guarded so a lookup failure can never crash the webhook.
+  if (order.type === 'ANNUAL') {
+    try {
+      const customerId = inv.customer as string
+      let pmId: string | null = null
+
+      // Simplest reliable source: the card was just attached to the customer
+      // during onboarding, so the newest card on the customer is the right one.
+      const pms = await stripe.paymentMethods.list({
+        customer: customerId,
+        type: 'card',
+        limit: 1
+      })
+      pmId = pms.data[0]?.id ?? null
+
+      await createLog('info', 'card propagation check', {
+        action: 'CARD_PROPAGATION_CHECK',
+        userId: order.userId,
+        customerId,
+        pmId
+      })
+
+      if (customerId && pmId) {
+        await stripe.customers.update(customerId, {
+          invoice_settings: { default_payment_method: pmId }
+        })
+
+        const subs = await stripe.subscriptions.list({ customer: customerId, limit: 10 })
+        for (const sub of subs.data) {
+          if (!sub.default_payment_method) {
+            await stripe.subscriptions.update(sub.id, { default_payment_method: pmId })
+          }
+        }
+
+        await createLog('info', `${order.user.name} card propagated`, {
+          action: 'CARD_PROPAGATED',
+          userId: order.userId,
+          customerId,
+          pmId
+        })
+      }
+    } catch (err) {
+      // Never let propagation crash the handler — the payment already succeeded.
+      await createLog('error', 'Card propagation failed', {
+        action: 'CARD_PROPAGATION_FAILED',
+        userId: order.userId,
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined
+      })
+    }
+  }
 }
 
 export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
