@@ -7,8 +7,8 @@
 
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/lib/auth'
-import { getActiveGame } from '../lib/actions/games/getActiveGame'
-import { getLobby } from '../lib/actions/games/getLobby'
+import { getActiveGame } from '../../../lib/actions/games/getActiveGame'
+import { getLobby } from '../../../lib/actions/games/getLobby'
 import GamesHubClient from './GamesHubClient'
 
 export const dynamic = 'force-dynamic'
@@ -21,7 +21,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
   const surface = view === 'tv' ? 'tv' : 'phone'
 
   // TV surface is host-only.
-  if (surface === 'tv' && !session.user.isSuperUser && !session.user.isAdmin) {
+  if (surface === 'tv' && session.user.role !== 'SUPER_USER' && session.user.role !== 'ADMIN') {
     redirect('/games')
   }
 

@@ -124,9 +124,11 @@ export function buildYearOfThursdays(
   const dayShift = (4 - start.getUTCDay() + 7) % 7
   start.setUTCDate(start.getUTCDate() + dayShift)
 
-  const today = new Date()
-  today.setUTCHours(0, 0, 0, 0)
-  const todayISO = today.toISOString().slice(0, 10)
+  // "Today" as a LOCAL calendar date. Using UTC here rolls over to tomorrow
+  // after ~8pm Eastern (9pm EDT = 1am UTC next day), which would wrongly mark
+  // tomorrow's Thursday as past/missed. Local date avoids that.
+  const now = new Date()
+  const todayISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 
   const rowByDate = new Map(rows.map((r) => [r.date.slice(0, 10), r]))
   const exclusionMap = new Map(exclusions.map((e) => [e.date, e.reason]))

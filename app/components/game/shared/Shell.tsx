@@ -8,7 +8,7 @@ import type { ReactNode } from 'react'
 export function TVShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[radial-gradient(120%_140%_at_50%_0%,#0f2233_0%,#06121b_70%)] text-white px-8 py-8">
-      <div className="max-w-5xl mx-auto">{children}</div>
+      <div className="max-w-7xl mx-auto">{children}</div>
     </div>
   )
 }

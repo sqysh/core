@@ -12,13 +12,9 @@ export async function createTestUser() {
       company: 'Test Company',
       industry: 'Technology',
       membershipStatus: 'ACTIVE',
-      isAdmin: false,
-      isSuperUser: false,
       isMembership: false,
       isPublic: false,
-      isActive: true,
       hasCompletedApplication: false,
-      tempId: '',
       chapterId
     }
   })

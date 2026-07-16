@@ -13,6 +13,7 @@ import { MembershipStatus } from '@/types/user.types'
 import { SuperDashStatusBadge } from '../super-dash/SuperDashStatusBadge'
 import { deleteUser } from '@/app/lib/actions/user/deleteUser'
 import { getInitials } from '@/app/lib/utils/shared.utils'
+import { UserRole } from '@prisma/client'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 const MEMBERSHIP_STATUSES = ['PENDING', 'ACTIVE', 'REJECTED'] as const
@@ -112,7 +113,7 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
       secondaryEmail: form.secondaryEmail,
       title: form.title,
       isPublic: form.isPublic,
-      isAdmin: form.isAdmin,
+      role: form.role,
       isMembership: form.isMembership,
       membershipStatus: form.membershipStatus as MembershipStatus,
       profileImage: form.profileImage,
@@ -332,17 +333,27 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
             </div>
 
             <div className="border border-border-light dark:border-border-dark px-4 py-3.5">
-              <Switch
-                name="isAdmin"
-                checked={form.isAdmin ?? false}
-                onChange={() => set('isAdmin', !form.isAdmin)}
-                label="Admin Access"
-                description={
-                  form.isAdmin
-                    ? 'This member can manage chapter settings and members'
-                    : 'This member does not have admin privileges'
-                }
-              />
+              <label
+                htmlFor="role"
+                className="block text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark mb-2"
+              >
+                Role
+              </label>
+              <select
+                id="role"
+                name="role"
+                value={form.role ?? 'MEMBER'}
+                onChange={(e) => set('role', e.target.value as UserRole)}
+                className="w-full h-11 px-3 bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark font-nunito text-[14px] text-text-light dark:text-text-dark focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors rounded-none appearance-none cursor-pointer"
+              >
+                <option value="MEMBER">Member</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+              <p className="text-f10 font-mono text-muted-light dark:text-muted-dark mt-2">
+                {form.role === 'ADMIN'
+                  ? 'This member can manage chapter settings and members'
+                  : 'This member does not have admin privileges'}
+              </p>
             </div>
 
             <div className="border border-border-light dark:border-border-dark px-4 py-3.5">

@@ -45,6 +45,7 @@ export async function getLobby(): Promise<Result> {
         profileImage: a.user.profileImage ?? null,
         profileVideo: a.user.profileVideo ?? null
       }))
+      .filter((m: LobbyMember) => m.userId !== session.user.id)
       .sort((a: { name: string }, b: { name: any }) => a.name.localeCompare(b.name))
 
     return { success: true, data: members }

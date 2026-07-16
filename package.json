@@ -15,6 +15,8 @@
     "seed:meeting": "node --env-file=.env scripts/seed-meeting.js",
     "send:card-reminder": "node --env-file=.env scripts/card-reminder.js",
     "seed:game-test": "node --env-file=.env scripts/seed-game-test.js",
+    "seed:game-test:clean": "node --env-file=.env scripts/seed-game-test.js --clean",
+    "seed:game-test:reset": "npm run seed:game-test:clean && npm run seed:game-test",
     "seed:test-member": "node --env-file=.env scripts/seed-test-member.js"
   },
   "dependencies": {

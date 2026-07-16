@@ -5,7 +5,7 @@ import AttendanceHistoryClient from './AttendanceHistoryClient'
 
 export default async function AttendanceHistoryPage() {
   const session = await auth()
-  if (!session?.user?.isSuperUser) redirect('/dashboard')
+  if (session?.user?.role !== 'SUPER_USER') redirect('/dashboard')
 
   const result = await getAttendanceHistory()
 

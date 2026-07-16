@@ -5,6 +5,7 @@ import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { auth } from '@/app/lib/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { UserRole } from '@prisma/client'
 
 export async function updateUser(
   userId: string,
@@ -17,7 +18,7 @@ export async function updateUser(
     membershipStatus?: string
     joinedAt?: Date
     expiresAt?: Date
-    isAdmin?: boolean
+    role: UserRole
     isMembership?: boolean
     isPublic?: boolean
     rejectionReason?: string
@@ -34,7 +35,7 @@ export async function updateUser(
     }
 
     // Check if the current user is an admin
-    if (!session.user.isAdmin) {
+    if (session.user.role !== 'ADMIN') {
       return {
         success: false,
         error: 'Only admins can update user profiles'
@@ -71,15 +72,12 @@ export async function updateUser(
     if (data.name !== undefined) updateData.name = data.name?.trim()
     if (data.email !== undefined) updateData.email = data.email?.trim()
     if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.role !== undefined) updateData.role = data.role
     if (data.company !== undefined) updateData.company = data.company?.trim()
     if (data.industry !== undefined) updateData.industry = data.industry?.trim()
     if (data.membershipStatus !== undefined) updateData.membershipStatus = data.membershipStatus
     if (data.joinedAt !== undefined) updateData.joinedAt = new Date(data.joinedAt)
     if (data.expiresAt !== undefined) updateData.expiresAt = new Date(data.expiresAt)
-    if (data.isAdmin !== undefined) {
-      updateData.isAdmin = data.isAdmin
-      updateData.role = data.isAdmin ? 'ADMIN' : 'MEMBER'
-    }
     if (data.isMembership !== undefined) updateData.isMembership = data.isMembership
     if (data.isPublic !== undefined) updateData.isPublic = data.isPublic
     if (data.rejectionReason !== undefined) updateData.rejectionReason = data.rejectionReason

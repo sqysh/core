@@ -5,7 +5,7 @@
 
 import prisma from '@/prisma/client'
 import { auth } from '@/app/lib/auth'
-import { pusher } from '@/app/lib/pusher'
+import { pusher } from '@/app/lib/pusher/pusher'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { draftTeams } from '@/app/lib/games/draftTeams'
 import { serializeGame, GAME_SELECT } from '@/app/lib/games/serializeGame'
@@ -17,7 +17,7 @@ export async function draftTeamsAction(gameId: string, members: LobbyMember[]): 
   try {
     const session = await auth()
     if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
-    if (!session.user.isSuperUser && !session.user.isAdmin) {
+    if (session.user.role !== 'SUPER_USER') {
       return { success: false, error: 'Not allowed' }
     }
     if (members.length < 2) {

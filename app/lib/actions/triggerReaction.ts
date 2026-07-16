@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { pusher } from '../pusher'
+import { pusher } from '../pusher/pusher'
 
 export async function triggerReaction(emoji: string) {
   // const today = new Date()

@@ -12,7 +12,7 @@ export async function updateEventStatus(
   error?: string
 }> {
   const session = await auth()
-  if (!session?.user?.isSuperUser) return { success: false, error: 'Unauthorized' }
+  if (session?.user?.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
 
   try {
     await prisma.event.update({

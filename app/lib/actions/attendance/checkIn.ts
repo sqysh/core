@@ -3,7 +3,7 @@
 import { auth } from '@/app/lib/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
-import { pusher } from '../../pusher'
+import { pusher } from '../../pusher/pusher'
 import { createLog } from '../../utils/api/createLog'
 import { toDateKey } from '../../utils/date.utils'
 

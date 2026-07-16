@@ -80,7 +80,7 @@ export function MembersPanel({ members }: { members: SuperUserMember[] }) {
                   {m.name}
                 </span>
                 <SuperDashStatusBadge status={m.membershipStatus === 'INACTIVE' && 'INACTIVE'} />
-                {m.isAdmin && (
+                {m.role === 'ADMIN' && (
                   <span className="text-f9 font-mono tracking-widest uppercase px-1.5 py-0.5 bg-fuchsia-50 dark:bg-fuchsia-400/10 text-fuchsia-600 dark:text-fuchsia-400 border border-fuchsia-200 dark:border-fuchsia-400/20">
                     Admin
                   </span>

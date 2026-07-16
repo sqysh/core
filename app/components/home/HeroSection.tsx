@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
@@ -9,6 +9,10 @@ import { setOpenNavigationDrawer } from '@/app/lib/redux/slices/appSlice'
 import { Menu } from 'lucide-react'
 import { LaunchAppButton } from '../common/LaunchAppButton'
 import { AnimatedHeadline } from './AnimatedHeadline'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { announceGame } from '@/app/lib/actions/games/wheel/announceGame'
+import { createGame } from '@/app/lib/actions/games/createGame'
 
 const Spline = dynamic(() => import('@splinetool/react-spline'), { ssr: false })
 
@@ -18,6 +22,19 @@ const navLinkCls = (active: boolean) =>
   }`
 
 export default function HeroSection() {
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [launching, setLaunching] = useState(false)
+  const isSuperUser = session?.user?.role === 'SUPER_USER'
+
+  async function launchGame() {
+    if (launching) return
+    setLaunching(true)
+    await createGame('WHEEL') // 1. create the game FIRST
+    await announceGame() // 2. then tell everyone to go to /games
+    router.push('/games?view=tv') // 3. host to the TV
+  }
+
   return (
     <section className="relative min-h-screen">
       {/* ── Ocean Spline — full screen ── */}
@@ -138,6 +155,32 @@ export default function HeroSection() {
           >
             Apply to Join →
           </Link>
+          {isSuperUser && (
+            <button
+              onClick={launchGame}
+              disabled={launching}
+              aria-label="Launch Sqyeel of Fortune"
+              className="group relative h-11 sm:h-12 px-6 sm:px-8 inline-flex items-center justify-center overflow-hidden border border-amber-300/60 disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-dark"
+              style={{
+                background: 'radial-gradient(120% 160% at 50% 0%, #1e4fa3 0%, #0a2a6b 55%, #041845 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 10px rgba(4,24,69,0.5)'
+              }}
+            >
+              <span
+                className="font-black text-xs sm:text-sm tracking-[0.08em] uppercase text-center"
+                style={{
+                  background: 'linear-gradient(180deg, #FFF4C2 0%, #FFD54A 42%, #E8A11C 62%, #B8760E 100%)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  textShadow: '0 1px 0 rgba(0,0,0,0.35)',
+                  filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.4))'
+                }}
+              >
+                {launching ? 'Starting…' : 'Sqyeel of Fortune'}
+              </span>
+            </button>
+          )}
         </motion.div>
 
         {/* Stats */}

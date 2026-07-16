@@ -6,7 +6,6 @@
 // server-side) is shown — phones unlock for the consonant guess if it was a value.
 
 import { useEffect, useState } from 'react'
-import Pusher from 'pusher-js'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LobbyMember, SerializedGame } from '@/types/game.types'
 import { Wedge, WheelState } from '@/types/_wheel.types'
@@ -21,6 +20,8 @@ import TeamRoster from '../TeamRoster'
 import DraftAnimation from '../DraftAnimation'
 import LetterTray from '../LetterTray'
 import PhraseBoard from '../PhraseBoard'
+import { getPusherClient } from '@/app/lib/pusher/pusherClient'
+import { useSounds } from '@/app/lib/hooks/useSounds'
 
 type WheelGame = SerializedGame<WheelState>
 
@@ -50,6 +51,7 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
   // render) so server and client markup match — avoids hydration mismatch.
   const [spinSize, setSpinSize] = useState(680)
   const [mounted, setMounted] = useState(false)
+  const { play } = useSounds()
 
   useEffect(() => setMounted(true), [])
 
@@ -61,34 +63,42 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
   }, [])
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
-    })
+    const pusher = getPusherClient()
     const channel = pusher.subscribe(GAME_REGISTRY.WHEEL.channel)
 
-    channel.bind(GAME_EVENTS.TEAMS_DRAFTED, (data: WheelGame) => {
+    const onDrafted = (data: WheelGame) => {
       setGame(data)
       setDrafting(true)
-    })
-    channel.bind(GAME_EVENTS.STATE_CHANGED, (data: WheelGame & { spin?: SpinInfo }) => {
+    }
+    const onStateChanged = (data: WheelGame & { spin?: SpinInfo }) => {
       if (data.spin) {
+        play('spin')
         // A spin happened — animate the wheel, hold the rest of the UI until it settles.
         setSpin(data.spin)
         setSpinning(true)
       }
       setGame(data)
-    })
-    channel.bind(GAME_EVENTS.GAME_RESET, async () => {
+    }
+
+    const onReset = async () => {
+      setSpinning(false)
+      setSpin(null)
+      setDrafting(false)
       const res = await getActiveGame()
       if (res.success) setGame(res.data as WheelGame | null)
-    })
+    }
+
+    channel.bind(GAME_EVENTS.TEAMS_DRAFTED, onDrafted)
+    channel.bind(GAME_EVENTS.STATE_CHANGED, onStateChanged)
+    channel.bind(GAME_EVENTS.GAME_RESET, onReset)
 
     return () => {
-      channel.unbind_all()
-      pusher.unsubscribe(GAME_REGISTRY.WHEEL.channel)
-      pusher.disconnect()
+      // Only remove THIS component's handlers — leave the shared socket + subscription alive
+      channel.unbind(GAME_EVENTS.TEAMS_DRAFTED, onDrafted)
+      channel.unbind(GAME_EVENTS.STATE_CHANGED, onStateChanged)
+      channel.unbind(GAME_EVENTS.GAME_RESET, onReset)
     }
-  }, [])
+  }, [play])
 
   async function handleNewGame() {
     setBusy(true)
@@ -97,12 +107,15 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
     if (l.success) setLobby(l.data)
     setExcluded(new Set())
     setSpin(null)
+    setSpinning(false) // ← clear any stuck spin overlay
+    setDrafting(false) // ← also clear drafting
     setBusy(false)
   }
 
   async function handleDraft() {
     if (!game) return
     const players = lobby.filter((m) => !excluded.has(m.userId))
+
     if (players.length < 2) return
     setBusy(true)
     const res = await draftTeamsAction(game.id, players)
@@ -140,38 +153,47 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
       <GameHeader label={GAME_REGISTRY.WHEEL.label} />
 
       {showLobby && (
-        <div>
-          <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/40 mb-4">
-            Checked in today · {lobby.length} members · tap to bench anyone sitting out
-          </p>
+        <div className="min-h-[70vh] flex flex-col justify-center max-w-6xl mx-auto w-full px-6">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <p className="font-mono text-sm tracking-[0.3em] uppercase text-white/40">
+              Checked in today · {lobby.length} members
+            </p>
+            <p className="font-mono text-xs tracking-[0.2em] uppercase text-white/25 mt-2">
+              Tap to bench anyone sitting out
+            </p>
+          </div>
+
           {lobby.length === 0 ? (
-            <p className="font-nunito text-white/50 py-12 text-center">No one is checked in yet.</p>
+            <p className="font-nunito text-white/50 py-20 text-center text-xl">No one is checked in yet.</p>
           ) : (
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
               {lobby.map((m) => {
                 const benched = excluded.has(m.userId)
                 return (
                   <button
                     key={m.userId}
                     onClick={() => toggleExclude(m.userId)}
-                    className={`px-4 py-3 border text-left transition-colors ${
+                    className={`px-6 py-6 border-2 text-center transition-all ${
                       benched
-                        ? 'border-white/5 text-white/25 line-through'
-                        : 'border-white/15 text-white hover:border-sky-400'
+                        ? 'border-white/5 text-white/25 line-through scale-95'
+                        : 'border-white/15 text-white hover:border-sky-400 hover:scale-[1.03]'
                     }`}
                   >
-                    <span className="font-nunito font-bold text-sm">{m.name}</span>
+                    <span className="font-quicksand font-black text-2xl">{m.name}</span>
                   </button>
                 )
               })}
             </div>
           )}
-          <div className="flex gap-3">
+
+          {/* Action */}
+          <div className="flex justify-center">
             {!game ? (
               <button
                 onClick={handleNewGame}
                 disabled={busy}
-                className="px-6 py-3 bg-sky-500 text-white font-quicksand font-black disabled:opacity-40"
+                className="px-12 py-5 bg-sky-500 text-white font-quicksand font-black text-2xl disabled:opacity-40 hover:bg-sky-400 transition-colors"
               >
                 Start Game
               </button>
@@ -179,12 +201,18 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
               <button
                 onClick={handleDraft}
                 disabled={busy || lobby.length - excluded.size < 2}
-                className="px-6 py-3 bg-sky-500 text-white font-quicksand font-black disabled:opacity-40"
+                className="px-12 py-5 bg-sky-500 text-white font-quicksand font-black text-2xl disabled:opacity-40 hover:bg-sky-400 transition-colors"
               >
                 Draft Teams →
               </button>
             )}
           </div>
+
+          {/* Live count of who's actually playing */}
+          <p className="text-center font-mono text-xs tracking-[0.2em] uppercase text-white/30 mt-5">
+            {lobby.length - excluded.size} playing
+            {excluded.size > 0 && ` · ${excluded.size} benched`}
+          </p>
         </div>
       )}
 
@@ -192,7 +220,7 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
 
       {/* ── FULLSCREEN SPIN OVERLAY ── the wheel alone + huge while it turns ── */}
       <AnimatePresence>
-        {mounted && spinning && s && (
+        {mounted && spinning && s && game?.status === 'PLAYING' && s.spinNonce > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -221,9 +249,9 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
       </AnimatePresence>
 
       {!showLobby && !drafting && game && s && (
-        <div className="space-y-7 max-w-3xl mx-auto">
+        <div className="space-y-10 max-w-6xl mx-auto">
           {/* Spin result banner (after the overlay closes) */}
-          <div className="h-10 text-center">
+          <div className="h-14 text-center">
             <AnimatePresence>
               {!spinning && spin && game.status === 'PLAYING' && (
                 <motion.p
@@ -231,7 +259,7 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className={`font-quicksand font-black text-3xl ${
+                  className={`font-quicksand font-black text-5xl ${
                     spin.wedge === 'BANKRUPT'
                       ? 'text-red-400'
                       : spin.wedge === 'LOSE_TURN'
@@ -248,29 +276,30 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
           {/* The phrase board — the focus once the wheel has landed */}
           <div>
             <PhraseBoard phrase={s.phrase} revealed={s.revealed} />
-            <p className="text-center font-mono text-xs tracking-[0.06em] text-white/40 mt-5">Hint: {s.hint}</p>
+            <p className="text-center font-mono text-sm tracking-widest text-white/40 mt-8">Hint: {s.hint}</p>
           </div>
 
           {/* Money */}
-          <div className="flex gap-4">
-            <div className="flex-1 border border-sky-500/40 bg-sky-500/5 px-5 py-3">
-              <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-sky-400">Team A · round</p>
-              <p className="font-quicksand font-black text-2xl text-white">${s.roundMoneyA}</p>
+          <div className="flex gap-6">
+            <div className="flex-1 border-2 border-sky-500/40 bg-sky-500/5 px-8 py-5">
+              <p className="font-mono text-xs tracking-[0.25em] uppercase text-sky-400">Team A · round</p>
+              <p className="font-quicksand font-black text-4xl text-white mt-1">${s.roundMoneyA}</p>
             </div>
-            <div className="flex-1 border border-red-400/40 bg-red-400/5 px-5 py-3">
-              <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-red-300">Team B · round</p>
-              <p className="font-quicksand font-black text-2xl text-white">${s.roundMoneyB}</p>
+            <div className="flex-1 border-2 border-red-400/40 bg-red-400/5 px-8 py-5">
+              <p className="font-mono text-xs tracking-[0.25em] uppercase text-red-300">Team B · round</p>
+              <p className="font-quicksand font-black text-4xl text-white mt-1">${s.roundMoneyB}</p>
             </div>
           </div>
 
-          <div className="text-center min-h-6.5">
+          {/* Turn / win status */}
+          <div className="text-center min-h-10">
             <AnimatePresence mode="wait">
               {game.status === 'FINISHED' ? (
                 <motion.p
                   key="win"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="font-quicksand font-black text-2xl uppercase tracking-wide text-sky-300"
+                  className="font-quicksand font-black text-4xl uppercase tracking-wide text-sky-300"
                 >
                   {s.winner === 'TIE' ? "It's a tie" : `Team ${s.winner} wins`}
                 </motion.p>
@@ -279,7 +308,7 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
                   key="turn"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="font-nunito text-lg text-white/80"
+                  className="font-nunito text-2xl text-white/80"
                 >
                   {game.activePlayer ? (
                     <>
@@ -303,11 +332,11 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
           />
 
           {game.status === 'FINISHED' && (
-            <div className="text-center pt-2">
+            <div className="text-center pt-4">
               <button
                 onClick={handleNewGame}
                 disabled={busy}
-                className="px-6 py-3 bg-sky-500 text-white font-quicksand font-black disabled:opacity-40"
+                className="px-12 py-5 bg-sky-500 text-white font-quicksand font-black text-2xl disabled:opacity-40 hover:bg-sky-400 transition-colors"
               >
                 New Game
               </button>

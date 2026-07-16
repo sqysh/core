@@ -32,7 +32,7 @@ export async function proxy(req: NextRequest) {
   // ── Logged-in user hitting a public route → redirect to their home ────────
   if (isLoggedIn && isPublicRoute) {
     if (nextUrl.pathname === '/login') {
-      const dest = session.user.isSuperUser ? '/super' : '/dashboard'
+      const dest = session.user.role === 'SUPER_USER' ? '/super' : '/dashboard'
       return NextResponse.redirect(new URL(dest, nextUrl))
     }
     return NextResponse.next()
@@ -46,7 +46,7 @@ export async function proxy(req: NextRequest) {
   }
 
   // ── Non-superuser hitting /super → back to dashboard ────────────────────
-  if (isLoggedIn && isSuperUserRoute && !session.user.isSuperUser) {
+  if (isLoggedIn && isSuperUserRoute && session.user.role !== 'SUPER_USER') {
     return NextResponse.redirect(new URL('/dashboard', nextUrl))
   }
 

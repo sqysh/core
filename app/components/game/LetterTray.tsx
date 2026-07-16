@@ -1,9 +1,5 @@
 'use client'
 
-// The A–Z tray. Letters that were guessed and HIT show in white; guessed and
-// MISSED show crossed-off and dim; untried letters are neutral. This is the
-// read-only display version used on the TV and as a reference on phones.
-
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 interface LetterTrayProps {
@@ -16,10 +12,10 @@ export default function LetterTray({ revealed, guessed, compact }: LetterTrayPro
   const hitSet = new Set(revealed)
   const guessedSet = new Set(guessed)
 
-  const size = compact ? 'w-6 h-6 text-[11px]' : 'w-9 h-9 text-sm'
+  const size = compact ? 'w-6 h-6 text-[11px]' : 'w-14 h-14 text-xl'
 
   return (
-    <div className={`flex flex-wrap justify-center ${compact ? 'gap-1' : 'gap-1.5'}`}>
+    <div className={`flex flex-wrap justify-center ${compact ? 'gap-1' : 'gap-2'}`}>
       {ALPHABET.map((L) => {
         const tried = guessedSet.has(L)
         const hit = hitSet.has(L)
@@ -27,7 +23,7 @@ export default function LetterTray({ revealed, guessed, compact }: LetterTrayPro
         if (tried && hit) cls = 'border-emerald-400 text-emerald-300 bg-emerald-400/10'
         else if (tried) cls = 'border-white/5 text-white/25 line-through'
         return (
-          <div key={L} className={`${size} flex items-center justify-center border font-mono font-bold ${cls}`}>
+          <div key={L} className={`${size} flex items-center justify-center border-2 font-mono font-bold ${cls}`}>
             {L}
           </div>
         )

@@ -3,7 +3,7 @@ import { Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { setOpenNavigationDrawer } from '@/app/lib/redux/slices/appSlice'
-import { LaunchAppButton } from '../common/LaunchAppButton'
+import { LaunchAppButton } from './common/LaunchAppButton'
 
 export const Header = () => {
   const path = usePathname()

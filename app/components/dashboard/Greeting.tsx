@@ -12,7 +12,8 @@ export function Greeting({ currentUser }) {
   const firstName = currentUser.name.split(' ')[0]
   const greeting = getGreeting()
   const today = getTodayLabel()
-  const isAdmin = session.data?.user?.isAdmin ?? false
+  const isAdmin = session.data?.user?.role === 'ADMIN'
+  const isSuperUser = session.data?.user?.role === 'SUPER_USER'
 
   return (
     <div className="flex flex-col gap-3">
@@ -62,7 +63,7 @@ export function Greeting({ currentUser }) {
           </Link>
         )}
 
-        {session.data?.user?.isSuperUser && (
+        {isSuperUser && (
           <Link href="/super" className={sharedCls}>
             <ShieldCheck className="hidden sm:block sm:w-3 sm:h-3" />
             Super

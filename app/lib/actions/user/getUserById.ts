@@ -1,5 +1,6 @@
 import prisma from '@/prisma/client'
 import { auth } from '../../auth'
+import { UserRole } from '@prisma/client'
 
 export type MemberParleyActivity = {
   id: string
@@ -40,7 +41,7 @@ export type SuperMemberEditData = {
   secondaryEmail: string
   title: string
   isPublic: boolean
-  isAdmin: boolean
+  role: UserRole
   isMembership: boolean
   membershipStatus: string
   profileImage: string | null
@@ -75,7 +76,7 @@ export async function getUserById(userId: string): Promise<{
           secondaryEmail: true,
           title: true,
           isPublic: true,
-          isAdmin: true,
+          role: true,
           isMembership: true,
           membershipStatus: true,
           profileImage: true,
@@ -136,7 +137,7 @@ export async function getUserById(userId: string): Promise<{
         secondaryEmail: user.secondaryEmail,
         title: user.title,
         isPublic: user.isPublic,
-        isAdmin: user.isAdmin,
+        role: user.role,
         isMembership: user.isMembership,
         membershipStatus: user.membershipStatus,
         profileImage: user.profileImage,

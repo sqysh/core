@@ -5,6 +5,7 @@ import googleProvider from './config/googleProvider'
 import { magicLinkConfig } from './config/magicLinkConfig'
 import { handleEmailCallback } from './callbacks/handleEmailCallback'
 import { handleGoogleCallback } from './callbacks/handleGoogleCallback'
+import { UserRole } from '@prisma/client'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: false,
@@ -39,8 +40,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         select: {
           id: true,
           role: true,
-          isAdmin: true,
-          isSuperUser: true,
           isMembership: true
         }
       })
@@ -48,8 +47,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (dbUser) {
         token.userId = dbUser.id
         token.role = dbUser.role
-        token.isAdmin = dbUser.isAdmin
-        token.isSuperUser = dbUser.isSuperUser
         token.isMembership = dbUser.isMembership
         token.signedInWith = account?.provider === 'google' ? 'secondaryEmail' : 'email'
       }
@@ -60,9 +57,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (token.userId && typeof token.userId === 'string') {
         session.user.id = token.userId
-        session.user.role = token.role as string
-        session.user.isAdmin = token.isAdmin as boolean
-        session.user.isSuperUser = token.isSuperUser as boolean
+        session.user.role = token.role as UserRole
         session.user.isMembership = token.isMembership as boolean
         session.user.signedInWith = token.signedInWith as 'email' | 'secondaryEmail'
       }

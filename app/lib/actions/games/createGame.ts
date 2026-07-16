@@ -6,7 +6,7 @@
 
 import prisma from '@/prisma/client'
 import { auth } from '@/app/lib/auth'
-import { pusher } from '@/app/lib/pusher'
+import { pusher } from '@/app/lib/pusher/pusher'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { serializeGame, GAME_SELECT } from '@/app/lib/games/serializeGame'
 import { GAME_EVENTS, channelFor } from '@/app/lib/games/registry'
@@ -31,7 +31,7 @@ export async function createGame(type: GameType): Promise<GameActionResult> {
   try {
     const session = await auth()
     if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
-    if (!session.user.isSuperUser && !session.user.isAdmin) {
+    if (session.user.role !== 'SUPER_USER') {
       return { success: false, error: 'Not allowed' }
     }
 

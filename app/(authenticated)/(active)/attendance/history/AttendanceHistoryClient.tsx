@@ -16,6 +16,8 @@ export function AttendanceHistoryClient({ userName, rows, summary, squares }: At
   const firstName = userName.split(' ')[0]
   const [correctionRow, setCorrectionRow] = useState<{ meetingId: string; date: string } | null>(null)
 
+  console.log(grouped)
+
   return (
     <>
       <AttendanceCorrectionModal

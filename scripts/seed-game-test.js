@@ -23,10 +23,10 @@ const CHAPTER_ID = process.env.CHAPTER_ID || chapterId
 
 // Test members. Emails are tagged so --clean can find and remove them.
 const TEST_MEMBERS = [
-  { name: 'Test Alice', email: 'test+alice@core-game.local', company: 'Alice Co' },
-  { name: 'Test Bob', email: 'test+bob@core-game.local', company: 'Bob LLC' },
-  { name: 'Test Carol', email: 'test+carol@core-game.local', company: 'Carol Inc' },
-  { name: 'Test Dave', email: 'test+dave@core-game.local', company: 'Dave & Sons' }
+  { name: 'Greg Row', email: 'rowgregory@gmail.com', company: 'Sqysh' },
+  { name: 'Devon Hunt', email: 'greg@sqysh.com', company: 'The Iron Roses' },
+  { name: 'Jordan Vale', email: 'dev.mhdcustom@gmail.com', company: 'MHD Custom' },
+  { name: 'Casey Bloom', email: 'dev.educf@gmail.com', company: 'Education Comes First' }
 ]
 
 const TEST_EMAIL_TAG = '@core-game.local'

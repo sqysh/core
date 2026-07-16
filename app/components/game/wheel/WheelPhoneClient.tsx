@@ -8,7 +8,6 @@
 // Everyone else sees a locked "waiting" view. Turn + phase enforced server-side.
 
 import { useEffect, useState } from 'react'
-import Pusher from 'pusher-js'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GAME_EVENTS, GAME_REGISTRY } from '@/app/lib/games/registry'
 import { spinWheel } from '@/app/lib/actions/games/wheel/spinWheel'
@@ -20,6 +19,7 @@ import { isConsonant, VOWEL_COST, VOWELS, WheelState } from '@/types/_wheel.type
 import { Centered, PhoneShell } from '../shared/Shell'
 import PhraseBoard from '../PhraseBoard'
 import { SerializedGame, Team } from '@/types/game.types'
+import { getPusherClient } from '@/app/lib/pusher/pusherClient'
 
 type WheelGame = SerializedGame<WheelState>
 const CONSONANTS = 'BCDFGHJKLMNPQRSTVWXYZ'.split('')
@@ -41,12 +41,19 @@ export default function WheelPhoneClient({ userId, initialGame }: Props) {
   const [spinLock, setSpinLock] = useState(false)
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!
-    })
+    const pusher = getPusherClient()
     const channel = pusher.subscribe(GAME_REGISTRY.WHEEL.channel)
 
-    const onChange = (data: WheelGame & { spin?: unknown }) => {
+    channel.bind_global((eventName: string, data: unknown) => {
+      console.log('PHONE received:', eventName, data)
+    })
+
+    const onDrafted = (d: WheelGame) => {
+      setGame(d)
+      setError(null)
+    }
+
+    const onStateChanged = (data: WheelGame & { spin?: unknown }) => {
       setGame(data)
       setError(null)
       if ((data as any).spin) {
@@ -55,20 +62,20 @@ export default function WheelPhoneClient({ userId, initialGame }: Props) {
         setTimeout(() => setSpinLock(false), 4300)
       }
     }
-    channel.bind(GAME_EVENTS.TEAMS_DRAFTED, (d: WheelGame) => {
-      setGame(d)
-      setError(null)
-    })
-    channel.bind(GAME_EVENTS.STATE_CHANGED, onChange)
-    channel.bind(GAME_EVENTS.GAME_RESET, async () => {
+
+    const onReset = async () => {
       const res = await getActiveGame()
       if (res.success) setGame(res.data as WheelGame | null)
-    })
+    }
+
+    channel.bind(GAME_EVENTS.TEAMS_DRAFTED, onDrafted)
+    channel.bind(GAME_EVENTS.STATE_CHANGED, onStateChanged)
+    channel.bind(GAME_EVENTS.GAME_RESET, onReset)
 
     return () => {
-      channel.unbind_all()
-      pusher.unsubscribe(GAME_REGISTRY.WHEEL.channel)
-      pusher.disconnect()
+      channel.unbind(GAME_EVENTS.TEAMS_DRAFTED, onDrafted)
+      channel.unbind(GAME_EVENTS.STATE_CHANGED, onStateChanged)
+      channel.unbind(GAME_EVENTS.GAME_RESET, onReset)
     }
   }, [])
 

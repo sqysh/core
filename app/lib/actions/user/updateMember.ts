@@ -4,6 +4,7 @@ import prisma from '@/prisma/client'
 import { auth } from '../../auth'
 import { MembershipStatus } from '@/types/user.types'
 import { createLog } from '../../utils/api/createLog'
+import { UserRole } from '@prisma/client'
 
 export async function updateMember(
   userId: string,
@@ -14,7 +15,7 @@ export async function updateMember(
     secondaryEmail?: string
     title?: string
     isPublic?: boolean
-    isAdmin?: boolean
+    role?: UserRole
     isMembership?: boolean
     membershipStatus?: MembershipStatus
     profileImage?: string | null
@@ -33,7 +34,7 @@ export async function updateMember(
       secondaryEmail: data.secondaryEmail,
       title: data.title,
       isPublic: data.isPublic,
-      isAdmin: data.isAdmin,
+      role: data.role,
       isMembership: data.isMembership,
       membershipStatus: data.membershipStatus,
       yearsInBusiness: data.yearsInBusiness

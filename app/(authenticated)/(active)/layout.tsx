@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/lib/auth'
 import prisma from '@/prisma/client'
+import GameAnnounceListener from '@/app/components/game/shared/GameAnnounceListener'
 
 export default async function ActiveLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -21,5 +22,10 @@ export default async function ActiveLayout({ children }: { children: React.React
     redirect('/onboarding')
   }
 
-  return <>{children}</>
+  return (
+    <>
+      <GameAnnounceListener />
+      {children}
+    </>
+  )
 }

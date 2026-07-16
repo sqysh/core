@@ -1,4 +1,4 @@
-import { Chapter, EventOrg, EventStatus } from '@prisma/client'
+import { Chapter, EventOrg, EventStatus, UserRole } from '@prisma/client'
 import { Visitor } from './visitor.types'
 
 export type SuperUserMember = {
@@ -8,10 +8,8 @@ export type SuperUserMember = {
   company: string
   title: string
   industry: string
-  role: string
+  role: UserRole
   membershipStatus: string
-  isActive: boolean
-  isAdmin: boolean
   isMembership: boolean
   lastLoginAt: string | null
   joinedAt: string | null

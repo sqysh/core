@@ -50,7 +50,7 @@ model User {
   secondaryEmail String?   @unique
   phone          String?
   image          String?
-  role           String
+  role           UserRole  @default(MEMBER)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   emailVerified  DateTime?
@@ -61,11 +61,8 @@ model User {
   // ── Membership ────────────────────────────────────────────────────────────
   chapterId        String
   membershipStatus MembershipStatus @default(PENDING)
-  isActive         Boolean          @default(true)
   isPublic         Boolean          @default(true)
-  isAdmin          Boolean          @default(false)
   isMembership     Boolean          @default(false)
-  isSuperUser      Boolean          @default(false)
 
   // ── Application ───────────────────────────────────────────────────────────
   hasCompletedApplication    Boolean  @default(false)
@@ -98,7 +95,6 @@ model User {
   coverImage           String?
   coverImageFilename   String?
   goal                 String?
-  tempId               String  @default("")
 
   // ── Social ────────────────────────────────────────────────────────────────
   facebookUrl  String?
@@ -109,19 +105,7 @@ model User {
   portfolioUrl String?
 
   // ── Professional ──────────────────────────────────────────────────────────
-  askMeAbout               Json?
-  careerAchievements       Json?
-  collage                  Json?
-  interests                String[]
-  learningGoals            String[]
-  podcasts                 Json?
-  posts                    Json?
-  professionalAssociations Json?
-  professionalBooks        Json?
-  servicesOffered          Json?
-  sideProjects             Json?
-  skills                   String[]
-  weeklyTreasureWishlist   String?
+  weeklyTreasureWishlist String?
 
   // ── Billing ───────────────────────────────────────────────────────────────
   stripeCustomerId         String?
@@ -446,6 +430,13 @@ model GamePlayer {
 
   @@unique([gameId, userId])
   @@index([gameId])
+}
+
+enum UserRole {
+  SUPER_USER
+  ADMIN
+  MEMBER
+  APPLICANT
 }
 
 enum GameType {

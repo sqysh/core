@@ -1,4 +1,4 @@
-import { Anchor, Parley } from '@prisma/client'
+import { Anchor, Parley, UserRole } from '@prisma/client'
 import { JsonValue } from '@prisma/client/runtime/library'
 
 // Base User interface matching your Prisma User model
@@ -41,14 +41,11 @@ export interface User {
   isRejected?: boolean
 
   // Role & Permissions
-  role: string
-  isAdmin?: boolean
-  isSuperUser?: boolean
+  role: UserRole
   isMembership?: boolean
 
   // Profile & Networking
   interests: string[]
-  isActive?: boolean
   isPublic?: boolean
   profileImage?: string | null
   profileImageFilename?: string | null
@@ -155,7 +152,6 @@ export interface UserFormData {
   profileImage?: string
   profileImageFilename?: string
   isPublic: boolean
-  isActive: boolean
 }
 
 // User profile (for detailed views)
@@ -171,7 +167,6 @@ export interface UserFilters {
   search?: string
   membershipStatus?: MembershipStatus | 'all'
   chapterId?: string | 'all'
-  isActive?: boolean
   interests?: string[]
   joinedAfter?: string
   joinedBefore?: string

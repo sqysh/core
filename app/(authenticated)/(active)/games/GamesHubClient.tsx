@@ -2,9 +2,9 @@
 
 import { WheelState } from '@/types/_wheel.types'
 import { LobbyMember, SerializedGame } from '@/types/game.types'
-import { Centered, PhoneShell } from '../components/game/shared/Shell'
-import WheelTVClient from '../components/game/wheel/WheelTVClient'
-import WheelPhoneClient from '../components/game/wheel/WheelPhoneClient'
+import { Centered, PhoneShell } from '../../../components/game/shared/Shell'
+import WheelTVClient from '../../../components/game/wheel/WheelTVClient'
+import WheelPhoneClient from '../../../components/game/wheel/WheelPhoneClient'
 
 // The hub. Reads game.type and the surface (tv|phone) and renders the matching
 // per-game client. This is the ONLY place that knows about specific game

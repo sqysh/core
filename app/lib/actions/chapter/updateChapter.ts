@@ -16,7 +16,7 @@ export async function updateChapter(data: {
   hasUnlockedMuster?: boolean
 }) {
   const session = await auth()
-  if (!session?.user?.isSuperUser) return { success: false, error: 'Unauthorized' }
+  if (session?.user?.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
 
   await prisma.chapter.update({
     where: { id: chapterId },

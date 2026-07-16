@@ -10,7 +10,7 @@ import { getCancelledMeetings } from '@/app/lib/actions/cancelled-meeting/getCan
 
 export default async function SuperDashPage() {
   const session = await auth()
-  if (!session?.user?.isSuperUser) redirect('/login')
+  if (session?.user?.role !== 'SUPER_USER') redirect('/login')
 
   const [result, queue, availableMembers, cancelledMeetings, visitorDays] = await Promise.all([
     getSuperUserDashboardData(),

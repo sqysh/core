@@ -35,7 +35,7 @@ export async function getLogs(filters: LogFilters = {}): Promise<{
 }> {
   try {
     const session = await auth()
-    if (!session?.user?.isSuperUser) return { success: false, error: 'Unauthorized' }
+    if (session?.user?.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
 
     const page = filters.page ?? 1
     const skip = (page - 1) * PAGE_SIZE
@@ -141,7 +141,7 @@ export async function getLogs(filters: LogFilters = {}): Promise<{
 export async function deleteLog(id: string): Promise<{ success: boolean; error?: string }> {
   try {
     const session = await auth()
-    if (!session?.user?.isSuperUser) return { success: false, error: 'Unauthorized' }
+    if (session?.user?.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
     await prisma.log.delete({ where: { id } })
     return { success: true }
   } catch {
@@ -152,7 +152,7 @@ export async function deleteLog(id: string): Promise<{ success: boolean; error?:
 export async function clearLogs(level?: string): Promise<{ success: boolean; error?: string }> {
   try {
     const session = await auth()
-    if (!session?.user?.isSuperUser) return { success: false, error: 'Unauthorized' }
+    if (session?.user?.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
     await prisma.log.deleteMany({ where: level ? { level } : {} })
     return { success: true }
   } catch {
