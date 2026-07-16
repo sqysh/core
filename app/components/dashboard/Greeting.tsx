@@ -13,6 +13,8 @@ export function Greeting({ currentUser }) {
   const greeting = getGreeting()
   const today = getTodayLabel()
   const isAdmin = session.data?.user?.role === 'ADMIN'
+
+  console.log(currentUser)
   const isSuperUser = session.data?.user?.role === 'SUPER_USER'
 
   return (
