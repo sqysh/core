@@ -18,7 +18,11 @@ export default async function ActiveLayout({ children }: { children: React.React
   }
 
   // Authenticated but hasn't finished billing setup → onboarding
-  if (!user?.hasAnnualSubscription || !user?.hasQuarterlySubscription) {
+  // if (!user?.hasAnnualSubscription || !user?.hasQuarterlySubscription) {
+  //   redirect('/onboarding')
+  // }
+
+  if (user?.membershipStatus !== 'ACTIVE') {
     redirect('/onboarding')
   }
 
