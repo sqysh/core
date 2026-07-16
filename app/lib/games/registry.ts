@@ -18,7 +18,7 @@ export interface GameMeta {
 export const GAME_REGISTRY: Record<GameType, GameMeta> = {
   WHEEL: {
     channel: 'core-wof',
-    label: 'Crack the Phrase',
+    label: 'Sqyeel of Fortune',
     route: 'wheel'
   }
   // WORD_CLOUD: { channel: 'core-cloud', label: 'Word Cloud', route: 'cloud' },

@@ -101,7 +101,7 @@ export default function WheelPhoneClient({ userId, initialGame }: Props) {
     return (
       <PhoneShell>
         <Centered>
-          <p className="font-quicksand font-black text-xl mb-2">Crack the Phrase</p>
+          <p className="font-quicksand font-black text-xl mb-2">Sqyeel of Fortune</p>
           <p className="font-nunito text-white/60 text-sm">Waiting for the host to draft teams.</p>
         </Centered>
       </PhoneShell>
