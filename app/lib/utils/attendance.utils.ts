@@ -109,9 +109,6 @@ export function buildYearOfThursdays(
   exclusions: AttendanceExclusion[],
   memberCreatedAt: Date | string
 ): AttendanceSquare[] {
-  // Start the grid at the LATER of chapter tracking start and when the member
-  // joined — so each member's heatmap begins fresh at their own week one,
-  // rather than showing greyed-out time before they existed.
   const trackingStart = new Date(from)
   trackingStart.setUTCHours(0, 0, 0, 0)
 
@@ -120,15 +117,19 @@ export function buildYearOfThursdays(
 
   const start = joined > trackingStart ? new Date(joined) : new Date(trackingStart)
 
-  // Snap to the first Thursday on or after the start
   const dayShift = (4 - start.getUTCDay() + 7) % 7
   start.setUTCDate(start.getUTCDate() + dayShift)
 
-  // "Today" as a LOCAL calendar date. Using UTC here rolls over to tomorrow
-  // after ~8pm Eastern (9pm EDT = 1am UTC next day), which would wrongly mark
-  // tomorrow's Thursday as past/missed. Local date avoids that.
-  const now = new Date()
-  const todayISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  // "Today" in America/New_York, independent of the server's own timezone.
+  // Vercel runs in UTC, so using the server's local date would roll over to
+  // tomorrow after ~8pm Eastern and wrongly mark tomorrow's Thursday as missed.
+  // Pinning to Eastern via Intl fixes it identically on laptop and on prod.
+  const todayISO = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date())
 
   const rowByDate = new Map(rows.map((r) => [r.date.slice(0, 10), r]))
   const exclusionMap = new Map(exclusions.map((e) => [e.date, e.reason]))
