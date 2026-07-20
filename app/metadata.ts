@@ -108,7 +108,7 @@ export const metadata: Metadata = {
     siteName: 'CORE',
     images: [
       {
-        url: 'https://firebasestorage.googleapis.com/v0/b/coastal-referral-exchange.firebasestorage.app/o/images%2Fcore-rich-preview.png?alt=media&token=f870ac25-90fd-48f9-a54c-61d52cfa66bb',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'CORE - Professional Networking Platform'
@@ -124,9 +124,7 @@ export const metadata: Metadata = {
     description:
       'Discover meaningful connections with a fresh take on networking. Match, collaborate, and grow your influence.',
     creator: '', // Replace with your Twitter handle
-    images: [
-      'https://firebasestorage.googleapis.com/v0/b/coastal-referral-exchange.firebasestorage.app/o/images%2Fcore-rich-preview.png?alt=media&token=f870ac25-90fd-48f9-a54c-61d52cfa66bb'
-    ]
+    images: ['/og-image.png']
   },
 
   robots: {

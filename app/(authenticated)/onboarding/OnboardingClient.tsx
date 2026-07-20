@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react'
 export default function OnboardingClient() {
   const nextRoomDuesDate = getNextQuarterlyDueDate()
   const session = useSession()
-  const firstName = session.data?.user?.name
+  const firstName = session.data?.user?.name?.split(' ')[0]
 
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">

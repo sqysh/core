@@ -1,7 +1,9 @@
 'use server'
 
-// Shared across all games. Returns members checked in for today's meeting.
-// Mirrors getTodayAttendance exactly (local-time day range, same imports).
+/** 
+  Shared across all games. Returns members checked in for today's meeting.
+  Mirrors getTodayAttendance exactly (local-time day range, same imports).
+*/
 
 import prisma from '@/prisma/client'
 import { auth } from '@/app/lib/auth'

@@ -1,9 +1,11 @@
 'use client'
 
-// Wheel-of-Fortune TV view with the spinning wheel + two-pot money model.
-// Lobby → draft animation → live board. When a SPIN broadcast arrives, the
-// wheel animates to the wedge; when it settles, the board state (already updated
-// server-side) is shown — phones unlock for the consonant guess if it was a value.
+/**
+ Wheel-of-Fortune TV view with the spinning wheel + two-pot money model.
+ Lobby → draft animation → live board. When a SPIN broadcast arrives, the
+ wheel animates to the wedge; when it settles, the board state (already updated
+ server-side) is shown — phones unlock for the consonant guess if it was a value.
+ */
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -22,6 +24,8 @@ import LetterTray from '../LetterTray'
 import PhraseBoard from '../PhraseBoard'
 import { getPusherClient } from '@/app/lib/pusher/pusherClient'
 import { useSounds } from '@/app/lib/hooks/useSounds'
+import { skipTurn } from '@/app/lib/actions/games/wheel/skipTurn'
+import { useSession } from 'next-auth/react'
 
 type WheelGame = SerializedGame<WheelState>
 
@@ -40,6 +44,7 @@ interface SpinInfo {
 }
 
 export default function WheelTVClient({ initialGame, initialLobby }: Props) {
+  const session = useSession()
   const [game, setGame] = useState<WheelGame | null>(initialGame)
   const [lobby, setLobby] = useState<LobbyMember[]>(initialLobby)
   const [excluded, setExcluded] = useState<Set<string>>(new Set())
@@ -47,6 +52,8 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
   const [busy, setBusy] = useState(false)
   const [spin, setSpin] = useState<SpinInfo | null>(null)
   const [spinning, setSpinning] = useState(true)
+  const [guestInput, setGuestInput] = useState('')
+  const [guests, setGuests] = useState<{ name: string }[]>([])
   // Wheel size for the fullscreen overlay. Computed after mount (never during
   // render) so server and client markup match — avoids hydration mismatch.
   const [spinSize, setSpinSize] = useState(680)
@@ -118,7 +125,7 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
 
     if (players.length < 2) return
     setBusy(true)
-    const res = await draftTeamsAction(game.id, players)
+    const res = await draftTeamsAction(game.id, players, guests)
     if (res.success) {
       setGame(res.data as WheelGame)
       setDrafting(true)
@@ -133,6 +140,13 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
       else next.add(userId)
       return next
     })
+  }
+
+  const addGuest = () => {
+    const name = guestInput.trim()
+    if (!name) return
+    setGuests((prev) => [...prev, { name }])
+    setGuestInput('')
   }
 
   const showLobby = !game || game.status === 'LOBBY'
@@ -184,8 +198,40 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
                   </button>
                 )
               })}
+
+              {/* Guest tiles */}
+              {guests.map((g, i) => (
+                <div key={i} className="px-6 py-6 border-2 border-violet-400/40 text-center relative">
+                  <span className="font-quicksand font-black text-2xl text-violet-300">{g.name}</span>
+                  <button
+                    onClick={() => setGuests((prev) => prev.filter((_, j) => j !== i))}
+                    className="absolute top-2 right-2 text-white/30 hover:text-white/70 font-mono text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
           )}
+
+          {/* Guest input */}
+          <div className="flex gap-3 mb-8 max-w-sm mx-auto w-full">
+            <input
+              type="text"
+              value={guestInput}
+              onChange={(e) => setGuestInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addGuest()}
+              placeholder="Add guest name…"
+              className="flex-1 bg-transparent border border-white/20 px-4 py-3 text-white font-quicksand text-lg placeholder:text-white/25 focus:outline-none focus:border-violet-400 transition-colors"
+            />
+            <button
+              onClick={addGuest}
+              disabled={!guestInput.trim()}
+              className="px-5 py-3 border border-violet-400/60 text-violet-300 font-mono text-xs tracking-[0.2em] uppercase hover:bg-violet-400/10 transition-colors disabled:opacity-30"
+            >
+              Add
+            </button>
+          </div>
 
           {/* Action */}
           <div className="flex justify-center">
@@ -208,10 +254,11 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
             )}
           </div>
 
-          {/* Live count of who's actually playing */}
+          {/* Live count */}
           <p className="text-center font-mono text-xs tracking-[0.2em] uppercase text-white/30 mt-5">
-            {lobby.length - excluded.size} playing
+            {lobby.length - excluded.size + guests.length} playing
             {excluded.size > 0 && ` · ${excluded.size} benched`}
+            {guests.length > 0 && ` · ${guests.length} guest${guests.length > 1 ? 's' : ''}`}
           </p>
         </div>
       )}
@@ -322,6 +369,18 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
               )}
             </AnimatePresence>
           </div>
+
+          {game.status === 'PLAYING' && session.data?.user?.role === 'SUPER_USER' && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => skipTurn(game.id)}
+                disabled={busy}
+                className="px-6 py-3 border border-white/20 text-white/50 font-mono text-xs tracking-[0.2em] uppercase hover:border-white/40 hover:text-white/80 transition-colors disabled:opacity-30"
+              >
+                Skip Turn
+              </button>
+            </div>
+          )}
 
           <LetterTray revealed={s.revealed} guessed={s.guessed} />
           <TeamRoster

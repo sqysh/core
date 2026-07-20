@@ -1,7 +1,9 @@
 'use server'
 
-// Shared. Splits the locked lobby into teams, writes GamePlayer rows, flips the
-// game to PLAYING, and broadcasts TEAMS_DRAFTED on the game's own channel.
+/**
+ Shared. Splits the locked lobby into teams, writes GamePlayer rows, flips the
+ game to PLAYING, and broadcasts TEAMS_DRAFTED on the game's own channel.
+ */
 
 import prisma from '@/prisma/client'
 import { auth } from '@/app/lib/auth'
@@ -13,7 +15,11 @@ import { GAME_EVENTS, channelFor } from '@/app/lib/games/registry'
 import { GameActionResult, LobbyMember } from '@/types/game.types'
 import { createLog } from '../../utils/api/createLog'
 
-export async function draftTeamsAction(gameId: string, members: LobbyMember[]): Promise<GameActionResult> {
+export async function draftTeamsAction(
+  gameId: string,
+  members: LobbyMember[],
+  guests: { name: string }[]
+): Promise<GameActionResult> {
   try {
     const session = await auth()
     if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
@@ -30,7 +36,7 @@ export async function draftTeamsAction(gameId: string, members: LobbyMember[]): 
     })
     if (!existing) return { success: false, error: 'Game not found' }
 
-    const drafted = draftTeams(members)
+    const drafted = draftTeams(members, guests)
 
     const updated = await prisma.$transaction(async (tx) => {
       await tx.gamePlayer.deleteMany({ where: { gameId } })
