@@ -17,6 +17,8 @@ export type SuperUserMember = {
   parleyCount: number
   referralCount: number
   closedCount: number
+  hasAnnualSubscription: boolean
+  hasQuarterlySubscription: boolean
 }
 
 export type SuperUserParley = {

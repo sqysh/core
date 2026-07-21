@@ -42,6 +42,8 @@ export async function getSuperUserDashboardData(): Promise<
             lastLoginAt: true,
             profileImage: true,
             joinedAt: true,
+            hasAnnualSubscription: true,
+            hasQuarterlySubscription: true,
             _count: {
               select: {
                 requestedMeetings: true,
@@ -229,7 +231,9 @@ export async function getSuperUserDashboardData(): Promise<
           parleyCount: m._count.requestedMeetings,
           referralCount: m._count.giver,
           closedCount: m._count.givenCredits,
-          profileImage: m.profileImage
+          profileImage: m.profileImage,
+          hasAnnualSubscription: m.hasAnnualSubscription,
+          hasQuarterlySubscription: m.hasQuarterlySubscription
         })),
         applicants: (applicants ?? []).map((a) => ({
           ...a,

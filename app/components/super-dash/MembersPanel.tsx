@@ -110,6 +110,22 @@ export function MembersPanel({ members }: { members: SuperUserMember[] }) {
                 <p className="font-mono text-[11px] font-bold text-text-light dark:text-text-dark">{m.closedCount}</p>
                 <p className="text-f9 font-mono text-muted-light dark:text-muted-dark uppercase tracking-widest">$</p>
               </div>
+              <div className="text-center">
+                <p
+                  className={`font-mono text-[11px] font-bold ${m.hasAnnualSubscription ? 'text-emerald-500' : 'text-rose-400'}`}
+                >
+                  {m.hasAnnualSubscription ? '✓' : '✗'}
+                </p>
+                <p className="text-f9 font-mono text-muted-light dark:text-muted-dark uppercase tracking-widest">Ann</p>
+              </div>
+              <div className="text-center">
+                <p
+                  className={`font-mono text-[11px] font-bold ${m.hasQuarterlySubscription ? 'text-emerald-500' : 'text-rose-400'}`}
+                >
+                  {m.hasQuarterlySubscription ? '✓' : '✗'}
+                </p>
+                <p className="text-f9 font-mono text-muted-light dark:text-muted-dark uppercase tracking-widest">Qtr</p>
+              </div>
             </div>
 
             {/* last seen */}

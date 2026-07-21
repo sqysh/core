@@ -159,7 +159,7 @@ export default function HeroSection() {
             <button
               onClick={launchGame}
               disabled={launching}
-              aria-label="Launch Sqyeel of Fortune"
+              aria-label="Launch Sqywheel of Fortune"
               className="group relative h-11 sm:h-12 px-6 sm:px-8 inline-flex items-center justify-center overflow-hidden border border-amber-300/60 disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-dark"
               style={{
                 background: 'radial-gradient(120% 160% at 50% 0%, #1e4fa3 0%, #0a2a6b 55%, #041845 100%)',
@@ -177,7 +177,7 @@ export default function HeroSection() {
                   filter: 'drop-shadow(0 1px 1px rgba(0,0,0,0.4))'
                 }}
               >
-                {launching ? 'Starting…' : 'Sqyeel of Fortune'}
+                {launching ? 'Starting…' : 'Sqywheel of Fortune'}
               </span>
             </button>
           )}
