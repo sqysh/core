@@ -193,6 +193,13 @@ export async function handleSubscriptionCreated(sub: Stripe.Subscription) {
     amount,
     subId: sub.id
   })
+
+  await pusher.trigger('super-admin', 'membership-payment', {
+    userId: user.id,
+    name: user.name,
+    type,
+    amount
+  })
 }
 
 export async function handleSubscriptionUpdated(sub: Stripe.Subscription) {

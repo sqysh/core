@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { MembershipStatus, UserRole } from '@prisma/client'
 import { lastSeenColor, lastSeenLabel } from '@/app/lib/utils/date.utils'
+import { formatPhone } from '@/app/lib/utils/phone.utils'
 
 interface Member {
   id: string
@@ -43,6 +44,9 @@ const STATUS_STYLES: Record<MembershipStatus, string> = {
   FLAGGED: 'bg-red-50 dark:bg-red-400/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-400/20'
 }
 
+const COLS = 'grid grid-cols-[2fr_2fr_1.2fr_1fr_1fr_auto] gap-4 px-4'
+const HEADS = ['Name', 'Email', 'Phone', 'Status', 'Last Seen', 'Ann · Qtr']
+
 function SubDot({ active }: { active: boolean }) {
   return (
     <span
@@ -58,12 +62,85 @@ function SubDot({ active }: { active: boolean }) {
   )
 }
 
-export default function SuperMembersClient({ members }: { members: Member[] }) {
+function TableHead() {
+  return (
+    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
+      {HEADS.map((h) => (
+        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
+          {h}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function MemberRow({ m, onClick }: { m: Member; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full ${COLS} py-3.5 items-center border-b border-border-light dark:border-border-dark last:border-0 hover:bg-surface-light dark:hover:bg-surface-dark transition-colors text-left group`}
+    >
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="w-7 h-7 shrink-0 bg-primary-light/10 dark:bg-primary-dark/10 border border-primary-light/20 dark:border-primary-dark/20 flex items-center justify-center overflow-hidden rounded-sm">
+          {m.profileImage ? (
+            <img src={m.profileImage} alt={m.name} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-[9px] font-mono font-bold text-primary-light dark:text-primary-dark">
+              {m.name
+                .split(' ')
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase()}
+            </span>
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="font-sora font-bold text-[13px] text-text-light dark:text-text-dark truncate group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
+            {m.name}
+          </p>
+          {m.title && (
+            <p className="text-[11px] font-nunito text-muted-light dark:text-muted-dark truncate">{m.title}</p>
+          )}
+        </div>
+      </div>
+
+      <p className="text-[12px] font-mono text-muted-light dark:text-muted-dark truncate">{m.email}</p>
+
+      <p className="text-[12px] font-mono text-muted-light dark:text-muted-dark">
+        {formatPhone(m.phone) ?? <span className="text-on-dark">—</span>}
+      </p>
+
+      <span
+        className={`inline-block text-[9px] font-mono tracking-widest uppercase px-1.5 py-0.5 border ${STATUS_STYLES[m.membershipStatus] ?? ''}`}
+      >
+        {m.membershipStatus.toLowerCase().replace('_', ' ')}
+      </span>
+
+      <p className={`text-[11px] font-mono ${lastSeenColor(m.lastLoginAt ? String(m.lastLoginAt) : null)}`}>
+        {lastSeenLabel(m.lastLoginAt ? String(m.lastLoginAt) : null)}
+      </p>
+
+      <div className="flex items-center gap-1.5">
+        <SubDot active={m.hasAnnualSubscription} />
+        <SubDot active={m.hasQuarterlySubscription} />
+      </div>
+    </button>
+  )
+}
+
+export default function SuperMembersClient({
+  activeMembers,
+  approvedMembers
+}: {
+  activeMembers: Member[]
+  approvedMembers: Member[]
+}) {
   const router = useRouter()
+  const push = (id: string) => router.push(`/super/members/${id}`)
 
   return (
     <div className="p-6">
-      {/* Header */}
       <div className="mb-6 flex items-baseline justify-between">
         <div>
           <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-1">
@@ -73,85 +150,34 @@ export default function SuperMembersClient({ members }: { members: Member[] }) {
             Members
           </h1>
         </div>
-        <span className="text-[11px] font-mono text-on-dark">{members.length} total</span>
+        <span className="text-[11px] font-mono text-on-dark">{activeMembers.length} active</span>
       </div>
 
-      {/* Table */}
+      {/* Active */}
       <div className="border border-border-light dark:border-border-dark overflow-hidden">
-        {/* Head */}
-        <div className="grid grid-cols-[2fr_2fr_1.2fr_1fr_1fr_auto] gap-4 px-4 py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark">
-          {['Name', 'Email', 'Phone', 'Status', 'Last Seen', 'Ann · Qtr'].map((h) => (
-            <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-              {h}
-            </span>
-          ))}
-        </div>
-
-        {/* Rows */}
-        {members.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => router.push(`/super/members/${m.id}`)}
-            className="w-full grid grid-cols-[2fr_2fr_1.2fr_1fr_1fr_auto] gap-4 px-4 py-3.5 items-center
-            border-b border-border-light dark:border-border-dark last:border-0
-            hover:bg-surface-light dark:hover:bg-surface-dark transition-colors text-left group"
-          >
-            {/* Name + avatar */}
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 shrink-0 bg-primary-light/10 dark:bg-primary-dark/10 border border-primary-light/20 dark:border-primary-dark/20 flex items-center justify-center overflow-hidden rounded-sm">
-                {m.profileImage ? (
-                  <img src={m.profileImage} alt={m.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-[9px] font-mono font-bold text-primary-light dark:text-primary-dark">
-                    {m.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join('')
-                      .toUpperCase()}
-                  </span>
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="font-sora font-bold text-[13px] text-text-light dark:text-text-dark truncate group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
-                  {m.name}
-                </p>
-                {m.title && (
-                  <p className="text-[11px] font-nunito text-muted-light dark:text-muted-dark truncate">{m.title}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Email */}
-            <p className="text-[12px] font-mono text-muted-light dark:text-muted-dark truncate">{m.email}</p>
-
-            {/* Phone */}
-            <p className="text-[12px] font-mono text-muted-light dark:text-muted-dark">
-              {m.phone ?? <span className="text-on-dark">—</span>}
-            </p>
-
-            {/* Status */}
-            <div>
-              <span
-                className={`inline-block text-[9px] font-mono tracking-widest uppercase px-1.5 py-0.5 border ${STATUS_STYLES[m.membershipStatus] ?? ''}`}
-              >
-                {m.membershipStatus.toLowerCase().replace('_', ' ')}
-              </span>
-            </div>
-
-            {/* Last seen */}
-            <p className={`text-[11px] font-mono ${lastSeenColor(String(m.lastLoginAt))}`}>
-              {lastSeenLabel(String(m.lastLoginAt))}
-            </p>
-
-            {/* Subscriptions */}
-            <div className="flex items-center gap-1.5">
-              <SubDot active={m.hasAnnualSubscription} />
-              <SubDot active={m.hasQuarterlySubscription} />
-            </div>
-          </button>
+        <TableHead />
+        {activeMembers.map((m) => (
+          <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
         ))}
       </div>
+
+      {/* Approved — awaiting payment */}
+      {approvedMembers.length > 0 && (
+        <div className="mt-8">
+          <div className="mb-3 flex items-baseline justify-between">
+            <p className="text-[9.5px] font-mono tracking-[0.2em] uppercase text-amber-500 dark:text-amber-400">
+              Approved · Awaiting Payment
+            </p>
+            <span className="text-[11px] font-mono text-on-dark">{approvedMembers.length}</span>
+          </div>
+          <div className="border border-amber-200 dark:border-amber-400/20 overflow-hidden">
+            <TableHead />
+            {approvedMembers.map((m) => (
+              <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -11,24 +11,44 @@ export default async function SuperMembersPage() {
   if (!session?.user?.id) redirect('/login')
   if (session.user.role !== 'SUPER_USER') redirect('/dashboard')
 
-  const members = await prisma.user.findMany({
-    where: { chapterId, membershipStatus: 'ACTIVE' },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      lastLoginAt: true,
-      membershipStatus: true,
-      role: true,
-      hasAnnualSubscription: true,
-      hasQuarterlySubscription: true,
-      profileImage: true,
-      company: true,
-      title: true
-    },
-    orderBy: { name: 'asc' }
-  })
+  const [activeMembers, approvedMembers] = await Promise.all([
+    prisma.user.findMany({
+      where: { chapterId, membershipStatus: 'ACTIVE' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        lastLoginAt: true,
+        membershipStatus: true,
+        role: true,
+        hasAnnualSubscription: true,
+        hasQuarterlySubscription: true,
+        profileImage: true,
+        company: true,
+        title: true
+      },
+      orderBy: { name: 'asc' }
+    }),
+    prisma.user.findMany({
+      where: { chapterId, membershipStatus: 'APPROVED' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        lastLoginAt: true,
+        membershipStatus: true,
+        role: true,
+        hasAnnualSubscription: true,
+        hasQuarterlySubscription: true,
+        profileImage: true,
+        company: true,
+        title: true
+      },
+      orderBy: { name: 'asc' }
+    })
+  ])
 
-  return <SuperMembersClient members={members} />
+  return <SuperMembersClient activeMembers={activeMembers} approvedMembers={approvedMembers} />
 }

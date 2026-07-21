@@ -210,7 +210,7 @@ export const MemberApplicationForm: FC<IForm> = ({ inputs, errors, handleInput, 
                   })
                 }
                 className={inputCls}
-                placeholder="(555) 000-0000"
+                placeholder="9781112222"
                 autoComplete="tel"
                 aria-required="true"
                 aria-invalid={!!errors?.phone}
@@ -275,7 +275,7 @@ export const MemberApplicationForm: FC<IForm> = ({ inputs, errors, handleInput, 
                 value={inputs.businessLicenseNumber || ''}
                 onChange={handleInput}
                 className={inputCls}
-                placeholder="Optional"
+                placeholder="BL-12345678"
                 aria-required="true"
                 aria-invalid={!!errors?.businessLicenseNumber}
               />

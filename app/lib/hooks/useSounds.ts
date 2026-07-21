@@ -27,7 +27,7 @@ interface UseSoundsOptions {
   volume?: number // 0 to 1
 }
 
-export const useSounds = ({ enabled = true, volume = 0.5 }: UseSoundsOptions = {}) => {
+export const useSounds = ({ enabled = true, volume = 1 }: UseSoundsOptions = {}) => {
   const soundsRef = useRef<Partial<Record<SoundKey, HTMLAudioElement>>>({})
 
   useEffect(() => {
