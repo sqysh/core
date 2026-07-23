@@ -44,19 +44,18 @@ model VerificationToken {
 
 model User {
   // ── Identity ──────────────────────────────────────────────────────────────
-  id             String    @id @default(cuid())
-  name           String
-  email          String    @unique
-  secondaryEmail String?   @unique
-  phone          String?
-  image          String?
-  role           UserRole  @default(MEMBER)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  emailVerified  DateTime?
-  expiresAt      DateTime?
-  lastLoginAt    DateTime?
-  joinedAt       DateTime?
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  phone         String?
+  image         String?
+  role          UserRole  @default(MEMBER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  emailVerified DateTime?
+  expiresAt     DateTime?
+  lastLoginAt   DateTime?
+  joinedAt      DateTime?
 
   // ── Membership ────────────────────────────────────────────────────────────
   chapterId        String
@@ -65,20 +64,16 @@ model User {
   isMembership     Boolean          @default(false)
 
   // ── Application ───────────────────────────────────────────────────────────
-  hasCompletedApplication    Boolean  @default(false)
-  businessLicenseNumber      String?  @default("")
-  isLicensed                 Boolean? @default(false)
-  isBackgroudCheckCompleted  Boolean  @default(false)
-  isInitialReviewCompleted   Boolean  @default(false)
-  isFinalDecisionMade        Boolean  @default(false)
-  isRejected                 Boolean  @default(false)
-  backgroundCheckCompletedAt String?  @default("")
-  initialReviewCompletedAt   String?  @default("")
-  finalDecisionAt            String?  @default("")
-  rejectedAt                 String?  @default("")
-  rejectedStep               String?  @default("")
-  rejectionReason            String?  @default("")
-  signals                    Json?    @default("[]")
+  hasCompletedApplication Boolean  @default(false)
+  businessLicenseNumber   String?  @default("")
+  isLicensed              Boolean? @default(false)
+  isFinalDecisionMade     Boolean  @default(false)
+  isRejected              Boolean  @default(false)
+
+  finalDecisionAt String? @default("")
+  rejectedAt      String? @default("")
+  rejectedStep    String? @default("")
+  rejectionReason String? @default("")
 
   // ── Profile ───────────────────────────────────────────────────────────────
   bio                  String? @default("")
@@ -130,6 +125,15 @@ model User {
   giver             TreasureMap[]   @relation("TreasureMapGiver")
   receiver          TreasureMap[]   @relation("TreasureMapReceiver")
   attendances       Attendance[]
+  alternateEmails   UserEmail[]
+
+  // DEPRECATED
+  secondaryEmail             String? @unique
+  signals                    Json?   @default("[]")
+  backgroundCheckCompletedAt String? @default("")
+  initialReviewCompletedAt   String? @default("")
+  isBackgroudCheckCompleted  Boolean @default(false)
+  isInitialReviewCompleted   Boolean @default(false)
 }
 
 model Parley {
@@ -430,6 +434,17 @@ model GamePlayer {
 
   @@unique([gameId, userId])
   @@index([gameId])
+}
+
+model UserEmail {
+  id        String   @id @default(cuid())
+  userId    String
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum UserRole {
