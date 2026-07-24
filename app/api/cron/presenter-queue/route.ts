@@ -93,7 +93,7 @@ async function sendPresenterQueue(req: NextRequest) {
         batch.map(async (member) => {
           try {
             const result = await resend.emails.send({
-              from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
+              from: `Coastal Referral Exchange <queue@coastalreferralxchange.com>`,
               to: member.email,
               subject: `Presenter Schedule — This Week & Upcoming`,
               html: presenterQueueTemplate(
@@ -102,10 +102,9 @@ async function sendPresenterQueue(req: NextRequest) {
                 `${BASE_URL}/dashboard`
               )
             })
-            console.log(`✅ Sent to ${member.email}`)
+
             return { success: true, email: member.email, result }
           } catch (error) {
-            console.error(`❌ Failed to send to ${member.email}:`, error)
             return {
               success: false,
               email: member.email,

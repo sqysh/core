@@ -23,7 +23,6 @@ export async function createUser(input: CreateUserInput): Promise<CreateUserResp
       }
     }
 
-    // Check if email already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: input.email.toLowerCase() }
     })

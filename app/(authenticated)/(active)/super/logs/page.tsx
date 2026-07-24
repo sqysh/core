@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/lib/auth'
 import { getLogs } from '@/app/lib/actions/log/log-actions'
-import LogsClient from '@/app/components/pages/SuperLogsClient'
+import SuperLogsClient from '@/app/(authenticated)/(active)/super/logs/SuperLogsClient'
 
 export default async function LogsPage() {
   const session = await auth()
@@ -20,5 +20,5 @@ export default async function LogsPage() {
     )
   }
 
-  return <LogsClient initialByLevel={result.data.byLevel} />
+  return <SuperLogsClient initialByLevel={result.data.byLevel} />
 }

@@ -6,8 +6,15 @@ import SuperDashboardClient from './SuperDashboardClient'
 
 export const dynamic = 'force-dynamic'
 
+const ANNUAL_PRICE = 365
+const QUARTERLY_PRICE = 60
+
 function sumBy(orders: { amount: number; type: string }[], type?: string) {
   return orders.filter((o) => !type || o.type === type).reduce((s, o) => s + o.amount, 0)
+}
+
+function inPeriod<T extends { createdAt: Date }>(orders: T[], start: Date) {
+  return orders.filter((o) => o.createdAt >= start)
 }
 
 export default async function SuperDashboardPage() {
@@ -16,85 +23,107 @@ export default async function SuperDashboardPage() {
   if (session.user.role !== 'SUPER_USER') redirect('/dashboard')
 
   const now = new Date()
-  const quarterStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1)
-  const yearStart = new Date(now.getFullYear(), 0, 1)
+  const year = now.getFullYear()
+  const quarterStart = new Date(year, Math.floor(now.getMonth() / 3) * 3, 1)
+  const yearStart = new Date(year, 0, 1)
 
-  const [allOrders, activeMembers, pendingApplicants] = await Promise.all([
+  const [allOrders, members] = await Promise.all([
     prisma.order.findMany({
       where: { chapterId, status: { in: ['ACTIVE', 'SCHEDULED', 'INCOMPLETE'] } },
       select: { amount: true, type: true, status: true, createdAt: true }
     }),
-    prisma.user.count({ where: { chapterId, membershipStatus: 'ACTIVE' } }),
-    prisma.user.count({ where: { chapterId, membershipStatus: 'PENDING', role: 'APPLICANT' } })
+    prisma.user.findMany({
+      where: { chapterId, membershipStatus: 'ACTIVE' },
+      select: {
+        id: true,
+        name: true,
+        company: true,
+        hasAnnualSubscription: true,
+        hasQuarterlySubscription: true,
+        stripeCustomerId: true,
+        paymentMethods: {
+          where: { isDefault: true },
+          select: { last4: true, brand: true },
+          take: 1
+        },
+        orders: {
+          where: { status: 'ACTIVE', currentPeriodStart: { not: null } },
+          select: { amount: true, type: true, createdAt: true }
+        }
+      },
+      orderBy: { name: 'asc' }
+    })
   ])
 
   const mapped = allOrders.map((o) => ({ ...o, amount: Number(o.amount) }))
 
   const byStatus = (status: string) => mapped.filter((o) => o.status === status)
-  const inPeriod = (orders: typeof mapped, start: Date) => orders.filter((o) => new Date(o.createdAt) >= start)
-
   const active = byStatus('ACTIVE')
   const scheduled = byStatus('SCHEDULED')
   const incomplete = byStatus('INCOMPLETE')
 
+  const makeBlock = (orders: typeof mapped) => ({
+    total: sumBy(orders),
+    annual: sumBy(orders, 'ANNUAL'),
+    quarterly: sumBy(orders, 'QUARTERLY'),
+    ytd: sumBy(inPeriod(orders, yearStart)),
+    qtd: sumBy(inPeriod(orders, quarterStart)),
+    count: orders.length
+  })
+
+  // Monthly revenue for the current year (active orders only)
+  const monthlyRevenue = Array.from({ length: 12 }, (_, i) => {
+    const monthOrders = active.filter((o) => {
+      const d = new Date(o.createdAt)
+      return d.getFullYear() === year && d.getMonth() === i
+    })
+    return {
+      month: new Date(year, i).toLocaleString('en-US', { month: 'short' }),
+      revenue: sumBy(monthOrders),
+      annual: sumBy(monthOrders, 'ANNUAL'),
+      quarterly: sumBy(monthOrders, 'QUARTERLY')
+    }
+  })
+
+  // MRR / ARR from live subscription flags
+  const annualCount = members.filter((m) => m.hasAnnualSubscription).length
+  const quarterlyCount = members.filter((m) => m.hasQuarterlySubscription).length
+  const mrr = Math.round((annualCount * ANNUAL_PRICE) / 12 + (quarterlyCount * QUARTERLY_PRICE) / 3)
+  const arr = mrr * 12
+
+  // Per-member revenue breakdown
+  const memberRevenue = members
+    .map((m) => {
+      const orders = m.orders.map((o) => ({ ...o, amount: Number(o.amount) }))
+      return {
+        id: m.id,
+        name: m.name,
+        company: m.company,
+        hasSavedCard: m.paymentMethods.length > 0,
+        savedCard: m.paymentMethods[0] ?? null,
+        hasAnnual: m.hasAnnualSubscription,
+        hasQuarterly: m.hasQuarterlySubscription,
+        totalPaid: sumBy(orders),
+        annualPaid: sumBy(orders, 'ANNUAL'),
+        quarterlyPaid: sumBy(orders, 'QUARTERLY')
+      }
+    })
+    .sort((a, b) => b.totalPaid - a.totalPaid)
+
   return (
     <SuperDashboardClient
       stats={{
-        activeMembers,
-        pendingApplicants,
-        totalOrders: mapped.length,
-
-        active: {
-          total: sumBy(active),
-          annual: sumBy(active, 'ANNUAL'),
-          quarterly: sumBy(active, 'QUARTERLY'),
-          ytd: sumBy(inPeriod(active, yearStart)),
-          qtd: sumBy(inPeriod(active, quarterStart)),
-          ytdAnnual: sumBy(inPeriod(active, yearStart), 'ANNUAL'),
-          ytdQuarterly: sumBy(inPeriod(active, yearStart), 'QUARTERLY'),
-          qtdAnnual: sumBy(inPeriod(active, quarterStart), 'ANNUAL'),
-          qtdQuarterly: sumBy(inPeriod(active, quarterStart), 'QUARTERLY'),
-          count: active.length
-        },
-
-        scheduled: {
-          total: sumBy(scheduled),
-          annual: sumBy(scheduled, 'ANNUAL'),
-          quarterly: sumBy(scheduled, 'QUARTERLY'),
-          ytd: sumBy(inPeriod(scheduled, yearStart)),
-          qtd: sumBy(inPeriod(scheduled, quarterStart)),
-          ytdAnnual: sumBy(inPeriod(scheduled, yearStart), 'ANNUAL'),
-          ytdQuarterly: sumBy(inPeriod(scheduled, yearStart), 'QUARTERLY'),
-          qtdAnnual: sumBy(inPeriod(scheduled, quarterStart), 'ANNUAL'),
-          qtdQuarterly: sumBy(inPeriod(scheduled, quarterStart), 'QUARTERLY'),
-          count: scheduled.length
-        },
-
-        incomplete: {
-          total: sumBy(incomplete),
-          annual: sumBy(incomplete, 'ANNUAL'),
-          quarterly: sumBy(incomplete, 'QUARTERLY'),
-          ytd: sumBy(inPeriod(incomplete, yearStart)),
-          qtd: sumBy(inPeriod(incomplete, quarterStart)),
-          ytdAnnual: sumBy(inPeriod(incomplete, yearStart), 'ANNUAL'),
-          ytdQuarterly: sumBy(inPeriod(incomplete, yearStart), 'QUARTERLY'),
-          qtdAnnual: sumBy(inPeriod(incomplete, quarterStart), 'ANNUAL'),
-          qtdQuarterly: sumBy(inPeriod(incomplete, quarterStart), 'QUARTERLY'),
-          count: incomplete.length
-        },
-
-        combined: {
-          total: sumBy(mapped),
-          annual: sumBy(mapped, 'ANNUAL'),
-          quarterly: sumBy(mapped, 'QUARTERLY'),
-          ytd: sumBy(inPeriod(mapped, yearStart)),
-          qtd: sumBy(inPeriod(mapped, quarterStart)),
-          ytdAnnual: sumBy(inPeriod(mapped, yearStart), 'ANNUAL'),
-          ytdQuarterly: sumBy(inPeriod(mapped, yearStart), 'QUARTERLY'),
-          qtdAnnual: sumBy(inPeriod(mapped, quarterStart), 'ANNUAL'),
-          qtdQuarterly: sumBy(inPeriod(mapped, quarterStart), 'QUARTERLY'),
-          count: mapped.length
-        }
+        activeMembers: members.length,
+        mrr,
+        arr,
+        active: makeBlock(active),
+        scheduled: makeBlock(scheduled),
+        incomplete: makeBlock(incomplete),
+        combined: makeBlock(mapped),
+        monthlyRevenue,
+        memberRevenue,
+        annualCount,
+        quarterlyCount
       }}
     />
   )

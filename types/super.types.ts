@@ -21,7 +21,7 @@ export type SuperUserMember = {
   hasQuarterlySubscription: boolean
 }
 
-export type SuperUserParley = {
+export type SuperUserOneTwoOne = {
   id: string
   scheduledAt: string
   status: string
@@ -78,7 +78,7 @@ export type SuperUserDashboardData = {
   stats: SuperUserStats
   members: SuperUserMember[]
   applicants: SuperUserApplicant[]
-  parleys: SuperUserParley[]
+  oneTwoOnes: SuperUserOneTwoOne[]
   referrals: SuperUserReferral[]
   anchors: SuperUserAnchor[]
   chapter: Chapter

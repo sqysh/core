@@ -3,7 +3,7 @@ import { SuperDashStatusBadge } from '../super-dash/SuperDashStatusBadge'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { updateUserStatus } from '@/app/lib/actions/super-user/updateUserStatus'
+import { updateUserStatus } from '@/app/lib/actions/super/updateUserStatus'
 import { deleteUser } from '@/app/lib/actions/user/deleteUser'
 import { fmtDate } from '@/app/lib/utils/date.utils'
 

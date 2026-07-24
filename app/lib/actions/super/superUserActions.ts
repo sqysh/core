@@ -240,7 +240,7 @@ export async function getSuperUserDashboardData(): Promise<
           createdAt: a.createdAt.toISOString(),
           finalDecisionAt: a.finalDecisionAt
         })),
-        parleys: (parleys ?? []).map((p) => ({
+        oneTwoOnes: (parleys ?? []).map((p) => ({
           id: p.id,
           scheduledAt: p.scheduledAt.toISOString(),
           status: p.status,

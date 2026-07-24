@@ -25,7 +25,7 @@ const NAV = [
   { label: 'Members', href: '/super/members', icon: Users },
   { label: 'Applications', href: '/super/applications', icon: UserPlus },
   { label: 'Attendance', href: '/super/attendance', icon: ClipboardCheck },
-  { label: 'Face to Face', href: '/super/face-to-face', icon: Handshake },
+  { label: '1-2-1', href: '/super/1-2-1', icon: Handshake },
   { label: 'Referrals', href: '/super/referrals', icon: Share2 },
   { label: 'Closed Business', href: '/super/closed-business', icon: DollarSign },
   { label: 'Presenter Queue', href: '/super/presenter-queue', icon: Mic },

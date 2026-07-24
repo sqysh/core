@@ -17,6 +17,6 @@ export interface Visitor {
   company?: string
   industry?: string
   createdAt?: string
-  visitDate: Date // ISO string
+  visitDate: string
   invitedBy?: { name: string }
 }

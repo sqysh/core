@@ -380,7 +380,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   // Not a subscription invoice — skip
   if (!subId) return
 
-  const order = await prisma.order.findFirst({
+  let order = await prisma.order.findFirst({
     where: { stripeSubId: subId },
     select: { id: true, type: true, userId: true, user: { select: { name: true } } }
   })
@@ -423,7 +423,22 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     }
   }
 
-  if (!order) return // order not created yet (webhook race); subscription.created will handle it
+  if (!order) {
+    await new Promise((r) => setTimeout(r, 2000))
+    order = await prisma.order.findFirst({
+      where: { stripeSubId: subId },
+      select: { id: true, type: true, userId: true, user: { select: { name: true } } }
+    })
+  }
+
+  if (!order) {
+    await createLog('error', 'handleInvoicePaymentSucceeded — no order found after retry', {
+      action: 'INVOICE_PAYMENT_RACE',
+      subId,
+      invoiceId: invoice.id
+    })
+    return
+  }
 
   const lineItem = invoice.lines.data[0] as any
   const currentPeriodStart = lineItem?.period?.start ? new Date(lineItem.period.start * 1000) : null

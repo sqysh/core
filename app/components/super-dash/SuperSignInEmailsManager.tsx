@@ -3,8 +3,8 @@
 import { useState, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, X, AlertCircle, Check, ShieldAlert } from 'lucide-react'
-import { removeMemberEmail } from '@/app/lib/actions/super-user/removeMemberEmail'
-import { addMemberEmail } from '@/app/lib/actions/super-user/addMemberEmail'
+import { removeMemberEmail } from '@/app/lib/actions/super/removeMemberEmail'
+import { addMemberEmail } from '@/app/lib/actions/super/addMemberEmail'
 
 export interface MemberEmail {
   id: string

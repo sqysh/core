@@ -2,11 +2,10 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
-import { ArrowLeft, Search, Trash2, ChevronDown, ChevronUp, RefreshCw, X } from 'lucide-react'
+import { Search, Trash2, ChevronDown, ChevronUp, RefreshCw, X } from 'lucide-react'
 import { clearLogs, deleteLog, getLogs, LogEntry, LogsByLevel } from '@/app/lib/actions/log/log-actions'
 import { fmtDate, timeAgo } from '@/app/lib/utils/date.utils'
-import FadeUp from '../common/FadeUp'
+import FadeUp from '../../../../components/common/FadeUp'
 
 function parseMetadata(metadata: Record<string, unknown> | null): string[] {
   if (!metadata) return []
@@ -273,93 +272,73 @@ export default function LogsClient({ initialByLevel }: { initialByLevel: LogsByL
   const total = Object.values(byLevel).reduce((sum, arr) => sum + arr.length, 0)
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
-      <div className="max-w-350 mx-auto px-4 xs:px-6 pb-6">
-        {/* ── Header ── */}
-        <FadeUp className="pt-7 pb-5 border-b border-border-light dark:border-border-dark mb-5">
-          <div className="flex items-center gap-3 mb-4">
-            <Link
-              href="/super"
-              className="inline-flex items-center gap-1.5 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-            >
-              <ArrowLeft size={13} aria-hidden="true" />
-              Dashboard
-            </Link>
-          </div>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-1">
-                Superuser
-              </p>
-              <h1 className="font-sora font-black text-[28px] text-text-light dark:text-text-dark tracking-tight leading-none">
-                System Logs
-                <span className="ml-3 text-[18px] font-mono text-muted-light dark:text-muted-dark font-normal">
-                  {total.toLocaleString()} entries
-                </span>
-              </h1>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {/* search */}
-              <form onSubmit={handleSearch} className="flex gap-2">
-                <div className="relative">
-                  <Search
-                    size={12}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark pointer-events-none"
-                    aria-hidden="true"
-                  />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search…"
-                    className="h-9 w-48 pl-8 pr-3 bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark font-nunito text-[13px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors rounded-none"
-                  />
-                  {search && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearch('')
-                        fetchLogs({ search: '' })
-                      }}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark"
-                    >
-                      <X size={11} />
-                    </button>
-                  )}
-                </div>
-                <button
-                  type="submit"
-                  className="h-9 px-4 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-sm hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-                >
-                  Search
-                </button>
-              </form>
-              <button
-                onClick={() => fetchLogs()}
-                disabled={loading}
-                className="flex items-center gap-2 h-9 px-4 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors text-f10 font-mono tracking-[0.15em] uppercase disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-              >
-                <RefreshCw size={12} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
-                Refresh
-              </button>
-            </div>
-          </div>
-        </FadeUp>
+    <div className="p-6">
+      {/* ── Page header ── */}
+      <div className="mb-6 flex items-baseline justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-1">
+            Super · Admin
+          </p>
+          <h1 className="font-sora font-black text-[26px] text-text-light dark:text-text-dark tracking-tight">
+            System Logs
+            <span className="ml-3 text-[16px] font-mono text-muted-light dark:text-muted-dark font-normal">
+              {total.toLocaleString()}
+            </span>
+          </h1>
+        </div>
 
-        {/* ── 4-column grid ── */}
-        <FadeUp delay={0.08}>
-          <div className={`grid grid-cols-1 1000:grid-cols-3 gap-4 transition-opacity ${loading ? 'opacity-50' : ''}`}>
-            {(Object.keys(LEVELS) as (keyof typeof LEVELS)[]).map((level) => (
-              <LevelColumn
-                key={level}
-                level={level}
-                logs={byLevel[level]}
-                onDelete={handleDelete}
-                onClear={handleClear}
+        {/* Search + refresh */}
+        <div className="flex items-center gap-2 shrink-0">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="relative">
+              <Search
+                size={12}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark pointer-events-none"
+                aria-hidden="true"
               />
-            ))}
-          </div>
-        </FadeUp>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search…"
+                className="h-8 w-48 pl-8 pr-3 bg-white dark:bg-bg-dark border border-border-light dark:border-border-dark font-nunito text-[13px] text-text-light dark:text-text-dark placeholder:text-muted-light/50 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch('')
+                    fetchLogs({ search: '' })
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark"
+                >
+                  <X size={11} />
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="h-8 px-3 bg-primary-light dark:bg-primary-dark text-white font-sora font-bold text-[10px] tracking-[0.15em] uppercase hover:opacity-90 transition-opacity"
+            >
+              Search
+            </button>
+          </form>
+          <button
+            onClick={() => fetchLogs()}
+            disabled={loading}
+            className="flex items-center gap-1.5 h-8 px-3 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:border-primary-light dark:hover:border-primary-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors text-[10px] font-mono tracking-[0.15em] uppercase disabled:opacity-50"
+          >
+            <RefreshCw size={12} className={loading ? 'animate-spin' : ''} aria-hidden="true" />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* ── Log columns ── */}
+      <div className={`grid grid-cols-1 1000:grid-cols-3 gap-4 transition-opacity ${loading ? 'opacity-50' : ''}`}>
+        {(Object.keys(LEVELS) as (keyof typeof LEVELS)[]).map((level) => (
+          <LevelColumn key={level} level={level} logs={byLevel[level]} onDelete={handleDelete} onClear={handleClear} />
+        ))}
       </div>
     </div>
   )

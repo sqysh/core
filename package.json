@@ -41,6 +41,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-redux": "^9.1.2",
+    "recharts": "^3.10.0",
     "resend": "^4.6.0",
     "stripe": "^22.1.0"
   },

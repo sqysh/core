@@ -46,7 +46,7 @@ const INITIAL_STATE: FormState = {
 // ─── Visitor Row ──────────────────────────────────────────────────────────────
 
 function VisitorRow({ visitor }: { visitor: Visitor }) {
-  const date = new Date(`${visitor.visitDate.toISOString().slice(0, 10)}T12:00:00`)
+  const date = new Date(`${new Date(visitor.visitDate).toISOString().slice(0, 10)}T12:00:00`)
   const dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
   return (
