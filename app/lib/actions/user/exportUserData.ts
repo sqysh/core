@@ -28,7 +28,6 @@ export async function exportUserData(): Promise<{
         id: true,
         name: true,
         email: true,
-        secondaryEmail: true,
         phone: true,
         company: true,
         industry: true,
@@ -77,7 +76,6 @@ export async function exportUserData(): Promise<{
       profile: {
         name: user.name,
         email: user.email,
-        secondary_email: user.secondaryEmail,
         phone: user.phone,
         company: user.company,
         industry: user.industry,

@@ -5,7 +5,7 @@ import { createLog } from '@/app/lib/utils/api/createLog'
 import { auth } from '@/app/lib/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { Resend } from 'resend'
-import referralNotificationTemplate from '../../email-templates/referral-notificiation.template'
+import referralNotificationTemplate from '../../email/referral-notificiation.template'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -90,7 +90,7 @@ export async function createReferral(data: {
     const giverName = session.user.name
 
     resend.emails.send({
-      from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+      from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
       to: [receiver.email],
       subject: `${giverName} sent you a referral`,
       html: referralNotificationTemplate(giverName, `${BASE_URL}/dashboard?id=${referral.id}&action=referral`)

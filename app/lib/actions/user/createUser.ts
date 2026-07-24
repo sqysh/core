@@ -5,8 +5,8 @@ import { validateUserData } from '../../utils/validations/validateUserData'
 import prisma from '@/prisma/client'
 import { createLog } from '../../utils/api/createLog'
 import { chapterId } from '../../constants/api/chapterId'
-import { applicationConfirmationTemplate } from '../../email-templates/application-confirmation.template'
-import { adminVisitorNotificationTemplate } from '../../email-templates/admin-visitor-notification'
+import { applicationConfirmationTemplate } from '../../email/application-confirmation.template'
+import { adminVisitorNotificationTemplate } from '../../email/admin-visitor-notification'
 import { calculateExpiresAt } from '../../utils/date.utils'
 import { resend } from '../../resend'
 
@@ -70,13 +70,13 @@ export async function createUser(input: CreateUserInput): Promise<CreateUserResp
 
     await Promise.all([
       resend.emails.send({
-        from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+        from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
         to: 'greg@sqysh.com',
         subject: `New Application — ${user.name}`,
         html: adminVisitorNotificationTemplate('Sqysh', user.name, user.email, `${BASE_URL}/super`)
       }),
       resend.emails.send({
-        from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+        from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
         to: user.email,
         subject: `We received your application — Coastal Referral Exchange`,
         html: applicationConfirmationTemplate(user.name.split(' ')[0], user.id, `${BASE_URL}/application/${user.id}`)

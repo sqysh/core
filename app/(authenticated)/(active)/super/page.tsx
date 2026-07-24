@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/app/lib/auth'
-import SuperDashClient from '@/app/components/pages/SuperDashClient'
+import SuperDashClient from '@/app/(authenticated)/(active)/super/SuperDashClient'
 import { getSuperUserDashboardData } from '@/app/lib/actions/super-user/superUserActions'
 import { getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
 import { getVisitorDays } from '@/app/lib/actions/visitor-day/getVisitorDays'

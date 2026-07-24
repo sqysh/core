@@ -31,8 +31,3 @@ export type ClosedRecord = {
   giver: { name: string; company: string } | null
   receiver: { name: string; company: string } | null
 }
-
-export type LinkedRecord =
-  | { type: 'referral'; data: ReferralRecord }
-  | { type: 'f2f'; data: F2FRecord }
-  | { type: 'closed'; data: ClosedRecord }

@@ -2,7 +2,7 @@ import { createLog } from '@/app/lib/utils/api/createLog'
 import { resend } from '@/app/lib/resend'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { presenterQueueTemplate } from '@/app/lib/email-templates/presenter-queue.template'
+import { presenterQueueTemplate } from '@/app/lib/email/presenter-queue.template'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { buildSchedule, getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
 import { fmtDate } from '@/app/lib/utils/date.utils'
@@ -93,7 +93,7 @@ async function sendPresenterQueue(req: NextRequest) {
         batch.map(async (member) => {
           try {
             const result = await resend.emails.send({
-              from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+              from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
               to: member.email,
               subject: `Presenter Schedule — This Week & Upcoming`,
               html: presenterQueueTemplate(

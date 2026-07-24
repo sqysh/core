@@ -9,10 +9,10 @@ import { UserRole } from '@prisma/client'
 export async function updateMember(
   userId: string,
   data: {
+    email?: string
     name?: string
     phone?: string | null
     company?: string
-    secondaryEmail?: string
     title?: string
     isPublic?: boolean
     role?: UserRole
@@ -26,12 +26,28 @@ export async function updateMember(
   try {
     const session = await auth()
     if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
+    if (session.user.role !== 'SUPER_USER') {
+      return { success: false, error: 'Only superusers can update members.' }
+    }
+
+    // Display email is unique — reject collisions before Prisma throws P2002
+    let email = data.email
+    if (email !== undefined) {
+      email = email.trim().toLowerCase()
+      if (!email) return { success: false, error: 'Display email cannot be empty.' }
+
+      const taken = await prisma.user.findFirst({
+        where: { email, NOT: { id: userId } },
+        select: { name: true }
+      })
+      if (taken) return { success: false, error: `That email belongs to ${taken.name}.` }
+    }
 
     const updateData: any = {
+      email,
       name: data.name,
       phone: data.phone,
       company: data.company,
-      secondaryEmail: data.secondaryEmail,
       title: data.title,
       isPublic: data.isPublic,
       role: data.role,
@@ -65,7 +81,10 @@ export async function updateMember(
       location: ['server action - updateMember'],
       message: `Superuser updated member ${userId}`,
       name: 'SuperMemberUpdated',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      userId,
+      adminId: session.user.id,
+      fields: Object.keys(updateData)
     })
 
     return { success: true }

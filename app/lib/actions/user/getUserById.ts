@@ -1,6 +1,7 @@
 import prisma from '@/prisma/client'
 import { auth } from '../../auth'
 import { UserRole } from '@prisma/client'
+import { UserEmailItem } from '@/types/user.types'
 
 export type MemberParleyActivity = {
   id: string
@@ -32,13 +33,13 @@ export type MemberReferralActivity = {
   giver: { name: string }
   receiver: { name: string }
 }
+
 export type SuperMemberEditData = {
   id: string
   name: string
   email: string
   phone: string | null
   company: string
-  secondaryEmail: string
   title: string
   isPublic: boolean
   role: UserRole
@@ -51,6 +52,7 @@ export type SuperMemberEditData = {
   hasQuarterlySubscription: boolean
   createdAt: string
   lastLoginAt: string | null
+  alternateEmails: UserEmailItem[]
   paymentMethods: {
     id: string
     brand: string
@@ -85,7 +87,6 @@ export async function getUserById(userId: string): Promise<{
           email: true,
           phone: true,
           company: true,
-          secondaryEmail: true,
           title: true,
           isPublic: true,
           role: true,
@@ -97,7 +98,8 @@ export async function getUserById(userId: string): Promise<{
           hasAnnualSubscription: true,
           hasQuarterlySubscription: true,
           createdAt: true,
-          lastLoginAt: true
+          lastLoginAt: true,
+          alternateEmails: true
         }
       }),
       prisma.parley.findMany({
@@ -163,7 +165,6 @@ export async function getUserById(userId: string): Promise<{
         email: user.email,
         phone: user.phone,
         company: user.company,
-        secondaryEmail: user.secondaryEmail,
         title: user.title,
         isPublic: user.isPublic,
         role: user.role,
@@ -176,6 +177,11 @@ export async function getUserById(userId: string): Promise<{
         hasQuarterlySubscription: user.hasQuarterlySubscription,
         createdAt: user.createdAt.toISOString(),
         lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
+        alternateEmails: user.alternateEmails.map((e) => ({
+          id: e.id,
+          email: e.email,
+          createdAt: e.createdAt.toISOString()
+        })),
         paymentMethods: paymentMethods.map((pm) => ({
           ...pm,
           createdAt: pm.createdAt.toISOString()

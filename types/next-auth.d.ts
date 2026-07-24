@@ -8,7 +8,6 @@ declare module 'next-auth' {
     role: UserRole
     isMembership?: boolean
     membershipStatus?: string
-    signedInWith?: 'email' | 'secondaryEmail'
   }
 
   interface Session {
@@ -16,7 +15,8 @@ declare module 'next-auth' {
       id: string
       role: UserRole
       isMembership?: boolean
-      signedInWith?: 'email' | 'secondaryEmail'
+      /** The Google account used to authenticate this session — not the display email. */
+      signInEmail?: string
     } & DefaultSession['user']
   }
 }
@@ -27,7 +27,6 @@ declare module '@auth/core/adapters' {
     isMembership?: boolean
     membershipStatus?: string
     lastLoginAt?: Date
-    signedInWith?: 'email' | 'secondaryEmail'
   }
 }
 
@@ -36,6 +35,6 @@ declare module '@auth/core/jwt' {
     userId?: string
     role: UserRole
     isMembership?: boolean
-    signedInWith?: 'email' | 'secondaryEmail'
+    signInEmail?: string
   }
 }

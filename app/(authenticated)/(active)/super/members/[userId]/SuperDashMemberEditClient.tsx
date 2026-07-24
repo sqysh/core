@@ -13,6 +13,7 @@ import { SuperDashStatusBadge } from '../../../../../components/super-dash/Super
 import { deleteUser } from '@/app/lib/actions/user/deleteUser'
 import { getInitials } from '@/app/lib/utils/shared.utils'
 import { UserRole } from '@prisma/client'
+import SuperSignInEmailsManager from '@/app/components/super-dash/SuperSignInEmailsManager'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 const MEMBERSHIP_STATUSES = ['PENDING', 'ACTIVE', 'REJECTED'] as const
@@ -58,7 +59,7 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
     setDeleting(true)
     const res = await deleteUser(member.id)
     setDeleting(false)
-    if (res.success) router.push('/super')
+    if (res.success) router.push('/super/members')
   }
 
   const initials = getInitials(form.name)
@@ -106,10 +107,10 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
     setError(null)
 
     const res = await updateMember(member.id, {
+      email: form.email,
       name: form.name,
       phone: form.phone,
       company: form.company,
-      secondaryEmail: form.secondaryEmail,
       title: form.title,
       isPublic: form.isPublic,
       role: form.role,
@@ -324,31 +325,27 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
               </Field>
             </div>
 
-            <Field label="Gmail Sign-In" htmlFor="secondaryEmail">
-              <div className="flex items-stretch">
-                <input
-                  id="secondaryEmail"
-                  type="text"
-                  value={(form.secondaryEmail ?? '').replace('@gmail.com', '')}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[@\s]/g, '')
-                    set('secondaryEmail', val ? `${val}@gmail.com` : '')
-                  }}
-                  placeholder="yourusername"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                  className={`${inputCls} flex-1 border-r-0`}
-                />
-                <div className="h-12 px-3.5 flex items-center bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark font-mono text-[13px] text-muted-light dark:text-muted-dark select-none whitespace-nowrap">
-                  @gmail.com
-                </div>
-              </div>
-              {form.secondaryEmail && (
-                <p className="text-f10 font-mono text-muted-light dark:text-muted-dark mt-1.5">
-                  Sign in with: {form.secondaryEmail}
-                </p>
-              )}
+            <Field label="Display Email" htmlFor="email">
+              <input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => set('email', e.target.value)}
+                className={inputCls}
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+              <p className="text-f10 font-mono text-muted-light dark:text-muted-dark mt-1.5">
+                How members reach them. Changing this does not affect sign-in.
+              </p>
             </Field>
+
+            <SuperSignInEmailsManager
+              userId={member.id}
+              memberName={member.name}
+              primaryEmail={member.email}
+              initialEmails={member.alternateEmails}
+            />
 
             {/* Toggles */}
             <div className="flex flex-col gap-2">

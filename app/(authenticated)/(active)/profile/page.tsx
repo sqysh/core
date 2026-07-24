@@ -1,6 +1,8 @@
 import { getProfile } from '@/app/lib/actions/user/getProfile'
 import ProfileClient from './ProfileClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProfilePage() {
   const result = await getProfile()
 

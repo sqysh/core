@@ -13,7 +13,6 @@ export async function updateProfile(data: UpdateProfileInput): Promise<{ success
     const updateData: any = {
       name: data.name ?? undefined,
       phone: data.phone ?? undefined,
-      secondaryEmail: data.secondaryEmail ?? undefined,
       company: data.company ?? undefined,
       isPublic: data.isPublic ?? undefined,
       location: data.location ?? undefined,

@@ -25,14 +25,14 @@ export async function proxy(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
   const isProtectedPage =
     nextUrl.pathname.startsWith('/dashboard') ||
-    nextUrl.pathname.startsWith('/super') ||
+    nextUrl.pathname.startsWith('/super/dashboard') ||
     nextUrl.pathname.startsWith('/check-in')
-  const isSuperUserRoute = nextUrl.pathname.startsWith('/super')
+  const isSuperUserRoute = nextUrl.pathname.startsWith('/super/dashboard')
 
   // ── Logged-in user hitting a public route → redirect to their home ────────
   if (isLoggedIn && isPublicRoute) {
     if (nextUrl.pathname === '/login') {
-      const dest = session.user.role === 'SUPER_USER' ? '/super' : '/dashboard'
+      const dest = session.user.role === 'SUPER_USER' ? '/super/dashboard' : '/dashboard'
       return NextResponse.redirect(new URL(dest, nextUrl))
     }
     return NextResponse.next()

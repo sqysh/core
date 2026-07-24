@@ -1,4 +1,4 @@
-import { sendMemberEmail } from '@/app/lib/actions/sendMemberEmail'
+import { sendMemberEmail } from '@/app/lib/actions/user/sendMemberEmail'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Mail, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'

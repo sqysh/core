@@ -2,14 +2,14 @@
 
 import { CreateVisitorInput } from '@/types/visitor.types'
 import { auth } from '../../auth'
-import { emailRegex } from '../../utils/regex'
+import { EMAIL_REGEX } from '../../utils/regex'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { getActor } from '../user/getActor'
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
 import { createLog } from '../../utils/api/createLog'
 import { resend } from '../../resend'
-import { visitorInviteTemplate } from '../../email-templates/visitor.template'
+import { visitorInviteTemplate } from '../../email/visitor.template'
 
 export async function createVisitor(input: CreateVisitorInput): Promise<{
   success: boolean
@@ -33,7 +33,7 @@ export async function createVisitor(input: CreateVisitorInput): Promise<{
   if (!email?.trim()) {
     return { success: false, error: 'Email is required.' }
   }
-  if (!emailRegex.test(email)) {
+  if (!EMAIL_REGEX.test(email)) {
     return { success: false, error: "That email address doesn't look right. Please double-check it." }
   }
   if (!company?.trim()) {
@@ -123,7 +123,7 @@ export async function createVisitor(input: CreateVisitorInput): Promise<{
 
     const emailResult = await resend.emails
       .send({
-        from: 'Coastal Referral Exchange <noreply@coastalreferralxchange.com>',
+        from: 'Coastal Referral Exchange <core@coastalreferralxchange.com>',
         to: email.trim(),
         bcc: session.user.email,
         subject: `You're invited to CORE on ${dateLabel}`,

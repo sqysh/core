@@ -2,8 +2,8 @@
 
 import { auth } from '@/app/lib/auth'
 import { Resend } from 'resend'
-import { memberMessageTemplate } from '../email-templates/member-message.template'
-import { createLog } from '../utils/api/createLog'
+import { memberMessageTemplate } from '../../email/member-message.template'
+import { createLog } from '../../utils/api/createLog'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -12,7 +12,7 @@ export async function sendMemberEmail({ to, from, message }: { to: string; from:
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
   await resend.emails.send({
-    from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+    from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
     to: [to],
     subject: `Message from ${from} — Coastal Referral Exchange`,
     html: memberMessageTemplate(from, message)

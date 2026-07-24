@@ -3,12 +3,12 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import googleProvider from './config/googleProvider'
 import { magicLinkConfig } from './config/magicLinkConfig'
-import { handleEmailCallback } from './callbacks/handleEmailCallback'
-import { handleGoogleCallback } from './callbacks/handleGoogleCallback'
+import { handleEmailCallback } from './callbacks/magic-link.callback'
+import { handleGoogleCallback } from './callbacks/google.callback'
 import { UserRole } from '@prisma/client'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: false,
+  debug: true,
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60,
@@ -19,20 +19,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [googleProvider, magicLinkConfig],
 
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       switch (account?.provider) {
         case 'email':
-          user.signedInWith = 'email'
           return handleEmailCallback(user)
         case 'google':
-          user.signedInWith = 'secondaryEmail'
-          return handleGoogleCallback(user, account)
+          return handleGoogleCallback(user, account, profile)
         default:
           return true
       }
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === 'google' && profile?.email) {
+        token.signInEmail = profile.email.toLowerCase()
+      }
+
       if (!user?.id) return token
 
       const dbUser = await prisma.user.findUnique({
@@ -48,7 +50,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.userId = dbUser.id
         token.role = dbUser.role
         token.isMembership = dbUser.isMembership
-        token.signedInWith = account?.provider === 'google' ? 'secondaryEmail' : 'email'
       }
 
       return token
@@ -59,7 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.userId
         session.user.role = token.role as UserRole
         session.user.isMembership = token.isMembership as boolean
-        session.user.signedInWith = token.signedInWith as 'email' | 'secondaryEmail'
+        session.user.signInEmail = token.signInEmail as string | undefined
       }
       return session
     }

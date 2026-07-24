@@ -13,7 +13,6 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
         id: true,
         name: true,
         email: true,
-        secondaryEmail: true,
         phone: true,
         company: true,
         isPublic: true,
@@ -34,7 +33,11 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
         threadsUrl: true,
         xUrl: true,
         youtubeUrl: true,
-        weeklyTreasureWishlist: true
+        weeklyTreasureWishlist: true,
+        alternateEmails: {
+          orderBy: { createdAt: 'asc' },
+          select: { id: true, email: true, createdAt: true }
+        }
       }
     })
 
@@ -46,7 +49,6 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
         id: user.id,
         name: user.name,
         email: user.email,
-        secondaryEmail: user.secondaryEmail ?? '',
         phone: user.phone ?? '',
         company: user.company,
         isPublic: user.isPublic,
@@ -67,7 +69,12 @@ export async function getProfile(): Promise<{ success: boolean; data?: ProfileDa
         threadsUrl: user.threadsUrl ?? '',
         xUrl: user.xUrl ?? '',
         youtubeUrl: user.youtubeUrl ?? '',
-        weeklyTreasureWishlist: user.weeklyTreasureWishlist ?? ''
+        weeklyTreasureWishlist: user.weeklyTreasureWishlist ?? '',
+        alternateEmails: user.alternateEmails.map((e) => ({
+          id: e.id,
+          email: e.email,
+          createdAt: e.createdAt.toISOString()
+        }))
       }
     }
   } catch (error) {

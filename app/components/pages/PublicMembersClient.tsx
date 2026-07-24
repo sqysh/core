@@ -9,7 +9,19 @@ import { User } from '@/types/user.types'
 import FadeUp from '../common/FadeUp'
 import Picture from '../common/Picture'
 
-function MemberCard({ member, index }: { member: User; index: number }) {
+export interface PublicMemberCard {
+  id: string
+  name: string
+  title: string | null
+  company: string
+  industry: string
+  profileImage: string | null
+  profileVideo: string | null
+  isPublic: boolean
+  yearsInBusiness: string | null
+}
+
+function MemberCard({ member, index }: { member: PublicMemberCard; index: number }) {
   const router = useRouter()
   const initials = member.name
     .split(' ')
@@ -97,7 +109,7 @@ function MemberCard({ member, index }: { member: User; index: number }) {
 }
 
 // ─── Main ──────────────────────────────────────────────────────────────────────
-export const PublicMembersClient = ({ data }: { data: User[] }) => {
+export const PublicMembersClient = ({ data }: { data: PublicMemberCard[] }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIndustry, setSelectedIndustry] = useState('All')
 
@@ -110,7 +122,7 @@ export const PublicMembersClient = ({ data }: { data: User[] }) => {
       !q ||
       m.name.toLowerCase().includes(q) ||
       m.company.toLowerCase().includes(q) ||
-      m.interests?.some((s) => s.toLowerCase().includes(q))
+      (m.title?.toLowerCase().includes(q) ?? false)
     return matchesSearch && (selectedIndustry === 'All' || m.industry === selectedIndustry)
   })
 
@@ -226,7 +238,7 @@ export const PublicMembersClient = ({ data }: { data: User[] }) => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by name, company, or specialty…"
+                placeholder="Search by name, company, or title…"
                 aria-label="Search members"
                 className="w-full h-11 pl-9 pr-3.5 bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark font-nunito text-[14px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors rounded-none"
               />

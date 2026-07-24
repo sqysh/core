@@ -1,6 +1,5 @@
 import { TABS } from '@/app/lib/constants/dashboard.constants'
 import { UserAttendanceRow } from './attendance.types'
-import { LinkedRecord } from './common.types'
 import { TEvent } from './event.types'
 import { ScheduledPresenter } from './presenter-queue.types'
 import { Visitor } from './visitor.types'
@@ -31,7 +30,6 @@ export interface MemberDashboardProps {
     name: string
     initials: string
     email: string
-    secondaryEmail?: string
     hasAnnualSubscription?: boolean
     hasQuarterlySubscription?: boolean
     weeklyTreasureWishlist?: string
@@ -45,7 +43,6 @@ export interface MemberDashboardProps {
     data?: ScheduledPresenter[]
     error?: string
   }
-  linkedRecord: LinkedRecord
   events: TEvent[]
   visitors: Visitor[]
   closestVisitorDay: string

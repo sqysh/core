@@ -101,6 +101,8 @@ export interface User {
 
   // Prisma optional arrays
   specialties?: string[]
+
+  alternateEmails: UserEmailItem[]
 }
 
 // Usership status enum
@@ -274,11 +276,17 @@ export interface CreateUserResponse {
   fieldErrors?: any[]
 }
 
+export type UserEmailItem = {
+  id: string
+  email: string
+  createdAt: string
+}
+
 export type ProfileData = {
   id: string
   name: string
   email: string
-  secondaryEmail: string
+  alternateEmails: UserEmailItem[]
   phone: string
   company: string
   isPublic: boolean

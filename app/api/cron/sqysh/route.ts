@@ -1,4 +1,4 @@
-import sqyshGoogleReviewTemplate from '@/app/lib/email-templates/sqysh-google-review'
+import sqyshGoogleReviewTemplate from '@/app/lib/email/sqysh-google-review'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { handleApiError } from '@/app/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
@@ -50,7 +50,7 @@ async function sendSqyshGoogleReviewReminders(req: NextRequest) {
       const batchPromises = batch.map(async (user) => {
         try {
           const result = await resend.emails.send({
-            from: 'Coastal Referral Exchange <noreply@coastalreferralxchange.com>',
+            from: 'Coastal Referral Exchange <core@coastalreferralxchange.com>',
             to: user.email,
             subject: 'Help Sqysh Grow - Share Your Experience',
             html: sqyshGoogleReviewTemplate(user?.name?.split(' ')[0])

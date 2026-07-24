@@ -26,7 +26,8 @@ export default async function SuperMembersPage() {
         hasQuarterlySubscription: true,
         profileImage: true,
         company: true,
-        title: true
+        title: true,
+        _count: { select: { alternateEmails: true } }
       },
       orderBy: { name: 'asc' }
     }),
@@ -44,7 +45,8 @@ export default async function SuperMembersPage() {
         hasQuarterlySubscription: true,
         profileImage: true,
         company: true,
-        title: true
+        title: true,
+        _count: { select: { alternateEmails: true } }
       },
       orderBy: { name: 'asc' }
     })

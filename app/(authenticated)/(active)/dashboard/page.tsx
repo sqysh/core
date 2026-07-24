@@ -3,16 +3,11 @@ import { auth } from '@/app/lib/auth'
 import DashboardClient from '@/app/(authenticated)/(active)/dashboard/DashboardClient'
 import { getDashboardPageData } from '@/app/lib/actions/dashboard/getDashboardPageData'
 
-export default async function DashboardPage({
-  searchParams
-}: {
-  searchParams: Promise<{ action?: string; id?: string }>
-}) {
+export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user) redirect('/login')
 
-  const { action, id } = await searchParams
-  const result = await getDashboardPageData(action, id)
+  const result = await getDashboardPageData()
 
   if (!result.success || !result.data) {
     return <DashboardError />

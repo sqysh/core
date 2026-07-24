@@ -4,7 +4,7 @@ import { Resend } from 'resend'
 import { auth } from '../../auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
-import { closedBusinessNotificationTemplate } from '../../email-templates/closed-business.template'
+import { closedBusinessNotificationTemplate } from '../../email/closed-business.template'
 import { createLog } from '../../utils/api/createLog'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -58,7 +58,7 @@ export async function createAnchor(data: {
     )
 
     await resend.emails.send({
-      from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+      from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
       to: [giver.email],
       subject: `${session.user.name} thanked you for closed business`,
       html: emailHtml

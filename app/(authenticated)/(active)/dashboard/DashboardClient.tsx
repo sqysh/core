@@ -1,11 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import QuickActions from '../../../components/dashboard/QuickActions'
 import Link from 'next/link'
 import PresenterSchedule from '../../../components/PresentersSchedule'
 import { MemberList } from '../../../components/dashboard/MemberList'
-import LinkedRecordModal from '../../../components/modals/LinkedRecordModal'
 import { HistoryTabs } from '../../../components/dashboard/HistoryTabs'
 import FadeUp from '../../../components/common/FadeUp'
 import { SectionLabel } from '../../../components/common/SectionLabel'
@@ -24,7 +22,6 @@ export default function DashboardClient({
   stats,
   recentActivity,
   schedule,
-  linkedRecord,
   events,
   visitors,
   closestVisitorDay,
@@ -32,8 +29,6 @@ export default function DashboardClient({
   attendances,
   exclusions
 }: MemberDashboardProps) {
-  const [open, setOpen] = useState(linkedRecord ? true : false)
-
   // Unwrap action results into clean shapes for child components
   const scheduleData = schedule.data ?? []
   const attendanceData = attendances.data ?? {
@@ -44,7 +39,6 @@ export default function DashboardClient({
 
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
-      <LinkedRecordModal record={linkedRecord} setOpen={setOpen} open={open} />
       <main className="max-w-170 mx-auto px-4 pb-12">
         {/* ── Greeting ── */}
         <FadeUp delay={0.025} className="pt-7 pb-5">

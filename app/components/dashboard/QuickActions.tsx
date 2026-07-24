@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createFace2Face } from '@/app/lib/actions/createFace2Face'
+import { create121 } from '@/app/lib/actions/1-2-1/create121'
 import { createReferral } from '@/app/lib/actions/referral/createReferral'
 import { formatPhone } from '@/app/lib/utils/phone.utils'
 import { formatAmountInput } from '@/app/lib/utils/currency.utils'
@@ -111,7 +111,7 @@ export default function QuickActions({ members, variant }: QuickActionsProps) {
     if (activeModal === 'f2f') {
       if (!f2fMember) return setFormError('Please select a member.')
       setIsPending(true)
-      const res = await createFace2Face({
+      const res = await create121({
         recipientId: f2fMember,
         scheduledAt: new Date(f2fDate),
         notes: f2fNotes

@@ -178,6 +178,32 @@ export async function handleSubscriptionCreated(sub: Stripe.Subscription) {
     })
   ])
 
+  // Enroll in the presenter queue — non-fatal if it fails
+  try {
+    const last = await prisma.presenterQueue.findFirst({
+      where: { chapterId },
+      orderBy: { position: 'desc' },
+      select: { position: true }
+    })
+
+    await prisma.presenterQueue.upsert({
+      where: { userId: user.id },
+      create: {
+        userId: user.id,
+        chapterId,
+        position: (last?.position ?? 0) + 1
+      },
+      update: {}
+    })
+  } catch (error) {
+    await createLog('warning', `Presenter queue enrollment failed for ${user.name}`, {
+      action: 'PRESENTER_QUEUE_ADD_FAILED',
+      userId: user.id,
+      subId: sub.id,
+      error: error instanceof Error ? error.message : String(error)
+    })
+  }
+
   await createLog('info', `${user.name} started ${type.toLowerCase()} subscription`, {
     action: 'SUBSCRIPTION_CREATED',
     userId: user.id,

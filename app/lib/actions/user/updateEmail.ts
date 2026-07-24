@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/app/lib/auth'
-import { emailRegex } from '../../utils/regex'
+import { EMAIL_REGEX } from '../../utils/regex'
 import prisma from '@/prisma/client'
 
 export async function updateEmail(email: string): Promise<{
@@ -11,7 +11,7 @@ export async function updateEmail(email: string): Promise<{
   const session = await auth()
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
-  if (!email?.trim() || !emailRegex.test(email.trim())) {
+  if (!email?.trim() || !EMAIL_REGEX.test(email.trim())) {
     return { success: false, error: 'Invalid email address' }
   }
 

@@ -1,4 +1,4 @@
-export const face2faceRequestTemplate = (requesterName: string, recipientName: string, fullUrl: string) => {
+export const oneTwoOneTemplate = (requesterName: string, recipientName: string, fullUrl: string) => {
   const year = new Date().getFullYear()
   return `
 <!DOCTYPE html>

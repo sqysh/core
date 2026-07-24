@@ -1,19 +1,26 @@
-import { User as NextAuthUser, Account } from 'next-auth'
+import { User as NextAuthUser, Account, Profile } from 'next-auth'
 import prisma from '@/prisma/client'
 import { createLog } from '../utils/api/createLog'
 
-export async function handleGoogleCallback(user: NextAuthUser, account: Account): Promise<boolean> {
+export async function handleGoogleCallback(user: NextAuthUser, account: Account, profile?: Profile): Promise<boolean> {
+  console.log('HANDLE GOOGLE CALLBACK: ', profile)
   if (!user.email) return false
 
-  // Check primary then secondary email
-  let existingUser = await prisma.user.findUnique({
-    where: { email: user.email },
-    select: { id: true, name: true, membershipStatus: true }
+  const email = (profile?.email ?? user.email)?.toLowerCase()
+  // console.log('EMAIL in - handleGoogleCallback -: ', email)
+
+  // Registered sign-in accounts are the source of truth. Display email is a
+  // transitional fallback — remove once every member has a UserEmail row.
+  const alt = await prisma.userEmail.findUnique({
+    where: { email },
+    select: { user: { select: { id: true, name: true, membershipStatus: true } } }
   })
 
+  let existingUser = alt?.user ?? null
+
   if (!existingUser) {
-    existingUser = await prisma.user.findFirst({
-      where: { secondaryEmail: user.email },
+    existingUser = await prisma.user.findUnique({
+      where: { email },
       select: { id: true, name: true, membershipStatus: true }
     })
   }
@@ -41,8 +48,13 @@ export async function handleGoogleCallback(user: NextAuthUser, account: Account)
     return false
   }
 
-  const existingAccount = await prisma.account.findFirst({
-    where: { userId: existingUser.id, provider: 'google' }
+  const existingAccount = await prisma.account.findUnique({
+    where: {
+      provider_providerAccountId: {
+        provider: account.provider,
+        providerAccountId: account.providerAccountId
+      }
+    }
   })
 
   if (!existingAccount) {

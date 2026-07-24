@@ -3,7 +3,7 @@ import { handleApiError } from '@/app/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { memberDirectoryTemplate } from '@/app/lib/email-templates/member-directory.template'
+import { memberDirectoryTemplate } from '@/app/lib/email/member-directory.template'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -32,7 +32,7 @@ async function sendDirectoryReminders(req: NextRequest) {
       const batchPromises = batch.map(async (user) => {
         try {
           const result = await resend.emails.send({
-            from: 'Coastal Referral Exchange <noreply@coastalreferralxchange.com>',
+            from: 'Coastal Referral Exchange <core@coastalreferralxchange.com>',
             to: user.email,
             subject: 'CORE Member Directory — Latest Roster',
             html: memberDirectoryTemplate(user.name.split(' ')[0] || user.email.split('@')[0])

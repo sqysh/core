@@ -65,7 +65,7 @@ export function Greeting({ currentUser }) {
         )}
 
         {isSuperUser && (
-          <Link href="/super" className={sharedCls}>
+          <Link href="/super/dashboard" className={sharedCls}>
             <ShieldCheck className="hidden sm:block sm:w-3 sm:h-3" />
             Super
           </Link>

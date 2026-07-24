@@ -16,7 +16,8 @@ import {
   CalendarX,
   ScrollText,
   ClipboardCheck,
-  Layout
+  Layout,
+  ArrowLeft
 } from 'lucide-react'
 
 const NAV = [
@@ -49,14 +50,17 @@ export function SuperSidebar() {
     "
     >
       {/* Wordmark */}
-      <div className="h-12 flex items-center px-4 border-b border-border-light dark:border-border-dark shrink-0">
+      <Link
+        href="/"
+        className="h-12 flex items-center px-4 border-b border-border-light dark:border-border-dark shrink-0"
+      >
         <span className="font-sora font-black text-[17px] tracking-tight text-[#0c1e2e] dark:text-[#f0f9ff]">
           CORE<span className="text-primary-light">.</span>
         </span>
         <span className="ml-2 text-[9px] font-mono tracking-[0.18em] uppercase text-muted-light dark:text-[#38bdf8]/60 mt-0.5">
           super
         </span>
-      </div>
+      </Link>
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-3 px-2">
@@ -93,10 +97,23 @@ export function SuperSidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-border-light dark:border-border-dark shrink-0">
-        <p className="text-[9px] font-mono tracking-[0.12em] uppercase text-[#cbd5e1] dark:text-[#1e3a52]">
-          coastalreferralxchange.com
-        </p>
+      <div className="border-t border-border-light dark:border-border-dark shrink-0">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2.5 px-4 py-2.5 font-mono text-[11.5px] tracking-[0.06em] text-stat-label-light dark:text-muted-light hover:bg-[#f0f9ff] dark:hover:bg-[#0c1e2e] hover:text-[#0c1e2e] dark:hover:text-[#f0f9ff] transition-colors group"
+        >
+          <ArrowLeft
+            size={13}
+            strokeWidth={1.8}
+            className="shrink-0 text-on-dark dark:text-stat-label-light group-hover:text-primary-light dark:group-hover:text-[#38bdf8] transition-colors"
+          />
+          Member Dashboard
+        </Link>
+        <div className="px-4 pb-3 pt-1 border-t border-border-light dark:border-border-dark">
+          <p className="text-[9px] font-mono tracking-[0.12em] uppercase text-[#cbd5e1] dark:text-[#1e3a52]">
+            coastalreferralxchange.com
+          </p>
+        </div>
       </div>
     </aside>
   )

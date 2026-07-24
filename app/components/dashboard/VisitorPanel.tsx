@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { createVisitor } from '@/app/lib/actions/visitor/createVisitor'
-import { emailRegex } from '@/app/lib/utils/regex'
+import { EMAIL_REGEX } from '@/app/lib/utils/regex'
 import { CreateVisitorModal } from '../modals/CreateVisitorModal'
 import { Visitor } from '@/types/visitor.types'
 import { useRouter } from 'next/navigation'
@@ -114,7 +114,7 @@ export default function VisitorPanel({
       setErrorMsg('Last name is required.')
       return
     }
-    if (!form.email.trim() || !emailRegex.test(form.email.trim())) {
+    if (!form.email.trim() || !EMAIL_REGEX.test(form.email.trim())) {
       setStatus('error')
       setErrorMsg('A valid email address is required.')
       return

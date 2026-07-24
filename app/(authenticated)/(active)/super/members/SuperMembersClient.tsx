@@ -18,6 +18,7 @@ interface Member {
   profileImage: string | null
   company: string
   title: string | null
+  _count: { alternateEmails: number }
 }
 
 const STATUS_STYLES: Record<MembershipStatus, string> = {
@@ -44,8 +45,8 @@ const STATUS_STYLES: Record<MembershipStatus, string> = {
   FLAGGED: 'bg-red-50 dark:bg-red-400/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-400/20'
 }
 
-const COLS = 'grid grid-cols-[2fr_2fr_1.2fr_1fr_1fr_auto] gap-4 px-4'
-const HEADS = ['Name', 'Email', 'Phone', 'Status', 'Last Seen', 'Ann · Qtr']
+const COLS = 'grid grid-cols-[2fr_2fr_1.4fr_1fr_0.9fr_80px_90px] gap-4 px-4'
+const HEADS = ['Name', 'Email', 'Phone', 'Status', 'Last Seen', 'Sign-In', 'Ann · Qtr']
 
 function SubDot({ active }: { active: boolean }) {
   return (
@@ -111,17 +112,37 @@ function MemberRow({ m, onClick }: { m: Member; onClick: () => void }) {
         {formatPhone(m.phone) ?? <span className="text-on-dark">—</span>}
       </p>
 
-      <span
-        className={`inline-block text-[9px] font-mono tracking-widest uppercase px-1.5 py-0.5 border ${STATUS_STYLES[m.membershipStatus] ?? ''}`}
-      >
-        {m.membershipStatus.toLowerCase().replace('_', ' ')}
-      </span>
+      <div>
+        <span
+          className={`inline-block text-[9px] font-mono tracking-widest uppercase px-1.5 py-0.5 border ${STATUS_STYLES[m.membershipStatus] ?? ''}`}
+        >
+          {m.membershipStatus.toLowerCase().replace('_', ' ')}
+        </span>
+      </div>
 
       <p className={`text-[11px] font-mono ${lastSeenColor(m.lastLoginAt ? String(m.lastLoginAt) : null)}`}>
         {lastSeenLabel(m.lastLoginAt ? String(m.lastLoginAt) : null)}
       </p>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex justify-center">
+        <span
+          title={
+            m._count.alternateEmails === 0
+              ? 'No sign-in account — cannot log in with Google'
+              : `${m._count.alternateEmails} sign-in ${m._count.alternateEmails === 1 ? 'account' : 'accounts'}`
+          }
+          className={`inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-sm text-[10px] font-mono font-bold
+    ${
+      m._count.alternateEmails > 0
+        ? 'bg-emerald-50 dark:bg-emerald-400/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-400/20'
+        : 'bg-red-50 dark:bg-red-400/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-400/20'
+    }`}
+        >
+          {m._count.alternateEmails || '✗'}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-center gap-1.5">
         <SubDot active={m.hasAnnualSubscription} />
         <SubDot active={m.hasQuarterlySubscription} />
       </div>

@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { emailRegex } from '@/app/lib/utils/regex'
+import { EMAIL_REGEX } from '@/app/lib/utils/regex'
 import { updateEmail } from '@/app/lib/actions/user/updateEmail'
 import { useSession } from 'next-auth/react'
 import { useSounds } from '@/app/lib/hooks/useSounds'
 
 export function PrimaryEmailPrompt() {
   const session = useSession()
-  const currentEmail = session.data.user.email
+  const currentEmail = session.data?.user?.email
   const [email, setEmail] = useState(currentEmail ?? '')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -21,7 +21,7 @@ export function PrimaryEmailPrompt() {
 
   async function handleSave() {
     if (!email.trim() || unchanged) return
-    if (!emailRegex.test(email.trim())) {
+    if (!EMAIL_REGEX.test(email.trim())) {
       setError('Please enter a valid email address.')
       return
     }

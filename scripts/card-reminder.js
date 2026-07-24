@@ -32,7 +32,7 @@ async function main() {
   const results = []
   const BATCH_SIZE = 2
   const DELAY_MS = 1000
-  const FROM = 'Coastal Referral Xchange <noreply@coastalreferralxchange.com>'
+  const FROM = 'Coastal Referral Xchange <core@coastalreferralxchange.com>'
   const SUBJECT = 'Add your card — first quarterly charge is coming up'
 
   for (let i = 0; i < users.length; i += BATCH_SIZE) {

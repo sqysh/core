@@ -1,13 +1,11 @@
 'use server'
 
-import { Resend } from 'resend'
-import { auth } from '../auth'
+import { auth } from '../../auth'
 import prisma from '@/prisma/client'
-import { chapterId } from '../constants/api/chapterId'
-import { createLog } from '../utils/api/createLog'
-import { face2faceRequestTemplate } from '../email-templates/face-2-face-request'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { chapterId } from '../../constants/api/chapterId'
+import { createLog } from '../../utils/api/createLog'
+import { oneTwoOneTemplate } from '../../email/1.2.1.template'
+import { resend } from '../../resend'
 
 type CreateFace2FaceInputs = {
   recipientId: string
@@ -15,7 +13,7 @@ type CreateFace2FaceInputs = {
   notes?: string
 }
 
-export async function createFace2Face(data: CreateFace2FaceInputs) {
+export async function create121(data: CreateFace2FaceInputs) {
   const session = await auth()
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
@@ -35,7 +33,7 @@ export async function createFace2Face(data: CreateFace2FaceInputs) {
   })
 
   if (!recipient) {
-    await createLog('warning', `Face-2-Face failed — recipient not found: ${recipientId}`, {
+    await createLog('warning', `1-2-1 failed — recipient not found: ${recipientId}`, {
       location: ['server action - createFace2Face'],
       name: 'Face2FaceRecipientNotFound',
       timestamp: new Date().toISOString(),
@@ -57,7 +55,7 @@ export async function createFace2Face(data: CreateFace2FaceInputs) {
   })
 
   if (duplicate) {
-    await createLog('warning', `Face-2-Face failed — duplicate meeting between ${requesterId} and ${recipientId}`, {
+    await createLog('warning', `1-2-1 failed — duplicate meeting between ${requesterId} and ${recipientId}`, {
       location: ['server action - createFace2Face'],
       name: 'Face2FaceDuplicate',
       timestamp: new Date().toISOString(),
@@ -90,16 +88,16 @@ export async function createFace2Face(data: CreateFace2FaceInputs) {
   // Notify recipient
   const baseUrl =
     process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
-  const emailHtml = face2faceRequestTemplate(face2face.requester.name, face2face.recipient.name, `${baseUrl}/dashboard`)
+  const emailHtml = oneTwoOneTemplate(face2face.requester.name, face2face.recipient.name, `${baseUrl}/dashboard`)
 
   await resend.emails.send({
-    from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+    from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
     to: [face2face.recipient.email],
-    subject: `${face2face.requester.name} logged a Face-2-Face meeting with you`,
+    subject: `${face2face.requester.name} logged a 1-2-1 meeting with you`,
     html: emailHtml
   })
 
-  await createLog('info', `Face-2-Face logged — ${face2face.requester.name} met with ${face2face.recipient.name}`, {
+  await createLog('info', `1-2-1 logged — ${face2face.requester.name} met with ${face2face.recipient.name}`, {
     location: ['server action - createFace2Face'],
     name: 'Face2FaceCreated',
     timestamp: new Date().toISOString(),

@@ -1,6 +1,6 @@
 import type { EmailConfig } from 'next-auth/providers/email'
 import { Resend } from 'resend'
-import magicLinkTemplate from '../email-templates/magic-link'
+import magicLinkTemplate from '../email/magic-link'
 import { createLog } from '../utils/api/createLog'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -14,7 +14,7 @@ export const magicLinkConfig: EmailConfig = {
   sendVerificationRequest: async ({ identifier: email, url }) => {
     try {
       const result = await resend.emails.send({
-        from: `Coastal Referral Exchange <noreply@coastalreferralxchange.com>`,
+        from: `Coastal Referral Exchange <core@coastalreferralxchange.com>`,
         to: email,
         subject: 'Click Here to Sign In - Coastal Referral Exchange',
         html: magicLinkTemplate(url)
