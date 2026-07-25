@@ -5,11 +5,11 @@ import { motion } from 'framer-motion'
 import { ArrowLeft, Calendar, TrendingUp, CalendarOff } from 'lucide-react'
 import { AttendanceHistoryClientProps } from '@/types/attendance.types'
 import { groupByMonth } from '@/app/lib/utils/attendance.utils'
-import { YearHeatMap } from '@/app/components/dashboard/YearHeatMap'
-import { AttendanceCorrectionModal } from '@/app/components/modals/AttendanceCorrectionModal'
+import { YearHeatMap } from '@/app/components/member/attendance/YearHeatMap'
+import { AttendanceCorrectionModal } from '@/app/components/member/attendance/AttendanceCorrectionModal'
 import { useState } from 'react'
-import { HistoryRowEl } from '@/app/components/attendance/history/HistoryRowEl'
-import { StatCard } from '@/app/components/attendance/history/StatCard'
+import { HistoryRowEl } from '@/app/components/member/attendance/HistoryRowEl'
+import { StatCard } from '@/app/components/member/attendance/StatCard'
 
 export function AttendanceHistoryClient({ userName, rows, summary, squares }: AttendanceHistoryClientProps) {
   const grouped = groupByMonth(rows)

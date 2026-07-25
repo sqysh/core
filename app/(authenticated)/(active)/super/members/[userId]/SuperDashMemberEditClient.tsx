@@ -4,16 +4,16 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Upload, X, Check, AlertCircle } from 'lucide-react'
-import { Switch } from '@/app/components/ui/Switch'
 import { SuperMemberEditData } from '@/app/lib/actions/user/getUserById'
 import uploadFileToFirebase from '@/app/lib/utils/firebase/uploadFileToFirebase'
 import { updateMember } from '@/app/lib/actions/user/updateMember'
 import { MembershipStatus } from '@/types/user.types'
-import { SuperDashStatusBadge } from '../../../../../components/super-dash/SuperDashStatusBadge'
 import { deleteUser } from '@/app/lib/actions/user/deleteUser'
 import { getInitials } from '@/app/lib/utils/shared.utils'
 import { UserRole } from '@prisma/client'
-import SuperSignInEmailsManager from '@/app/components/super-dash/SuperSignInEmailsManager'
+import SuperSignInEmailsManager from '@/app/components/super/SuperSignInEmailsManager'
+import { SuperDashStatusBadge } from '@/app/components/super/SuperDashStatusBadge'
+import { Toggle } from '@/app/components/_shared/Toggle'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 const MEMBERSHIP_STATUSES = ['PENDING', 'ACTIVE', 'REJECTED'] as const
@@ -350,7 +350,7 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
             {/* Toggles */}
             <div className="flex flex-col gap-2">
               <div className="border border-border-light dark:border-border-dark px-4 py-3.5">
-                <Switch
+                <Toggle
                   name="isPublic"
                   checked={form.isPublic ?? false}
                   onChange={() => set('isPublic', !form.isPublic)}
@@ -383,7 +383,7 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
                 </p>
               </div>
               <div className="border border-border-light dark:border-border-dark px-4 py-3.5">
-                <Switch
+                <Toggle
                   name="isMembership"
                   checked={form.isMembership ?? false}
                   onChange={() => set('isMembership', !form.isMembership)}

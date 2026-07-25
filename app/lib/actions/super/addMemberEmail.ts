@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'

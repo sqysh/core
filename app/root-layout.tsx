@@ -1,12 +1,12 @@
 'use client'
 
-import Toast from './components/common/Toast'
-import { Footer } from './components/Footer'
-import NavigationDrawer from './components/NavigationDrawer'
+import Toast from './components/_shared/Toast'
+import { Footer } from './components/layout/Footer'
+import NavigationDrawer from './components/layout/NavigationDrawer'
 import { store } from './lib/redux/store'
 import { Provider } from 'react-redux'
 import { usePathname } from 'next/navigation'
-import { ThemeProvider } from './lib/providers/ThemeProvider'
+import { ThemeProvider } from './lib/providers/theme.provider'
 
 const showLink = (path: string) =>
   ![

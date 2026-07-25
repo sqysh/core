@@ -1,10 +1,10 @@
 'use client'
 
-import { PurposeOverview } from './components/home/PurposeOverview'
-import { MemberExpectations } from './components/home/MemberExpectations'
-import { CTASection } from './components/home/CTASection'
-import { AboutSection } from './components/home/AboutSection'
-import HeroSection from './components/home/HeroSection'
+import { PurposeOverview } from './components/public/home/PurposeOverview'
+import { MemberExpectations } from './components/public/home/MemberExpectations'
+import { CTASection } from './components/public/home/CTASection'
+import HeroSection from './components/public/home/HeroSection'
+import { AboutSection } from './components/public/home/AboutSection'
 
 const Home = () => {
   return (

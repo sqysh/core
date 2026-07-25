@@ -1,5 +1,5 @@
 import { createLog } from '@/app/lib/utils/api/createLog'
-import { resend } from '@/app/lib/resend'
+import { resend } from '@/app/lib/resend/resend'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { presenterQueueTemplate } from '@/app/lib/email/presenter-queue.template'

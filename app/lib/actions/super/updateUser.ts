@@ -3,7 +3,7 @@
 import {} from 'next/cache'
 import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { UserRole } from '@prisma/client'
 

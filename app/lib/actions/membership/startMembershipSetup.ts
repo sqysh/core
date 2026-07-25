@@ -14,8 +14,8 @@
 //      → subscriptions created WITH that card as default_payment_method
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
-import { stripe } from '../../stripe'
+import { auth } from '../../auth/auth'
+import { stripe } from '../../stripe/stripe'
 import { createLog } from '../../utils/api/createLog'
 
 export async function startMembershipSetup(): Promise<{

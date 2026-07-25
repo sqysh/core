@@ -1,5 +1,5 @@
 import { ProfileData } from '@/types/user.types'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import prisma from '@/prisma/client'
 
 export async function getProfile(): Promise<{ success: boolean; data?: ProfileData; error?: string }> {

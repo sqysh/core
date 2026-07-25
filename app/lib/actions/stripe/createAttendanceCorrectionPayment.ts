@@ -1,7 +1,7 @@
 'use server'
 
 import Stripe from 'stripe'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '../../utils/api/createLog'
 

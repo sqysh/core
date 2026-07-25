@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 
 export async function deleteOneTwoOne(id: string): Promise<{ success: boolean; error?: string }> {
   const session = await auth()

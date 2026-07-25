@@ -1,5 +1,5 @@
 import { CancelledMeeting } from '@/types/cancelled-meeting.types'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
 

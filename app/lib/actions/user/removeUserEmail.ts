@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { revalidatePath } from 'next/cache'

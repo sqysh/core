@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import { EventOrg } from '@prisma/client'
 import { createLog } from '../../utils/api/createLog'
 

@@ -1,8 +1,8 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { stripe } from '../../stripe'
+import { stripe } from '../../stripe/stripe'
 
 export async function updatePaymentMethod(newStripePaymentMethodId: string): Promise<{
   success: boolean

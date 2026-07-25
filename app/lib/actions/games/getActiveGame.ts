@@ -4,7 +4,7 @@
 // truth. Returns the latest game of any type, or null.
 
 import prisma from '@/prisma/client'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { serializeGame, GAME_SELECT } from '@/app/lib/games/serializeGame'
 import type { SerializedGame } from '@/types/game.types'

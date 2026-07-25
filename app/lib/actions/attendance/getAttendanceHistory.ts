@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 
 export interface AttendanceMember {
   id: string

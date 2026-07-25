@@ -4,7 +4,7 @@ import { getAvailableMembers } from '@/app/lib/actions/presenter-queue/getAvaila
 import { getCancelledMeetings } from '@/app/lib/actions/cancelled-meeting/getCancelledMeetings'
 import { getVisitorDays } from '@/app/lib/actions/visitor-day/getVisitorDays'
 import { getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 
 export default async function SuperPresenterQueuePage() {
   const [queue, availableMembers, cancelledMeetings, visitorDays, session] = await Promise.all([

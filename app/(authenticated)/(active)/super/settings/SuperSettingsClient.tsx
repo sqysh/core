@@ -3,6 +3,8 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { updateChapter } from '@/app/lib/actions/chapter/updateChapter'
+import { FormField } from '@/app/components/_shared/FormField'
+import { inputCls } from '@/app/lib/constants/member/dashboard.constants'
 
 interface Chapter {
   name: string
@@ -15,18 +17,7 @@ interface Chapter {
   hasUnlockedMuster: boolean
 }
 
-const inputCls =
-  'w-full h-10 bg-white dark:bg-bg-dark border border-border-light dark:border-border-dark px-3 font-nunito text-[13px] text-text-light dark:text-text-dark focus:outline-none focus:border-primary-light dark:focus:border-primary-dark transition-colors'
-
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark mb-1.5">
-      {children}
-    </p>
-  )
-}
-
-export function SuperSettingsClient({ chapter }: { chapter: Chapter }) {
+export function SuperChapterSettingsClient({ chapter }: { chapter: Chapter }) {
   const router = useRouter()
   const [form, setForm] = useState(chapter)
   const [saving, setSaving] = useState(false)
@@ -73,37 +64,40 @@ export function SuperSettingsClient({ chapter }: { chapter: Chapter }) {
       </div>
 
       <div className="border border-border-light dark:border-border-dark overflow-hidden">
-        {/* ── Basic info ── */}
         <div className="px-4 py-3 border-b border-border-light dark:border-border-dark bg-bg-light dark:bg-bg-dark">
           <span className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">Meeting Info</span>
         </div>
         <div className="px-4 py-4 grid grid-cols-1 xs:grid-cols-2 gap-3">
-          <div>
-            <FieldLabel>Chapter Name</FieldLabel>
-            <input className={inputCls} value={form.name} onChange={(e) => set('name', e.target.value)} />
-          </div>
-          <div>
-            <FieldLabel>Location</FieldLabel>
-            <input className={inputCls} value={form.location} onChange={(e) => set('location', e.target.value)} />
-          </div>
-          <div>
-            <FieldLabel>Meeting Day</FieldLabel>
-            <input
-              className={inputCls}
-              value={form.meetingDay}
-              onChange={(e) => set('meetingDay', e.target.value)}
-              placeholder="Thursday"
-            />
-          </div>
-          <div>
-            <FieldLabel>Meeting Time</FieldLabel>
-            <input
-              className={inputCls}
-              value={form.meetingTime}
-              onChange={(e) => set('meetingTime', e.target.value)}
-              placeholder="7:00 AM"
-            />
-          </div>
+          <FormField
+            id="name"
+            label="Chapter Name"
+            className={inputCls}
+            value={form.name}
+            onChange={(e) => set('name', e.target.value)}
+          />
+          <FormField
+            id="location"
+            label="Location"
+            className={inputCls}
+            value={form.location}
+            onChange={(e) => set('location', e.target.value)}
+          />
+          <FormField
+            id="meetingDay"
+            label="Meeting Day"
+            className={inputCls}
+            value={form.meetingDay}
+            onChange={(e) => set('meetingDay', e.target.value)}
+            placeholder="Thursday"
+          />
+          <FormField
+            id="meetingTime"
+            label="Meeting Time"
+            className={inputCls}
+            value={form.meetingTime}
+            onChange={(e) => set('meetingTime', e.target.value)}
+            placeholder="7:00 AM"
+          />
         </div>
       </div>
     </div>

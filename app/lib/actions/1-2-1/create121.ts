@@ -1,11 +1,11 @@
 'use server'
 
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
 import { createLog } from '../../utils/api/createLog'
 import { oneTwoOneTemplate } from '../../email/1.2.1.template'
-import { resend } from '../../resend'
+import { resend } from '../../resend/resend'
 
 type CreateFace2FaceInputs = {
   recipientId: string

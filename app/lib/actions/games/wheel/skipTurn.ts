@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { channelFor, GAME_EVENTS } from '@/app/lib/games/registry'
 import { GAME_SELECT, serializeGame } from '@/app/lib/games/serializeGame'

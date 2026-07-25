@@ -1,5 +1,5 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import { UserRole } from '@prisma/client'
 import { UserEmailItem } from '@/types/user.types'
 

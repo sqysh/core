@@ -2,7 +2,7 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { Resend } from 'resend'
 import referralNotificationTemplate from '../../email/referral-notificiation.template'

@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import { chapterId } from '../../constants/api/chapterId'
 
 export async function addVisitorDay(date: string): Promise<{ success: boolean; error?: string }> {

@@ -1,7 +1,7 @@
 'use server'
 
 import { Resend } from 'resend'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
 import { closedBusinessNotificationTemplate } from '../../email/closed-business.template'

@@ -1,10 +1,10 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'
 import { revalidatePath } from 'next/cache'
-import { EMAIL_REGEX } from '../../utils/regex'
+import { EMAIL_REGEX } from '../../utils/regex.utils'
 
 const ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com']
 

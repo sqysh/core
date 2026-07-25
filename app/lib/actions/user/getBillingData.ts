@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { getUserAttendance } from '../attendance/getUserAttendance'
 import { BillingOrder } from '@/types/billing.types'

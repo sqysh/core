@@ -21,45 +21,13 @@ import { updateProfile } from '@/app/lib/actions/user/updateProfile'
 import { formatPhone } from '@/app/lib/utils/phone.utils'
 import uploadFileToFirebase from '@/app/lib/utils/firebase/uploadFileToFirebase'
 import { getInitials } from '@/app/lib/utils/shared.utils'
-import { MemberEmailModal } from '@/app/components/modals/MemberEmailModal'
-import SignInEmailsManager from '@/app/components/members/profile/SignInEmailsManager'
-import { SectionHeader } from '@/app/components/members/profile/SectionHeader'
-
-// ─── Shared classes ────────────────────────────────────────────────────────────
-const inputCls =
-  'w-full h-12 bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark px-3.5 font-nunito text-[15px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light/20 dark:focus:ring-primary-dark/20 transition-colors rounded-none disabled:opacity-50'
+import { MemberEmailModal } from '@/app/components/member/dashboard/modals/MemberEmailModal'
+import SignInEmailsManager from '@/app/components/member/profile/SignInEmailsManager'
+import { SectionHeader } from '@/app/components/member/profile/SectionHeader'
+import { FormField } from '@/app/components/_shared/FormField'
 
 const textareaCls =
   'w-full bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark px-3.5 py-3 font-nunito text-[15px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light/20 dark:focus:ring-primary-dark/20 transition-colors rounded-none resize-none'
-
-// ─── Field ─────────────────────────────────────────────────────────────────────
-function Field({
-  label,
-  htmlFor,
-  optional,
-  hint,
-  children
-}: {
-  label: string
-  htmlFor: string
-  optional?: boolean
-  hint?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label
-        htmlFor={htmlFor}
-        className="text-f10 font-mono tracking-[0.18em] uppercase text-muted-light dark:text-muted-dark"
-      >
-        {label}
-        {optional && <span className="ml-2 text-f9 normal-case tracking-normal opacity-60">optional</span>}
-      </label>
-      {children}
-      {hint && <p className="text-[11.5px] font-nunito text-muted-light dark:text-muted-dark">{hint}</p>}
-    </div>
-  )
-}
 
 export default function ProfileClient({ profile }: { profile: ProfileData }) {
   const [form, setForm] = useState<ProfileData>(profile)
@@ -273,20 +241,16 @@ export default function ProfileClient({ profile }: { profile: ProfileData }) {
                 Display Email
               </p>
             </div>
-
             <p className="text-[12.5px] font-nunito text-muted-light dark:text-muted-dark leading-relaxed mb-3">
               Shown on your public profile so prospective clients and members can reach you. Separate from how you sign
               in.
             </p>
-
-            <input
+            <FormField
               id="email"
+              label="Display Email"
               type="email"
               value={form.email}
               onChange={(e) => set('email', e.target.value)}
-              autoCapitalize="off"
-              spellCheck={false}
-              className={inputCls}
             />
           </div>
 
@@ -330,39 +294,33 @@ export default function ProfileClient({ profile }: { profile: ProfileData }) {
             <SectionHeader icon={User} title="Personal Information" />
             <div className="flex flex-col gap-5">
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
-                <Field label="Full Name" htmlFor="name">
-                  <input
-                    id="name"
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => set('name', e.target.value)}
-                    className={inputCls}
-                    autoComplete="name"
-                  />
-                </Field>
-                <Field label="Phone" htmlFor="phone" optional>
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={formatPhone(form.phone)}
-                    onChange={(e) => set('phone', e.target.value)}
-                    className={inputCls}
-                    placeholder="7812223333"
-                    autoComplete="tel"
-                  />
-                </Field>
-              </div>
-              <Field label="Location" htmlFor="location" optional>
-                <input
-                  id="location"
-                  type="text"
-                  value={form.location}
-                  onChange={(e) => set('location', e.target.value)}
-                  className={inputCls}
-                  placeholder="City, State"
+                <FormField
+                  id="name"
+                  label="Full Name"
+                  value={form.name}
+                  onChange={(e) => set('name', e.target.value)}
+                  autoComplete="name"
                 />
-              </Field>
-              <Field label="Bio" htmlFor="bio" optional hint="Tell members a bit about yourself">
+                <FormField
+                  id="phone"
+                  label="Phone"
+                  type="tel"
+                  optional
+                  value={formatPhone(form.phone)}
+                  onChange={(e) => set('phone', e.target.value)}
+                  placeholder="7812223333"
+                  autoComplete="tel"
+                />
+              </div>
+              <FormField
+                id="location"
+                label="Location"
+                optional
+                value={form.location}
+                onChange={(e) => set('location', e.target.value)}
+                placeholder="City, State"
+              />
+              <FormField id="bio" label="Bio" optional hint="Tell members a bit about yourself">
                 <textarea
                   id="bio"
                   value={form.bio}
@@ -371,32 +329,24 @@ export default function ProfileClient({ profile }: { profile: ProfileData }) {
                   className={textareaCls}
                   placeholder="A few sentences about who you are…"
                 />
-              </Field>
-              <Field
+              </FormField>
+              <FormField
+                id="weeklyTreasureWishlist"
                 label="Weekly Referral Wish"
-                htmlFor="weeklyTreasureWishlist"
                 optional
                 hint="What kind of referrals are you looking for this week?"
-              >
-                <input
-                  id="weeklyTreasureWishlist"
-                  type="text"
-                  value={form.weeklyTreasureWishlist}
-                  onChange={(e) => set('weeklyTreasureWishlist', e.target.value)}
-                  className={inputCls}
-                  placeholder="e.g. Commercial real estate leads"
-                />
-              </Field>
-              <Field label="Goal" htmlFor="goal" optional>
-                <input
-                  id="goal"
-                  type="text"
-                  value={form.goal}
-                  onChange={(e) => set('goal', e.target.value)}
-                  className={inputCls}
-                  placeholder="Your networking goal"
-                />
-              </Field>
+                value={form.weeklyTreasureWishlist}
+                onChange={(e) => set('weeklyTreasureWishlist', e.target.value)}
+                placeholder="e.g. Commercial real estate leads"
+              />
+              <FormField
+                id="goal"
+                label="Goal"
+                optional
+                value={form.goal}
+                onChange={(e) => set('goal', e.target.value)}
+                placeholder="Your networking goal"
+              />
             </div>
           </section>
 
@@ -405,76 +355,61 @@ export default function ProfileClient({ profile }: { profile: ProfileData }) {
             <SectionHeader icon={Briefcase} title="Business Information" />
             <div className="flex flex-col gap-5">
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
-                <Field label="Business Name" htmlFor="company">
-                  <input
-                    id="company"
-                    type="text"
-                    value={form.company}
-                    onChange={(e) => set('company', e.target.value)}
-                    className={inputCls}
-                  />
-                </Field>
-                <Field label="Industry" htmlFor="industry">
-                  <input
-                    id="industry"
-                    type="text"
-                    value={form.industry}
-                    onChange={(e) => set('industry', e.target.value)}
-                    className={inputCls}
-                    placeholder="e.g. Real Estate"
-                  />
-                </Field>
+                <FormField
+                  id="company"
+                  label="Business Name"
+                  value={form.company}
+                  onChange={(e) => set('company', e.target.value)}
+                />
+                <FormField
+                  id="industry"
+                  label="Industry"
+                  value={form.industry}
+                  onChange={(e) => set('industry', e.target.value)}
+                  placeholder="e.g. Real Estate"
+                />
               </div>
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-5">
-                <Field label="Title" htmlFor="title" optional>
-                  <input
-                    id="title"
-                    type="text"
-                    value={form.title}
-                    onChange={(e) => set('title', e.target.value)}
-                    className={inputCls}
-                    placeholder="e.g. Owner, Broker"
-                  />
-                </Field>
-                <Field label="Years in Business" htmlFor="yearsInBusiness" optional>
-                  <input
-                    id="yearsInBusiness"
-                    type="text"
-                    value={form.yearsInBusiness}
-                    onChange={(e) => set('yearsInBusiness', e.target.value)}
-                    className={inputCls}
-                    placeholder="e.g. 12"
-                  />
-                </Field>
-              </div>
-              <Field label="License Number" htmlFor="businessLicenseNumber" optional>
-                <input
-                  id="businessLicenseNumber"
-                  type="text"
-                  value={form.businessLicenseNumber}
-                  onChange={(e) => set('businessLicenseNumber', e.target.value)}
-                  className={inputCls}
-                  placeholder="Professional license number"
+                <FormField
+                  id="title"
+                  label="Title"
+                  optional
+                  value={form.title}
+                  onChange={(e) => set('title', e.target.value)}
+                  placeholder="e.g. Owner, Broker"
                 />
-              </Field>
+                <FormField
+                  id="yearsInBusiness"
+                  label="Years in Business"
+                  optional
+                  value={form.yearsInBusiness}
+                  onChange={(e) => set('yearsInBusiness', e.target.value)}
+                  placeholder="e.g. 12"
+                />
+              </div>
+              <FormField
+                id="businessLicenseNumber"
+                label="License Number"
+                optional
+                value={form.businessLicenseNumber}
+                onChange={(e) => set('businessLicenseNumber', e.target.value)}
+                placeholder="Professional license number"
+              />
             </div>
           </section>
 
           {/* ── Online ── */}
           <section className="mb-8">
             <SectionHeader icon={Globe} title="Online Presence" />
-            <div className="flex flex-col gap-5">
-              <Field label="Website" htmlFor="website" optional>
-                <input
-                  id="website"
-                  type="url"
-                  value={form.website}
-                  onChange={(e) => set('website', e.target.value)}
-                  className={inputCls}
-                  placeholder="https://yoursite.com"
-                />
-              </Field>
-            </div>
+            <FormField
+              id="website"
+              label="Website"
+              type="url"
+              optional
+              value={form.website}
+              onChange={(e) => set('website', e.target.value)}
+              placeholder="https://yoursite.com"
+            />
           </section>
 
           {/* ── Social ── */}
@@ -488,16 +423,16 @@ export default function ProfileClient({ profile }: { profile: ProfileData }) {
                 { key: 'threadsUrl' as const, label: 'Threads', placeholder: 'https://threads.net/@you' },
                 { key: 'youtubeUrl' as const, label: 'YouTube', placeholder: 'https://youtube.com/@you' }
               ].map(({ key, label, placeholder }) => (
-                <Field key={key} label={label} htmlFor={key} optional>
-                  <input
-                    id={key}
-                    type="url"
-                    value={form[key] as string}
-                    onChange={(e) => set(key, e.target.value)}
-                    className={inputCls}
-                    placeholder={placeholder}
-                  />
-                </Field>
+                <FormField
+                  key={key}
+                  id={key}
+                  label={label}
+                  type="url"
+                  optional
+                  value={form[key] as string}
+                  onChange={(e) => set(key, e.target.value)}
+                  placeholder={placeholder}
+                />
               ))}
             </div>
           </section>

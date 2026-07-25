@@ -1,5 +1,5 @@
 import { deleteObject, ref } from 'firebase/storage'
-import { storage } from '../../config/firebaseConfig'
+import { storage } from '../../firebase/firebase.config'
 
 const deleteFileFromFirebase = async (
   fileName: string,

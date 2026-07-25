@@ -4,7 +4,7 @@
 // total decides nothing (they win outright); wrong → turn passes.
 
 import prisma from '@/prisma/client'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { pusher } from '@/app/lib/pusher/pusher'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { GameActionResult } from '@/types/game.types'

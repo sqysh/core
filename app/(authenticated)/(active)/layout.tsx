@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import GameAnnounceListener from '@/app/components/game/shared/GameAnnounceListener'
 

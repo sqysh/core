@@ -6,7 +6,7 @@
 // the meeting TV at /games?view=tv and link members to /games from the dashboard.
 
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { getActiveGame } from '../../../lib/actions/games/getActiveGame'
 import { getLobby } from '../../../lib/actions/games/getLobby'
 import GamesHubClient from './GamesHubClient'

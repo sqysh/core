@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { getAdminDashboardData } from '@/app/lib/actions/dashboard/getAdminDashboardData'
 import AdminDashboardClient from './AdminDashboardClient'
 

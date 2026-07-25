@@ -1,4 +1,4 @@
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { redirect } from 'next/navigation'
 import WelcomeClient from './WelcomeClient'

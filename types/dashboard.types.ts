@@ -1,4 +1,4 @@
-import { TABS } from '@/app/lib/constants/dashboard.constants'
+import { TABS } from '@/app/lib/constants/member/dashboard.constants'
 import { UserAttendanceRow } from './attendance.types'
 import { TEvent } from './event.types'
 import { ScheduledPresenter } from './presenter-queue.types'

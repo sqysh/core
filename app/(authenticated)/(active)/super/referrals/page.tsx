@@ -1,4 +1,4 @@
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/app/lib/constants/api/chapterId'

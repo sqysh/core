@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
 import { getActor } from './getActor'
 import { createLog } from '../../utils/api/createLog'

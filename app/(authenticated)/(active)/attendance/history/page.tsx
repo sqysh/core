@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { getUserAttendance } from '@/app/lib/actions/attendance/getUserAttendance'
 import {

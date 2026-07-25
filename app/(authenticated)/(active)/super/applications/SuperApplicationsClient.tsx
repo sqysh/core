@@ -1,6 +1,6 @@
 'use client'
 
-import { ApplicantModal } from '@/app/components/modals/ApplicantModal'
+import { ApplicantModal } from '@/app/components/super/ApplicantModal'
 import { useState } from 'react'
 
 interface Applicant {

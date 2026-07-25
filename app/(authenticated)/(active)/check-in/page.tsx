@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { checkIn } from '@/app/lib/actions/attendance/checkIn'
 import CheckInClient from './CheckInClient'
 

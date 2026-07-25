@@ -2,12 +2,12 @@
 
 import prisma from '@/prisma/client'
 import { createLog } from '@/app/lib/utils/api/createLog'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { memberAcceptedTemplate } from '../../email/application-approved.template'
 import { memberRejectedTemplate } from '../../email/application-rejected.template'
 import { MembershipStatus, UserRole } from '@prisma/client'
-import { resend } from '../../resend'
+import { resend } from '../../resend/resend'
 
 export async function updateUserStatus(userId: string, approve: boolean) {
   const session = await auth()

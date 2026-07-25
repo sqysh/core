@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { pusher } from '@/app/lib/pusher/pusher'
 import { GAME_REGISTRY } from '@/app/lib/games/registry'
 

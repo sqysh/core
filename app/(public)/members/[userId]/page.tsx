@@ -1,4 +1,4 @@
-import PublicMemberClient from '@/app/components/pages/PublicMemberClient'
+import PublicMemberClient from '@/app/(public)/members/[userId]/PublicMemberClient'
 import { getMemberProfile } from '@/app/lib/actions/user/getMemberProfile'
 import { getUsers } from '@/app/lib/actions/user/getUsers'
 

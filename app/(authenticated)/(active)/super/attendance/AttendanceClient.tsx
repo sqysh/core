@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CalendarPlus } from 'lucide-react'
 import { AttendanceMember, AttendanceRow } from '@/app/lib/actions/attendance/getAttendanceHistory'
-import { MeetingRow } from '@/app/components/super-dash/MeetingRow'
+import { MeetingRow } from '@/app/components/super/MeetingRow'
 import { createMeeting } from '@/app/lib/actions/meeting/createMeeting'
 
 interface AttendanceHistoryClientProps {

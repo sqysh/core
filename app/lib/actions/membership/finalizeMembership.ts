@@ -14,11 +14,11 @@
 // bug: the card exists and is designated before any invoice is created.
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
-import { stripe } from '../../stripe'
+import { auth } from '../../auth/auth'
+import { stripe } from '../../stripe/stripe'
 import { createLog } from '../../utils/api/createLog'
 import { getAnnualBillingAnchor, getQuarterlyBillingAnchor } from '../../utils/billing.utils'
-import { ANNUAL_PRICE_ID, QUARTERLY_PRICE_ID } from '../../constants/stripe.constants'
+import { ANNUAL_PRICE_ID, QUARTERLY_PRICE_ID } from '../../constants/member/stripe.constants'
 
 export async function finalizeMembership({
   paymentMethodId,

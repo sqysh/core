@@ -1,7 +1,7 @@
 'use server'
 
 import { UpdateProfileInput } from '@/types/user.types'
-import { auth } from '../../auth'
+import { auth } from '../../auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '../../utils/api/createLog'
 

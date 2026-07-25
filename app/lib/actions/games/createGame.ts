@@ -7,7 +7,7 @@
  */
 
 import prisma from '@/prisma/client'
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { pusher } from '@/app/lib/pusher/pusher'
 import { chapterId } from '@/app/lib/constants/api/chapterId'
 import { serializeGame, GAME_SELECT } from '@/app/lib/games/serializeGame'

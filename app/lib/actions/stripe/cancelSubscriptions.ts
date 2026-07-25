@@ -1,8 +1,8 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { stripe } from '../../stripe'
+import { stripe } from '../../stripe/stripe'
 import { createLog } from '../../utils/api/createLog'
 
 export type CancelErrorCode =

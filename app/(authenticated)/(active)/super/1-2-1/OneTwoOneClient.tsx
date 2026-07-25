@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation'
 import { useSounds } from '@/app/lib/hooks/useSounds'
 import { SuperUserOneTwoOne } from '@/types/super.types'
 import { deleteOneTwoOne } from '@/app/lib/actions/super/deleteOneTwoOne'
-import { SuperDashStatusBadge } from '@/app/components/super-dash/SuperDashStatusBadge'
-import { InlineActionBtn } from '@/app/components/super-dash/InlineActionButton'
+import { SuperDashStatusBadge } from '@/app/components/super/SuperDashStatusBadge'
+import { InlineActionBtn } from '@/app/components/super/InlineActionButton'
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-4 px-4'

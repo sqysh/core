@@ -8,7 +8,7 @@ import { chapterId } from '../../constants/api/chapterId'
 import { applicationConfirmationTemplate } from '../../email/application-confirmation.template'
 import { adminVisitorNotificationTemplate } from '../../email/admin-visitor-notification'
 import { calculateExpiresAt } from '../../utils/date.utils'
-import { resend } from '../../resend'
+import { resend } from '../../resend/resend'
 
 const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
 

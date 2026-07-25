@@ -1,8 +1,8 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth'
-import { stripe } from '../../stripe'
+import { auth } from '../../auth/auth'
+import { stripe } from '../../stripe/stripe'
 import Stripe from 'stripe'
 import { createLog } from '../../utils/api/createLog'
 import { getQuarterlyBillingAnchor } from '../../utils/billing.utils'

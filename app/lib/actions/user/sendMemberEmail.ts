@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/app/lib/auth'
+import { auth } from '@/app/lib/auth/auth'
 import { Resend } from 'resend'
 import { memberMessageTemplate } from '../../email/member-message.template'
 import { createLog } from '../../utils/api/createLog'

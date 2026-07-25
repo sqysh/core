@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { triggerReaction } from '@/app/lib/actions/triggerReaction'
 import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/app/lib/utils/currency.utils'
 import { getPusherClient } from '@/app/lib/pusher/pusherClient'
+import { triggerReaction } from '@/app/lib/actions/visitor-day/triggerReaction'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

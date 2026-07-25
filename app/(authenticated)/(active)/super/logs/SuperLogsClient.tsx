@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Trash2, ChevronDown, ChevronUp, RefreshCw, X } from 'lucide-react'
-import { clearLogs, deleteLog, getLogs, LogEntry, LogsByLevel } from '@/app/lib/actions/log/log-actions'
 import { fmtDate, timeAgo } from '@/app/lib/utils/date.utils'
-import FadeUp from '../../../../components/common/FadeUp'
+import { getLogs, LogEntry, LogsByLevel } from '@/app/lib/actions/log/getLogs'
+import { deleteLog } from '@/app/lib/actions/log/deleteLog'
+import { clearLogs } from '@/app/lib/actions/log/clearLogs'
 
 function parseMetadata(metadata: Record<string, unknown> | null): string[] {
   if (!metadata) return []
