@@ -2,294 +2,44 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import Picture from '@/app/components/_shared/Picture'
 import { useSounds } from '@/app/lib/hooks/useSounds'
-import { getInitials } from '@/app/lib/utils/shared.utils'
 import { getPusherClient } from '@/app/lib/pusher/pusherClient'
+import { FloatingEmoji, Member } from '@/types/attendance.types'
+import { FloatingEmojiEl } from '../../components/_shared/FloatingEmoji'
+import { NextMeetingCountdown } from './_components/NextMeetingCountdown'
+import { NameTile } from './_components/NameTile'
+import { CheckInAnnouncement } from './_components/CheckInAnnouncement'
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface FloatingEmoji {
-  id: string
-  emoji: string
-  x: number
-}
-
-interface Member {
-  id: string
-  name: string
-  company: string
-  profileImage?: string | null
-  profileVideo?: string | null
-}
-
-interface AttendanceTVProps {
+type Props = {
   date?: string
   members: Member[]
   initialAttendees: string[]
   initialReactionCount?: number
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-// const TICKER_MESSAGES = [
-//   "⚓ Scan the QR code to check in for today's meeting",
-//   '📋 Attendance is recorded every Thursday',
-//   '✦ Check in to keep your membership in good standing',
-//   '👋 Welcome — grab some food and find a seat',
-//   '📱 Open your camera and point it at the QR code'
-// ]
-
-// ─── Floating emoji ───────────────────────────────────────────────────────────
-
-function FloatingEmojiEl({ emoji, x, onDone }: { emoji: string; x: number; onDone: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 1, y: 0, scale: 0.8, x: 0 }}
-      animate={{
-        opacity: [1, 1, 1, 0],
-        y: typeof window !== 'undefined' ? -window.innerHeight : -900,
-        scale: [0.8, 1.4, 1.2, 1],
-        x: [0, 30, -25, 20, -15, 0]
-      }}
-      transition={{
-        duration: 5,
-        ease: 'easeOut',
-        x: { duration: 5, ease: 'easeInOut', times: [0, 0.25, 0.5, 0.75, 0.9, 1] },
-        opacity: { duration: 5, times: [0, 0.6, 0.8, 1] }
-      }}
-      onAnimationComplete={onDone}
-      className="fixed bottom-32 z-50 pointer-events-none select-none text-4xl"
-      style={{ left: `${x}%` }}
-    >
-      {emoji}
-    </motion.div>
-  )
-}
-
-// ─── Name tile ────────────────────────────────────────────────────────────────
-
-export function NameTile({
-  member,
-  checkedIn,
-  checkedInTime,
-  justCheckedIn
-}: {
-  member: Member
-  checkedIn: boolean
-  checkedInTime: string | null
-  justCheckedIn: boolean
-}) {
-  const firstName = member.name.split(' ')[0]
-  const lastName = member.name.split(' ').slice(1).join(' ')
-
-  return (
-    <motion.div
-      layout
-      animate={justCheckedIn ? { scale: [1, 1.05, 0.98, 1] } : { scale: 1 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden h-full w-full"
-    >
-      {/* Photo / video / initials */}
-      {member.profileVideo ? (
-        <video
-          src={member.profileVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className={`object-cover w-full h-full transition-all duration-700 ${
-            checkedIn ? 'brightness-100 saturate-100' : 'brightness-[0.15] saturate-0'
-          }`}
-        />
-      ) : member.profileImage ? (
-        <Picture
-          src={member.profileImage}
-          alt={member.name}
-          priority
-          className={`object-cover transition-all duration-700 w-full h-full ${
-            checkedIn ? 'brightness-100 saturate-100' : 'brightness-[0.15] saturate-0'
-          }`}
-        />
-      ) : (
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ${
-            checkedIn ? 'bg-bg-dark' : 'bg-bg-dark/30'
-          }`}
-        >
-          <span
-            className={`font-sora font-black transition-all duration-700 ${checkedIn ? 'text-white' : 'text-white/10'}`}
-            style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}
-          >
-            {getInitials(member.name)}
-          </span>
-        </div>
-      )}
-
-      {/* Dark gradient overlay */}
-      <div
-        className={`absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-700 ${
-          checkedIn ? 'opacity-100' : 'opacity-40'
-        }`}
-      />
-
-      {/* Shimmer sweep */}
-      <AnimatePresence>
-        {justCheckedIn && (
-          <motion.div
-            key="shimmer"
-            initial={{ x: '-100%', opacity: 0.9 }}
-            animate={{ x: '200%', opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-            className="absolute inset-0 z-20 pointer-events-none"
-            style={{
-              background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.6) 50%, transparent 70%)'
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Flash */}
-      <AnimatePresence>
-        {justCheckedIn && (
-          <motion.div
-            key="flash"
-            initial={{ opacity: 0.4 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: 1.5 }}
-            className="absolute inset-0 bg-white/30 pointer-events-none z-10"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Ripple */}
-      <AnimatePresence>
-        {justCheckedIn && (
-          <motion.div
-            key="ripple"
-            initial={{ scale: 0, opacity: 0.6 }}
-            animate={{ scale: 4, opacity: 0 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            className="absolute inset-0 m-auto w-10 h-10 rounded-full bg-white/40 pointer-events-none z-10"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Checkmark badge — top right ── */}
-      <div className="absolute top-2 right-2 z-30">
-        <AnimatePresence>
-          {checkedIn && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center shadow-lg"
-            >
-              <Check size={14} className="text-white" strokeWidth={3} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Lower third */}
-      <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 pt-6 z-30">
-        <p
-          className={`font-sora font-black leading-none transition-all duration-700 ${
-            checkedIn ? 'text-white' : 'text-white/20'
-          }`}
-          style={{ fontSize: 'clamp(0.9rem, 1.8vw, 1.5rem)' }}
-        >
-          {firstName}
-        </p>
-        <p
-          className={`font-sora font-bold leading-none mt-0.5 transition-all duration-700 ${
-            checkedIn ? 'text-white/80' : 'text-white/10'
-          }`}
-          style={{ fontSize: 'clamp(0.7rem, 1.3vw, 1.1rem)' }}
-        >
-          {lastName}
-        </p>
-
-        {/* Check-in time */}
-        <AnimatePresence>
-          {checkedIn && checkedInTime && (
-            <motion.p
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="text-[10px] font-mono tracking-widest uppercase text-green-400/80 mt-1"
-            >
-              {checkedInTime}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
-  )
-}
-
-function NextMeetingCountdown() {
-  const [timeLeft, setTimeLeft] = useState('')
-
-  useEffect(() => {
-    function getNextThursday() {
-      const now = new Date()
-      const est = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }))
-      const day = est.getDay()
-      const daysUntil = day <= 4 ? 4 - day : 7 - day + 4
-      const next = new Date(est)
-      next.setDate(est.getDate() + (daysUntil === 0 && est.getHours() >= 8 ? 7 : daysUntil))
-      next.setHours(7, 0, 0, 0)
-      return next
-    }
-
-    function update() {
-      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }))
-      const next = getNextThursday()
-      const diff = next.getTime() - now.getTime()
-
-      if (diff <= 0) {
-        setTimeLeft('Meeting is now!')
-        return
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-
-      setTimeLeft(days > 0 ? `${days}d ${hours}h ${minutes}m ${seconds}s` : `${hours}h ${minutes}m ${seconds}s`)
-    }
-
-    update()
-    const interval = setInterval(update, 1000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <p className={`text-xs lg:text-sm font-mono tracking-[0.15em] uppercase text-primary-dark hidden sm:block`}>
-      Next meeting in <span className="font-bold">{timeLeft}</span>
-    </p>
-  )
-}
-
-// ─── Main ─────────────────────────────────────────────────────────────────────
-
 export default function AttendanceClient({
   date = 'Thursday',
   members,
   initialAttendees = [],
   initialReactionCount = 0
-}: AttendanceTVProps) {
+}: Props) {
   const [dark] = useState(true)
   const [floaters, setFloaters] = useState<FloatingEmoji[]>([])
   const [totalReactions, setTotalReactions] = useState(initialReactionCount)
   const [checkedInIds, setCheckedInIds] = useState<Map<string, string>>(new Map(initialAttendees.map((id) => [id, ''])))
   const [justCheckedInId, setJustCheckedInId] = useState<string | null>(null)
   const { play } = useSounds({ enabled: true, volume: 0.4 })
+  const [announcedMember, setAnnouncedMember] = useState<Member | null>(null)
+  const [announcementKey, setAnnouncementKey] = useState(0)
+
+  useEffect(() => {
+    if (!justCheckedInId) return
+    const member = members.find((m) => m.id === justCheckedInId) ?? null
+    if (!member) return
+    setAnnouncedMember(member)
+    setAnnouncementKey((k) => k + 1) // force remount so animation replays
+  }, [justCheckedInId, members])
 
   const t = {
     bg: dark ? 'bg-bg-dark' : 'bg-bg-light',
@@ -336,6 +86,12 @@ export default function AttendanceClient({
     <div
       className={`h-screen w-screen overflow-hidden ${t.bg} ${t.text} flex flex-col transition-colors duration-300 relative`}
     >
+      <AnimatePresence>
+        {announcedMember && (
+          <CheckInAnnouncement key={announcementKey} member={announcedMember} onDone={() => setAnnouncedMember(null)} />
+        )}
+      </AnimatePresence>
+
       {/* ── Floating emojis ── */}
       <AnimatePresence>
         {floaters.map((f) => (
@@ -347,16 +103,17 @@ export default function AttendanceClient({
       {process.env.NODE_ENV === 'development' && (
         <button
           onClick={() => {
-            const unchecked = sortedMembers.find((m) => !checkedInIds.has(m.id))
-            if (!unchecked) return
+            const unchecked = sortedMembers.filter((m) => !checkedInIds.has(m.id))
+            if (!unchecked.length) return
+            const random = unchecked[Math.floor(Math.random() * unchecked.length)]
             play('se0')
             const time = new Date().toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
               hour12: true
             })
-            setCheckedInIds((prev) => new Map([...prev, [unchecked.id, time]]))
-            setJustCheckedInId(unchecked.id)
+            setCheckedInIds((prev) => new Map([...prev, [random.id, time]]))
+            setJustCheckedInId(random.id)
             setTimeout(() => setJustCheckedInId(null), 3000)
           }}
           className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-green-500 text-white text-xs font-mono"
@@ -486,18 +243,6 @@ export default function AttendanceClient({
           >
             <span className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
             <p className="text-xs font-mono tracking-[0.2em] uppercase whitespace-nowrap">CORE</p>
-          </div>
-          <div className="overflow-hidden flex-1">
-            {/* <Marquee speed={40} gradientWidth={0} pauseOnHover={false}>
-              {TICKER_MESSAGES.map((msg, i) => (
-                <span
-                  key={i}
-                  className={`mx-16 text-xs font-mono tracking-[0.15em] uppercase ${t.text} py-2 inline-block`}
-                >
-                  {msg}
-                </span>
-              ))}
-            </Marquee> */}
           </div>
         </div>
       </div>

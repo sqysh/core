@@ -1,6 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
+import { chapterId } from '@/app/lib/constants/api/chapterId'
 import VisitorDayClient from './VisitorDayClient'
 
 export interface GroupStats {
@@ -10,56 +11,72 @@ export interface GroupStats {
   reactionCount: number
 }
 
-export async function getGroupStats(): Promise<{
-  success: boolean
-  data?: GroupStats
-  error?: string
-}> {
-  try {
-    const today = new Date()
-    // const start = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    // const end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+async function getGroupStats(): Promise<GroupStats> {
+  const today = new Date()
 
-    const [anchors, totalParleys, totalReferrals, visitorDay] = await Promise.all([
-      prisma.anchor.findMany({ select: { businessValue: true } }).catch(() => []),
-      prisma.parley.count({ where: { status: { not: 'CANCELLED' } } }).catch(() => 0),
-      prisma.treasureMap.count({}).catch(() => 0),
-      prisma.visitorDay
-        .findFirst({
-          // where: { date: { gte: start, lt: end } },
-          select: { reactionCount: true }
-        })
-        .catch(() => null)
-    ])
-
-    const totalRevenue = anchors.map((a) => parseFloat(String(a.businessValue))).reduce((sum, val) => sum + val, 0)
-
-    return {
-      success: true,
-      data: {
-        totalRevenue,
-        totalParleys,
-        totalReferrals,
-        reactionCount: visitorDay?.reactionCount ?? 0
+  const [anchors, totalParleys, totalReferrals, visitorDay] = await Promise.all([
+    prisma.anchor.findMany({ where: { chapterId }, select: { businessValue: true } }),
+    prisma.parley.count({ where: { chapterId, status: { not: 'CANCELLED' } } }),
+    prisma.treasureMap.count({ where: { chapterId } }),
+    prisma.visitorDay.findFirst({
+      where: {
+        chapterId,
+        date: { gte: today }
+      },
+      orderBy: { date: 'asc' },
+      select: {
+        reactionCount: true,
+        date: true,
+        presenterName: true,
+        presenterCompany: true
       }
-    }
-  } catch (err) {
-    console.error('[getGroupStats]', err)
-    return { success: false, error: 'Failed to load group stats' }
+    })
+  ])
+
+  const totalRevenue = anchors.reduce((sum, a) => sum + parseFloat(String(a.businessValue)), 0)
+
+  return {
+    totalRevenue,
+    totalParleys,
+    totalReferrals,
+    reactionCount: visitorDay?.reactionCount ?? 0
   }
 }
 
 export default async function VisitorDayPage() {
-  const result = await getGroupStats()
+  const [stats, visitorDay] = await Promise.all([
+    getGroupStats(),
+    prisma.visitorDay.findFirst({
+      where: {
+        chapterId,
+        date: { gte: new Date() }
+      },
+      orderBy: { date: 'asc' },
+      select: {
+        date: true,
+        presenterName: true,
+        presenterCompany: true
+      }
+    })
+  ])
+
+  const date = visitorDay?.date
+    ? new Date(visitorDay.date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        timeZone: 'America/New_York'
+      })
+    : 'Thursday Morning'
 
   return (
     <VisitorDayClient
-      date="Thursday, May 7th"
-      presenterName="Zach Ayvazian"
-      presenterCompany="SureWay AI"
-      presenterBio="Zach Ayvazian builds custom automations that free service businesses from the admin work that's quietly running them — from speed-to-lead systems to document automation and billing workflows."
-      stats={result.data}
-      initialReactionCount={result.data?.reactionCount ?? 0}
+      date={date}
+      presenterName={visitorDay?.presenterName ?? null}
+      presenterCompany={visitorDay?.presenterCompany ?? null}
+      isVisitorDay={!!visitorDay}
+      stats={stats}
+      initialReactionCount={stats.reactionCount}
     />
   )
 }

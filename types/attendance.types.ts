@@ -57,3 +57,17 @@ export interface AttendanceCorrectionModalProps {
   date: string
   meetingId: string
 }
+
+export interface FloatingEmoji {
+  id: string
+  emoji: string
+  x: number
+}
+
+export interface Member {
+  id: string
+  name: string
+  company: string
+  profileImage?: string | null
+  profileVideo?: string | null
+}

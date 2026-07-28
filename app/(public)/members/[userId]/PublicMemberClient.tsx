@@ -1,134 +1,26 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Globe, MapPin, Phone, Mail, ChevronRight, Target } from 'lucide-react'
+import { ArrowLeft, Globe, MapPin, Phone, Mail, Target } from 'lucide-react'
 import { User } from '@/types/user.types'
 import FadeUp from '../../../components/_shared/FadeUp'
 import { formatPhone } from '@/app/lib/utils/phone.utils'
 import { useSession } from 'next-auth/react'
 import { getInitials } from '@/app/lib/utils/shared.utils'
+import SixtySecondsTV from '../_components/SixtySecondsTVClient'
+import {
+  FacebookIcon,
+  LinkedInIcon,
+  ThreadsIcon,
+  XIcon,
+  YoutubeIcon
+} from '@/app/components/_shared/social-media.icons'
+import { InfoRow } from './_components/InfoRow'
+import { SocialLink } from './_components/SocialLink'
+import { MiniMemberCard } from './_components/MiniMemberCard'
 
-// ─── X / Threads icons (lucide doesn't have these) ─────────────────────────────
-function XIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.264 5.636 5.9-5.636Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  )
-}
-
-function ThreadsIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 192 192" fill="currentColor" aria-hidden="true">
-      <path d="M141.537 88.988c-.67-.322-1.345-.635-2.028-.937-1.19-11.332-7.15-17.806-16.873-18.575-5.818-.46-11.532 1.782-15.692 6.105l3.45 3.17c2.91-3.091 6.94-4.72 11.101-4.41 6.34.5 10.41 4.29 11.63 11.24-4.15-1.71-8.64-2.44-13.08-2.14-11.46.75-18.92 7.66-18.43 17.4.27 5.31 3.21 9.87 8.18 12.88 4.2 2.56 9.63 3.79 15.3 3.39 7.44-.52 13.31-3.36 17.44-8.44 3.15-3.87 4.96-8.93 5.39-15.06.02-.12.04-.24.05-.36.2-2.38.26-4.87.17-7.43.27-.09.54-.18.82-.26zm-18.91 20.54c-4.11.29-8.42-.84-11.18-2.9-2.29-1.72-3.34-3.9-3.22-6.47.2-3.85 3.67-6.55 9.6-6.95 3.53-.24 6.97.42 10.07 1.91-.38 8.87-2.44 14.04-5.27 14.41z" />
-      <path d="M166.28 60.72c-5.35-5.9-12.94-8.94-22.08-8.94a30.68 30.68 0 0 0-3.88.25c-10.26-6.49-23.26-6.37-33.4.33-7.79 5.11-12.56 13.52-12.56 22.72v.49c-8.49 4.7-13.19 12.91-12.7 21.87.33 5.93 2.94 11.49 7.35 15.65 4.35 4.11 10.24 6.38 16.64 6.38 1.63 0 3.28-.16 4.9-.48 3.68 3.81 8.7 5.91 14.18 5.91 10.89 0 19.52-7.97 21.01-18.97 7.81-3.13 12.94-10.55 12.54-18.75-.25-4.99-2.62-9.72-6.55-13.24a22.47 22.47 0 0 0 2.38-5.95c3.32.38 6.37 1.58 8.87 3.52 5.07 3.88 7.91 10.07 7.67 16.77-.07 1.97-.38 3.9-.91 5.77a22.3 22.3 0 0 1 5.74-1.86c.68-2.44 1.03-4.97 1.03-7.54.01-9.63-4.02-17.98-10.33-24.97z" />
-    </svg>
-  )
-}
-
-function LinkedInIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  )
-}
-
-function FacebookIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  )
-}
-
-function YoutubeIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-    </svg>
-  )
-}
-
-// ─── Social link ────────────────────────────────────────────────────────────────
-function SocialLink({ href, icon: Icon, label }: { href: string; icon: React.ElementType; label: string }) {
-  if (!href) return null
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="w-9 h-9 flex items-center justify-center border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-    >
-      <Icon size={14} />
-    </a>
-  )
-}
-
-// ─── Info row ──────────────────────────────────────────────────────────────────
-function InfoRow({ icon: Icon, value, href }: { icon: React.ElementType; value?: string; href?: string }) {
-  if (!value) return null
-  const content = (
-    <div className="flex items-center gap-2.5">
-      <Icon size={13} className="text-muted-light dark:text-muted-dark shrink-0" aria-hidden="true" />
-      <span className="text-[13px] font-nunito text-text-light dark:text-text-dark">{value}</span>
-    </div>
-  )
-  if (href)
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:text-primary-light dark:hover:text-primary-dark transition-colors"
-      >
-        {content}
-      </a>
-    )
-  return <div>{content}</div>
-}
-
-// ─── Mini member card ──────────────────────────────────────────────────────────
-function MiniMemberCard({ member }: { member: User }) {
-  const router = useRouter()
-  return (
-    <button
-      onClick={() => router.push(`/members/${member.id}`)}
-      className="group flex items-center gap-3 p-3 border border-border-light dark:border-border-dark hover:border-primary-light dark:hover:border-primary-dark bg-bg-light dark:bg-bg-dark hover:bg-surface-light dark:hover:bg-surface-dark transition-colors w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-      aria-label={`View ${member.name}'s profile`}
-    >
-      <div className="w-9 h-9 shrink-0 border border-border-light dark:border-border-dark overflow-hidden bg-primary-light/5 dark:bg-primary-dark/5 flex items-center justify-center">
-        {member.profileImage ? (
-          <img src={member.profileImage} alt={member.name} className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-f9 font-mono font-bold text-primary-light dark:text-primary-dark">
-            {getInitials(member.name)}
-          </span>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[12.5px] font-sora font-bold text-text-light dark:text-text-dark truncate group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
-          {member.name}
-        </p>
-        <p className="text-f10 font-nunito text-muted-light dark:text-muted-dark truncate">{member.company}</p>
-      </div>
-      <ChevronRight
-        size={12}
-        className="text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all shrink-0"
-        aria-hidden="true"
-      />
-    </button>
-  )
-}
-
-// ─── Main ──────────────────────────────────────────────────────────────────────
-export default function PublicMemberClient({
-  user,
-  users
-}: {
+type Props = {
   user: {
     id: string
     name: string
@@ -152,10 +44,14 @@ export default function PublicMemberClient({
     weeklyTreasureWishlist: string | null
   }
   users: User[]
-}) {
+}
+
+export default function PublicMemberClient({ user, users }: Props) {
   const otherMembers = users.filter((m) => m.id !== user.id && m.isPublic)
   const session = useSession()
   const isLoggedIn = session.status === 'authenticated'
+
+  if (user.id === 'cmizav9ql000hy0u41tjgqqko') return <SixtySecondsTV />
 
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
