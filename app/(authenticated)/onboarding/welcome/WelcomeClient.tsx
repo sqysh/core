@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { CheckCircle, Map, Users, Calendar, ArrowRight } from 'lucide-react'
-import FadeUp from '@/app/components/_shared/FadeUp'
-import { getNextQuarterlyDueDate } from '@/app/lib/utils/billing.utils'
+import FadeUp from '@/components/_shared/FadeUp'
+import { getNextQuarterlyDueDate } from '@/lib/utils/billing.utils'
 
 interface WelcomeClientProps {
   firstName: string

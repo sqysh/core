@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { signOut } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { Download, LogOut, AlertCircle, Calendar, FileDown, Check } from 'lucide-react'
-import { useSounds } from '@/app/lib/hooks/useSounds'
-import { exportUserData } from '@/app/lib/actions/user/exportUserData'
+import { useSounds } from '@/lib/hooks/useSounds'
+import { exportUserData } from '@/lib/actions/user/exportUserData'
 
 function fmtFullDate(iso: string): string {
   const d = new Date(iso)

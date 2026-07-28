@@ -1,5 +1,5 @@
 import { PublicMembersClient } from '@/app/(public)/members/PublicMembersClient'
-import { getUsers } from '@/app/lib/actions/user/getUsers'
+import { getUsers } from '@/lib/actions/user/getUsers'
 
 export const dynamic = 'force-dynamic'
 

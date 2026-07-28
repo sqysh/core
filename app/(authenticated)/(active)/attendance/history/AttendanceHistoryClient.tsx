@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Calendar, TrendingUp, CalendarOff } from 'lucide-react'
 import { AttendanceHistoryClientProps } from '@/types/attendance.types'
-import { groupByMonth } from '@/app/lib/utils/attendance.utils'
-import { YearHeatMap } from '@/app/components/member/attendance/YearHeatMap'
-import { AttendanceCorrectionModal } from '@/app/components/member/attendance/AttendanceCorrectionModal'
+import { groupByMonth } from '@/lib/utils/attendance.utils'
+import { YearHeatMap } from '@/app/(authenticated)/(active)/attendance/history/_components/YearHeatMap'
+import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
 import { useState } from 'react'
-import { HistoryRowEl } from '@/app/components/member/attendance/HistoryRowEl'
-import { StatCard } from '@/app/components/member/attendance/StatCard'
+import { HistoryRowEl } from '@/app/(authenticated)/(active)/attendance/history/_components/HistoryRowEl'
+import { StatCard } from '@/app/(authenticated)/(active)/attendance/history/_components/StatCard'
 
 export function AttendanceHistoryClient({ userName, rows, summary, squares }: AttendanceHistoryClientProps) {
   const grouped = groupByMonth(rows)

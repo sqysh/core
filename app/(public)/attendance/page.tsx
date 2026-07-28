@@ -1,6 +1,6 @@
-import { getUsers } from '@/app/lib/actions/user/getUsers'
+import { getUsers } from '@/lib/actions/user/getUsers'
 import AttendanceClient from './AttendanceClient'
-import { getTodayAttendance } from '@/app/lib/actions/meeting/getTodayAttendance'
+import { getTodayAttendance } from '@/lib/actions/meeting/getTodayAttendance'
 
 export const dynamic = 'force-dynamic'
 

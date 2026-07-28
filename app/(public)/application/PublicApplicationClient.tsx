@@ -1,95 +1,64 @@
 'use client'
 
-import { createUser } from '@/app/lib/actions/user/createUser'
-import { createFormActions } from '@/app/lib/redux/slices/formSlice'
-import { showToast } from '@/app/lib/redux/slices/toastSlice'
-import { store, useAppSelector } from '@/app/lib/redux/store'
-import { motion } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
+import { createUser } from '@/lib/actions/user/createUser'
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlertCircle, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { MemberApplicationForm } from '@/app/components/public/apply/MemberApplicationForm'
+import { ApplicationForm } from '@/app/(public)/application/_components/ApplicationForm'
 import Link from 'next/link'
 import { CreateUserInput } from '@/types/user.types'
-import { useSounds } from '@/app/lib/hooks/useSounds'
-import isValidEmail from '@/app/lib/regex/isValidEmail'
+import { useSounds } from '@/lib/hooks/useSounds'
+import { ApplicationFormInputs } from '@/app/(public)/application/_types/application.types'
+import { validate } from './_lib/validate'
 
-export const useFormSelector = () => useAppSelector((state) => state.form.forms)
-
-interface ApplicationFormInputs {
-  name: string
-  email: string
-  company: string
-  industry: string
-  location: string
-  phone: string
-  businessLicenseNumber: string
-}
-
-const validateApplicationForm = (inputs: ApplicationFormInputs, setErrors: (newErrors: any) => void) => {
-  const newErrors: any = {}
-
-  if (!inputs?.name?.trim()) {
-    newErrors.name = 'Please enter valid name'
-  }
-
-  if (!isValidEmail(inputs?.email)) {
-    newErrors.email = 'Please enter valid email'
-  }
-
-  if (!inputs?.company?.trim()) {
-    newErrors.company = 'Please enter valid company'
-  }
-
-  if (!inputs?.location?.trim()) {
-    newErrors.location = 'Please enter valid location'
-  }
-
-  if (!inputs?.industry?.trim()) {
-    newErrors.industry = 'Please enter valid industry'
-  }
-
-  if (!inputs?.phone?.trim() || inputs.phone.replace(/\D/g, '').length < 10) {
-    newErrors.phone = 'Please enter a valid 10-digit phone number'
-  }
-
-  if (!inputs?.businessLicenseNumber?.trim()) {
-    newErrors.businessLicenseNumber = 'Please enter valid businees license number'
-  }
-
-  setErrors(newErrors)
-  return Object.keys(newErrors).length === 0
+const EMPTY_INPUTS: ApplicationFormInputs = {
+  name: '',
+  email: '',
+  company: '',
+  industry: '',
+  location: '',
+  phone: '',
+  businessLicenseNumber: ''
 }
 
 export default function PublicApplicationClient() {
-  const { handleInput, setErrors, resetForm } = createFormActions('applicationForm', store.dispatch)
-  const { applicationForm } = useFormSelector()
-  const inputs = applicationForm?.inputs
-  const errors = applicationForm?.errors
-  const { push, refresh } = useRouter()
+  const [inputs, setInputs] = useState<ApplicationFormInputs>(EMPTY_INPUTS)
+  const [errors, setErrors] = useState<Partial<Record<keyof ApplicationFormInputs, string>>>({})
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { push, refresh } = useRouter()
   const { play } = useSounds({ enabled: true, volume: 0.4 })
 
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target
+    setInputs((prev) => ({ ...prev, [name]: value }))
+    if (errors[name as keyof ApplicationFormInputs]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }))
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!validateApplicationForm(inputs as CreateUserInput, setErrors)) return
+    setSubmitError(null)
+    const newErrors = validate(inputs)
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
 
     setIsLoading(true)
     const result = await createUser(inputs as CreateUserInput)
     setIsLoading(false)
 
     if (!result.success) {
-      store.dispatch(
-        showToast({
-          type: 'error',
-          message: 'Submission failed',
-          description: result.error ?? 'Something went wrong. Please try again.'
-        })
-      )
+      setSubmitError(result.error ?? 'Something went wrong. Please try again.')
       return
     }
+
     play('se2')
-    resetForm()
+    setInputs(EMPTY_INPUTS)
+    setErrors({})
     refresh()
     push(`/application/${result.user.id}`)
   }
@@ -137,7 +106,26 @@ export default function PublicApplicationClient() {
           </h1>
         </motion.div>
 
-        <MemberApplicationForm
+        <AnimatePresence>
+          {submitError && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-start gap-3 px-4 py-3.5 mb-6 border border-red-200 dark:border-red-400/20 bg-red-50 dark:bg-red-400/10 border-l-2 border-l-red-500"
+              role="alert"
+            >
+              <AlertCircle size={15} className="text-red-500 dark:text-red-400 shrink-0 mt-0.5" aria-hidden="true" />
+              <div>
+                <p className="font-sora font-bold text-[13px] text-red-700 dark:text-red-400">Submission failed</p>
+                <p className="text-[12px] font-nunito text-red-600 dark:text-red-400/80 mt-0.5">{submitError}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <ApplicationForm
           inputs={inputs}
           errors={errors}
           handleInput={handleInput}

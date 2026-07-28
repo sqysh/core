@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { QueueMember } from '@/types/presenter-queue.types'
-import { addToQueue } from '@/app/lib/actions/presenter-queue/addToQueue'
-import { reorderQueue } from '@/app/lib/actions/presenter-queue/reorderQueue'
-import { fmtDate } from '@/app/lib/utils/date.utils'
-import { getInitials } from '@/app/lib/utils/shared.utils'
+import { addToQueue } from '@/lib/actions/presenter-queue/addToQueue'
+import { reorderQueue } from '@/lib/actions/presenter-queue/reorderQueue'
+import { fmtDate } from '@/lib/utils/date.utils'
+import { getInitials } from '@/lib/utils/shared.utils'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface Props {

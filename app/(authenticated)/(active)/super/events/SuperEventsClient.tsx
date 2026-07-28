@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { EventStatus } from '@prisma/client'
-import { updateEventStatus } from '@/app/lib/actions/event/updateEventStatus'
+import { updateEventStatus } from '@/lib/actions/event/updateEventStatus'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface SuperEvent {

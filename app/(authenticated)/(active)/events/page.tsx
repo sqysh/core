@@ -1,8 +1,7 @@
-// app/events/page.tsx
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 import EventsClient from './EventsClient'
 
 export default async function EventsPage() {

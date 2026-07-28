@@ -1,13 +1,8 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { getUserAttendance } from '@/app/lib/actions/attendance/getUserAttendance'
-import {
-  buildHistoryRows,
-  buildYearOfThursdays,
-  computeSummary,
-  TRACKING_EPOCH
-} from '@/app/lib/utils/attendance.utils'
+import { getUserAttendance } from '@/lib/actions/attendance/getUserAttendance'
+import { buildHistoryRows, buildYearOfThursdays, computeSummary, TRACKING_EPOCH } from '@/lib/utils/attendance.utils'
 import { AttendanceHistoryClient } from './AttendanceHistoryClient'
 
 export const dynamic = 'force-dynamic'

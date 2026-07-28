@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getPusherClient } from '@/app/lib/pusher/pusherClient'
-import { useSounds } from '@/app/lib/hooks/useSounds'
+import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { useSounds } from '@/lib/hooks/useSounds'
 
 export function SuperPaymentListener() {
   const { play } = useSounds()

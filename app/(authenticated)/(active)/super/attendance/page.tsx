@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth/auth'
-import { getAttendanceHistory } from '@/app/lib/actions/attendance/getAttendanceHistory'
+import { auth } from '@/lib/auth/auth'
+import { getAttendanceHistory } from '@/lib/actions/attendance/getAttendanceHistory'
 import AttendanceClient from './AttendanceClient'
 
 export default async function AttendancePage() {

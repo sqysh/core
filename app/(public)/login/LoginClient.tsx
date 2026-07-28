@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
-import { LoginCard } from '@/app/components/public/auth/LoginCard'
-import LoginFeatures from '@/app/components/public/auth/LoginFeatures'
-import LoginHeader from '@/app/components/public/auth/LoginHeader'
+import { LoginCard } from '@/app/(public)/login/_components/LoginCard'
+import LoginFeatures from '@/app/(public)/login/_components/LoginFeatures'
+import LoginHeader from '@/app/(public)/login/_components/LoginHeader'
 import { useSearchParams } from 'next/navigation'
 import { ShieldX } from 'lucide-react'
-import getAuthErrorMessage from '@/app/lib/utils/auth/getAuthErrorMessage'
+import getAuthErrorMessage from '@/lib/utils/auth/getAuthErrorMessage'
 
 export function LoginClient() {
   const [email, setEmail] = useState('')

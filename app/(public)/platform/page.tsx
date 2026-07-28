@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { fadeInUp } from '@/app/lib/constants/motion'
-import { PLATFORM_FEATURES, WHY_IT_MATTERS_OPTS } from '@/app/lib/constants/public/platform.constants'
-import { LogFeed } from '@/app/components/public/platform/LogFeed'
+import { fadeInUp } from '@/lib/constants/motion'
+import { PLATFORM_FEATURES, WHY_IT_MATTERS_OPTS } from '@/lib/constants/public/platform.constants'
+import { LogFeed } from '@/app/(public)/platform/_components/LogFeed'
 
 export default function PlatformPage() {
   return (

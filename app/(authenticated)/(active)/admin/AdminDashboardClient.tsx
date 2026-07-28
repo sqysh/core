@@ -1,12 +1,12 @@
 'use client'
 
 import { Users, Activity, DollarSign, Clock, FileText, LayoutDashboard } from 'lucide-react'
-import FadeUp from '../../../components/_shared/FadeUp'
 import Link from 'next/link'
-import { AdminDashboardData } from '@/app/lib/actions/dashboard/getAdminDashboardData'
-import { StatTile } from '@/app/components/admin/StatTile'
-import { RecentActivityItem } from '@/app/components/admin/RecentActivityItem'
-import { SectionLabel } from '@/app/components/_shared/SectionLabel'
+import { AdminDashboardData } from '@/lib/actions/dashboard/getAdminDashboardData'
+import { StatTile } from '@/app/(authenticated)/(active)/admin/_components/StatTile'
+import { RecentActivityItem } from '@/app/(authenticated)/(active)/admin/_components/RecentActivityItem'
+import { SectionLabel } from '@/components/_shared/SectionLabel'
+import FadeUp from '@/components/_shared/FadeUp'
 
 export default function AdminDashboardClient({ data }: { data: AdminDashboardData }) {
   const { stats, recentActivity } = data

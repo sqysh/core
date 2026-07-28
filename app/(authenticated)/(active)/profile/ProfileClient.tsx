@@ -17,14 +17,14 @@ import {
   Upload
 } from 'lucide-react'
 import { ProfileData } from '@/types/user.types'
-import { updateProfile } from '@/app/lib/actions/user/updateProfile'
-import { formatPhone } from '@/app/lib/utils/phone.utils'
-import uploadFileToFirebase from '@/app/lib/utils/firebase/uploadFileToFirebase'
-import { getInitials } from '@/app/lib/utils/shared.utils'
-import { MemberEmailModal } from '@/app/components/member/dashboard/modals/MemberEmailModal'
-import SignInEmailsManager from '@/app/components/member/profile/SignInEmailsManager'
-import { SectionHeader } from '@/app/components/member/profile/SectionHeader'
-import { FormField } from '@/app/components/_shared/FormField'
+import { updateProfile } from '@/lib/actions/user/updateProfile'
+import { formatPhone } from '@/lib/utils/phone.utils'
+import uploadFileToFirebase from '@/lib/utils/firebase/uploadFileToFirebase'
+import { getInitials } from '@/lib/utils/shared.utils'
+import { MemberEmailModal } from '@/app/(authenticated)/(active)/dashboard/_components/MemberEmailModal'
+import SignInEmailsManager from '@/components/member/profile/SignInEmailsManager'
+import { SectionHeader } from '@/app/(authenticated)/(active)/profile/_components/SectionHeader'
+import { FormField } from '@/components/_shared/FormField'
 
 const textareaCls =
   'w-full bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark px-3.5 py-3 font-nunito text-[15px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light/20 dark:focus:ring-primary-dark/20 transition-colors rounded-none resize-none'

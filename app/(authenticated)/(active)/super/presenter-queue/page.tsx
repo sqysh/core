@@ -1,10 +1,10 @@
-import { getPresenterQueue } from '@/app/lib/actions/presenter-queue/getPresenterQueue'
+import { getPresenterQueue } from '@/lib/actions/presenter-queue/getPresenterQueue'
 import SuperPresenterQueueClient from './SuperPresenterQueueClient'
-import { getAvailableMembers } from '@/app/lib/actions/presenter-queue/getAvailableMembers'
-import { getCancelledMeetings } from '@/app/lib/actions/cancelled-meeting/getCancelledMeetings'
-import { getVisitorDays } from '@/app/lib/actions/visitor-day/getVisitorDays'
-import { getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
-import { auth } from '@/app/lib/auth/auth'
+import { getAvailableMembers } from '@/lib/actions/presenter-queue/getAvailableMembers'
+import { getCancelledMeetings } from '@/lib/actions/cancelled-meeting/getCancelledMeetings'
+import { getVisitorDays } from '@/lib/actions/visitor-day/getVisitorDays'
+import { getUpcomingMeetingDates } from '@/lib/utils/presenter-engine.utils'
+import { auth } from '@/lib/auth/auth'
 
 export default async function SuperPresenterQueuePage() {
   const [queue, availableMembers, cancelledMeetings, visitorDays, session] = await Promise.all([

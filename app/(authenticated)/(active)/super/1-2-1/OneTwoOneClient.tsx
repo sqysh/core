@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { fmtDate, timeAgo } from '@/app/lib/utils/date.utils'
+import { fmtDate, timeAgo } from '@/lib/utils/date.utils'
 import { useRouter } from 'next/navigation'
-import { useSounds } from '@/app/lib/hooks/useSounds'
+import { useSounds } from '@/lib/hooks/useSounds'
 import { SuperUserOneTwoOne } from '@/types/super.types'
-import { deleteOneTwoOne } from '@/app/lib/actions/super/deleteOneTwoOne'
-import { SuperDashStatusBadge } from '@/app/components/super/SuperDashStatusBadge'
-import { InlineActionBtn } from '@/app/components/super/InlineActionButton'
+import { deleteOneTwoOne } from '@/lib/actions/super/deleteOneTwoOne'
+import { SuperDashStatusBadge } from '@/app/(authenticated)/(active)/super/_components/SuperDashStatusBadge'
+import { InlineActionBtn } from '@/app/(authenticated)/(active)/super/_components/InlineActionButton'
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-4 px-4'

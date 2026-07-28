@@ -3,48 +3,9 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { CheckCircle, User, Briefcase, MapPin, Phone, Mail, Building2, Hash } from 'lucide-react'
+import { ApplicationConfirmationProps } from '../_types/application.types'
+import { ConfirmRow } from '../_components/ConfirmRow'
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
-export interface ApplicationConfirmationProps {
-  application: {
-    name: string
-    email: string
-    phone?: string | null
-    location?: string | null
-    company: string
-    industry: string
-    businessLicenseNumber?: string | null
-    isLicensed?: boolean
-  }
-}
-
-// ─── Field row ─────────────────────────────────────────────────────────────────
-function ConfirmRow({
-  icon: Icon,
-  label,
-  value
-}: {
-  icon: React.ElementType
-  label: string
-  value: string | null | undefined
-}) {
-  if (!value) return null
-  return (
-    <div className="flex items-start gap-3 py-3.5 border-b border-border-light dark:border-border-dark last:border-0">
-      <div className="w-7 h-7 shrink-0 flex items-center justify-center bg-primary-light/10 dark:bg-primary-dark/10 border border-primary-light/20 dark:border-primary-dark/20 mt-0.5">
-        <Icon size={13} className="text-primary-light dark:text-primary-dark" aria-hidden="true" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark mb-0.5">
-          {label}
-        </p>
-        <p className="text-[14px] font-nunito text-text-light dark:text-text-dark wrap-break-word">{value}</p>
-      </div>
-    </div>
-  )
-}
-
-// ─── Main ──────────────────────────────────────────────────────────────────────
 export default function ApplicationConfirmation({ application }: ApplicationConfirmationProps) {
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">

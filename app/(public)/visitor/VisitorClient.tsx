@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { formatCurrency } from '@/app/lib/utils/currency.utils'
-import { getPusherClient } from '@/app/lib/pusher/pusherClient'
-import { triggerReaction } from '@/app/lib/actions/visitor-day/triggerReaction'
+import { formatCurrency } from '@/lib/utils/currency.utils'
+import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { triggerReaction } from '@/lib/actions/visitor-day/triggerReaction'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

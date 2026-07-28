@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { updateChapter } from '@/app/lib/actions/chapter/updateChapter'
-import { FormField } from '@/app/components/_shared/FormField'
-import { inputCls } from '@/app/lib/constants/member/dashboard.constants'
+import { updateChapter } from '@/lib/actions/chapter/updateChapter'
+import { FormField } from '@/components/_shared/FormField'
+import { inputCls } from '@/lib/constants/member/dashboard.constants'
 
 interface Chapter {
   name: string

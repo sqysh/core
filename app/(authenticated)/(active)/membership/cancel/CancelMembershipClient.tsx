@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogOut, AlertCircle, ArrowLeft } from 'lucide-react'
-import { useSounds } from '@/app/lib/hooks/useSounds'
-import { cancelSubscriptions } from '@/app/lib/actions/stripe/cancelSubscriptions'
+import { useSounds } from '@/lib/hooks/useSounds'
+import { cancelSubscriptions } from '@/lib/actions/stripe/cancelSubscriptions'
 
 export function CancelMembershipClient() {
   const router = useRouter()

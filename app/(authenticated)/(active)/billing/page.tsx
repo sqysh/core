@@ -1,4 +1,4 @@
-import { getBillingData } from '@/app/lib/actions/user/getBillingData'
+import { getBillingData } from '@/lib/actions/user/getBillingData'
 import BillingClient from './BillingClient'
 
 export default async function BillingPage() {

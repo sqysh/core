@@ -1,7 +1,7 @@
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 import { SuperVisitorsClient } from './SuperVisitorsClient'
 
 export const dynamic = 'force-dynamic'

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import DashboardClient from '@/app/(authenticated)/(active)/dashboard/DashboardClient'
-import { getDashboardPageData } from '@/app/lib/actions/dashboard/getDashboardPageData'
+import { getDashboardPageData } from '@/lib/actions/dashboard/getDashboardPageData'
 
 export default async function DashboardPage() {
   const session = await auth()

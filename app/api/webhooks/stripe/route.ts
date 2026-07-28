@@ -1,13 +1,8 @@
-import { chapterId } from '@/app/lib/constants/api/chapterId'
-import {
-  ANNUAL_PRICE_ID,
-  QUARTERLY_PRICE_ID,
-  statusMap,
-  WEBHOOK_SECRET
-} from '@/app/lib/constants/member/stripe.constants'
-import { pusher } from '@/app/lib/pusher/pusher'
-import { stripe } from '@/app/lib/stripe/stripe'
-import { createLog } from '@/app/lib/utils/api/createLog'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { ANNUAL_PRICE_ID, QUARTERLY_PRICE_ID, statusMap, WEBHOOK_SECRET } from '@/lib/constants/member/stripe.constants'
+import { pusher } from '@/lib/pusher/pusher'
+import { stripe } from '@/lib/stripe/stripe'
+import { createLog } from '@/lib/utils/api/createLog'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'

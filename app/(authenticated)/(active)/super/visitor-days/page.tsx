@@ -1,8 +1,8 @@
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { getCancelledMeetings } from '@/app/lib/actions/cancelled-meeting/getCancelledMeetings'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { getCancelledMeetings } from '@/lib/actions/cancelled-meeting/getCancelledMeetings'
 import { SuperVisitorDaysClient } from './SuperVisitorDaysClient'
 
 export const dynamic = 'force-dynamic'

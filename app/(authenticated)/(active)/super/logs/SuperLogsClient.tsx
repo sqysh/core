@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Trash2, ChevronDown, ChevronUp, RefreshCw, X } from 'lucide-react'
-import { fmtDate, timeAgo } from '@/app/lib/utils/date.utils'
-import { getLogs, LogEntry, LogsByLevel } from '@/app/lib/actions/log/getLogs'
-import { deleteLog } from '@/app/lib/actions/log/deleteLog'
-import { clearLogs } from '@/app/lib/actions/log/clearLogs'
+import { fmtDate, timeAgo } from '@/lib/utils/date.utils'
+import { getLogs, LogEntry, LogsByLevel } from '@/lib/actions/log/getLogs'
+import { deleteLog } from '@/lib/actions/log/deleteLog'
+import { clearLogs } from '@/lib/actions/log/clearLogs'
 
 function parseMetadata(metadata: Record<string, unknown> | null): string[] {
   if (!metadata) return []

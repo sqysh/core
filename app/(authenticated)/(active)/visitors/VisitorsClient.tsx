@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { fmtDate } from '@/app/lib/utils/date.utils'
+import { fmtDate } from '@/lib/utils/date.utils'
 
 interface TVisitor {
   id: string

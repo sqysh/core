@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from './app/lib/auth/auth'
+import { auth } from './lib/auth/auth'
 
 const publicRoutes = ['/login', '/visitor', '/visitor-day', '/attendance']
 const protectedAPIRoutes = ['/api/pdf/member-directory', '/billing']

@@ -2,15 +2,15 @@
 
 import Link from 'next/link'
 import { ArrowLeft, Calendar } from 'lucide-react'
-import { fmtDate } from '@/app/lib/utils/date.utils'
+import { fmtDate } from '@/lib/utils/date.utils'
 import { useState } from 'react'
-import { AttendanceCorrectionModal } from '@/app/components/member/attendance/AttendanceCorrectionModal'
+import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
 import { BillingClientProps } from '@/types/billing.types'
-import { isPaid } from '@/app/lib/utils/billing.utils'
-import { Section } from '@/app/components/member/billing/Section'
-import { OutstandingRow } from '@/app/components/member/billing/OutstandingRow'
-import { SubscriptionRow } from '@/app/components/member/billing/SubscriptionRow'
-import { CorrectionRow } from '@/app/components/member/billing/CorrectionRow'
+import { isPaid } from '@/lib/utils/billing.utils'
+import { Section } from '@/app/(authenticated)/(active)/billing/_components/Section'
+import { OutstandingRow } from '@/app/(authenticated)/(active)/billing/_components/OutstandingRow'
+import { SubscriptionRow } from '@/app/(authenticated)/(active)/billing/_components/SubscriptionRow'
+import { CorrectionRow } from '@/app/(authenticated)/(active)/billing/_components/CorrectionRow'
 
 export default function BillingClient({ subscriptions, corrections, missedMeetings }: BillingClientProps) {
   const [correctionRow, setCorrectionRow] = useState<{ meetingId: string; date: string } | null>(null)

@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CalendarX, Plus, RotateCcw } from 'lucide-react'
-import { cancelMeeting } from '@/app/lib/actions/cancelled-meeting/cancel-meeting'
-import { restoreMeeting } from '@/app/lib/actions/cancelled-meeting/restoreMeeting'
-import { fmtDate, toDateKey } from '@/app/lib/utils/date.utils'
-import { getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
+import { cancelMeeting } from '@/lib/actions/cancelled-meeting/cancel-meeting'
+import { restoreMeeting } from '@/lib/actions/cancelled-meeting/restoreMeeting'
+import { fmtDate, toDateKey } from '@/lib/utils/date.utils'
+import { getUpcomingMeetingDates } from '@/lib/utils/presenter-engine.utils'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface CancelledMeeting {

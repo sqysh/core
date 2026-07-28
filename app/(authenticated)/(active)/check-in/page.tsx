@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth/auth'
-import { checkIn } from '@/app/lib/actions/attendance/checkIn'
+import { auth } from '@/lib/auth/auth'
+import { checkIn } from '@/lib/actions/attendance/checkIn'
 import CheckInClient from './CheckInClient'
 
 export default async function CheckInPage({ searchParams }: { searchParams: Promise<{ date: string }> }) {

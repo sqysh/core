@@ -1,4 +1,4 @@
-import { generateMemberDirectoryPDFBuffer } from '@/app/lib/utils/reports/generateMemberDirectoryPDFBuffer'
+import { generateMemberDirectoryPDFBuffer } from '@/lib/utils/reports/generateMemberDirectoryPDFBuffer'
 import prisma from '@/prisma/client'
 import { NextResponse } from 'next/server'
 

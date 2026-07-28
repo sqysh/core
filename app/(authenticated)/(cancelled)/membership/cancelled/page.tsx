@@ -1,4 +1,4 @@
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { redirect } from 'next/navigation'
 import { CancelledMembershipClient } from './CancelledMembershipClient'
@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic'
 
 export default async function CancelledMembershipPage() {
   const session = await auth()
-  // if (!session?.user?.id) {
-  //   redirect('/login')
-  // }
+  if (!session?.user?.id) {
+    redirect('/login')
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -23,13 +23,13 @@ export default async function CancelledMembershipPage() {
     }
   })
 
-  // if (!user) {
-  //   redirect('/login')
-  // }
+  if (!user) {
+    redirect('/login')
+  }
 
-  //   if (user.membershipStatus !== 'CANCELLED') {
-  //     redirect('/dashboard')
-  //   }
+  if (user.membershipStatus !== 'CANCELLED') {
+    redirect('/dashboard')
+  }
 
   // Find the latest period end across the user's active orders
   const subIds = [user.annualSubscriptionId, user.quarterlySubscriptionId].filter(Boolean) as string[]

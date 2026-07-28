@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 import { OneTwoOneClient } from './OneTwoOneClient'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 
 export default async function OneTwoOnePage() {
   const result = await prisma.parley

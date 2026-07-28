@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { deleteVisitor } from '@/app/lib/actions/super/deleteVisitor'
-import { InlineActionBtn } from '@/app/components/super/InlineActionButton'
-import { useSounds } from '@/app/lib/hooks/useSounds'
-import { fmtDate, timeAgo } from '@/app/lib/utils/date.utils'
+import { deleteVisitor } from '@/lib/actions/super/deleteVisitor'
+import { InlineActionBtn } from '@/app/(authenticated)/(active)/super/_components/InlineActionButton'
+import { useSounds } from '@/lib/hooks/useSounds'
+import { fmtDate, timeAgo } from '@/lib/utils/date.utils'
 import { Visitor } from '@/types/visitor.types'
 
 // ─── Sub-components ──────────────────────────────────────────────────────────

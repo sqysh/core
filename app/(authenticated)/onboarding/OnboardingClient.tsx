@@ -1,8 +1,8 @@
 'use client'
 
-import FadeUp from '@/app/components/_shared/FadeUp'
-import OnboardingForm from '@/app/components/member/onboarding/OnboardingForm'
-import { getNextQuarterlyDueDate } from '@/app/lib/utils/billing.utils'
+import FadeUp from '@/components/_shared/FadeUp'
+import OnboardingForm from '@/app/(authenticated)/onboarding/_components/OnboardingForm'
+import { getNextQuarterlyDueDate } from '@/lib/utils/billing.utils'
 import { useSession } from 'next-auth/react'
 
 export default function OnboardingClient() {

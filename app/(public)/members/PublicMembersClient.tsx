@@ -5,8 +5,8 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Search, ArrowRight, ChevronRight } from 'lucide-react'
-import FadeUp from '../../components/_shared/FadeUp'
-import Picture from '../../components/_shared/Picture'
+import FadeUp from '../../../components/_shared/FadeUp'
+import Picture from '../../../components/_shared/Picture'
 
 export interface PublicMemberCard {
   id: string

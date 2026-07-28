@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { QRCodeSVG } from 'qrcode.react'
-import { getPusherClient } from '@/app/lib/pusher/pusherClient'
-import { FloatingEmojiEl } from '../../components/_shared/FloatingEmoji'
+import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { FloatingEmojiEl } from '../../../components/_shared/FloatingEmoji'
 import { FloatingEmoji } from '@/types/attendance.types'
-import { formatCurrency } from '@/app/lib/utils/currency.utils'
+import { formatCurrency } from '@/lib/utils/currency.utils'
 
 const Spline = dynamic(() => import('@splinetool/react-spline'), { ssr: false })
 

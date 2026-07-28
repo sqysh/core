@@ -1,4 +1,4 @@
-import { getInitials } from '@/app/lib/utils/shared.utils'
+import { getInitials } from '@/lib/utils/shared.utils'
 import { User } from '@/types/user.types'
 import { ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'

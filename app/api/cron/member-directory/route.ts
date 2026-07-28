@@ -1,9 +1,9 @@
-import { createLog } from '@/app/lib/utils/api/createLog'
-import { handleApiError } from '@/app/lib/utils/api/handleApiError'
+import { createLog } from '@/lib/utils/api/createLog'
+import { handleApiError } from '@/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { memberDirectoryTemplate } from '@/app/lib/email/member-directory.template'
+import { memberDirectoryTemplate } from '@/lib/email/member-directory.template'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 

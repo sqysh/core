@@ -1,7 +1,7 @@
 'use client'
 
-import Wheel from '@/app/components/game/wheel/Wheel'
-import { useSounds } from '@/app/lib/hooks/useSounds'
+import Wheel from '@/components/game/wheel/Wheel'
+import { useSounds } from '@/lib/hooks/useSounds'
 import { wedgeLabel, WHEEL } from '@/types/_wheel.types'
 // Standalone wheel playground — no DB, no auth, no game. Just renders the Wheel
 // and spins it to a random wedge each click so you can eyeball the animation and

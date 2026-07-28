@@ -1,12 +1,9 @@
 'use client'
 
-import Toast from './components/_shared/Toast'
-import { Footer } from './components/layout/Footer'
-import NavigationDrawer from './components/layout/NavigationDrawer'
-import { store } from './lib/redux/store'
-import { Provider } from 'react-redux'
+import ThemeProvider from '@/lib/providers/theme.provider'
+import { Footer } from '../components/layout/Footer'
+import NavigationDrawer from '../components/layout/NavigationDrawer'
 import { usePathname } from 'next/navigation'
-import { ThemeProvider } from './lib/providers/theme.provider'
 
 const showLink = (path: string) =>
   ![
@@ -29,13 +26,10 @@ export default function RootLayoutWrapper({ children }) {
   const path = usePathname()
 
   return (
-    <Provider store={store}>
-      <ThemeProvider>
-        <Toast />
-        <NavigationDrawer />
-        {children}
-        {showLink(path) && <Footer />}
-      </ThemeProvider>
-    </Provider>
+    <ThemeProvider>
+      <NavigationDrawer />
+      {children}
+      {showLink(path) && <Footer />}
+    </ThemeProvider>
   )
 }

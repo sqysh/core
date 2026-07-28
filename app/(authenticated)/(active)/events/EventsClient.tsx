@@ -15,25 +15,6 @@ interface TEvent {
 }
 
 function MarqueeContent({ event }: { event: TEvent }) {
-  // const content = [event.name, event.org, event.description].filter(Boolean).join(' · ')
-  // const isOverflowing = content.length > 40
-
-  // if (isOverflowing) {
-  //   return (
-  //     <Marquee speed={30} gradientWidth={20} pauseOnHover>
-  //       <span className="text-[13px] font-sora font-semibold text-text-light dark:text-text-dark pr-8">
-  //         {event.name}
-  //       </span>
-  //       <span className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark pr-8">
-  //         {event.org}
-  //       </span>
-  //       {event.description && (
-  //         <span className="text-xs font-nunito text-muted-light dark:text-muted-dark pr-8">{event.description}</span>
-  //       )}
-  //     </Marquee>
-  //   )
-  // }
-
   return (
     <div>
       <p className="text-[13px] font-sora font-semibold text-text-light dark:text-text-dark leading-tight truncate">

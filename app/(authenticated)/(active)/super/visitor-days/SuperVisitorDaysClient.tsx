@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, X, ChevronDown, ChevronUp } from 'lucide-react'
-import { getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
-import { toDateKey, fmtDate } from '@/app/lib/utils/date.utils'
-import { addVisitorDay } from '@/app/lib/actions/visitor-day/addVisitorDay'
-import { removeVisitorDay } from '@/app/lib/actions/visitor-day/removeVisitorDay'
-import { updateVisitorDay } from '@/app/lib/actions/visitor-day/updateVisitorDay'
+import { getUpcomingMeetingDates } from '@/lib/utils/presenter-engine.utils'
+import { toDateKey, fmtDate } from '@/lib/utils/date.utils'
+import { addVisitorDay } from '@/lib/actions/visitor-day/addVisitorDay'
+import { removeVisitorDay } from '@/lib/actions/visitor-day/removeVisitorDay'
+import { updateVisitorDay } from '@/lib/actions/visitor-day/updateVisitorDay'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface VisitorDay {

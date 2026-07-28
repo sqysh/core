@@ -1,12 +1,12 @@
-import { createLog } from '@/app/lib/utils/api/createLog'
-import { resend } from '@/app/lib/resend/resend'
+import { createLog } from '@/lib/utils/api/createLog'
+import { resend } from '@/lib/resend/resend'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { presenterQueueTemplate } from '@/app/lib/email/presenter-queue.template'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
-import { buildSchedule, getUpcomingMeetingDates } from '@/app/lib/utils/presenter-engine.utils'
-import { fmtDate } from '@/app/lib/utils/date.utils'
-import { getAllUpcomingThursdays } from '@/app/lib/utils/attendance.utils'
+import { presenterQueueTemplate } from '@/lib/email/presenter-queue.template'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { buildSchedule, getUpcomingMeetingDates } from '@/lib/utils/presenter-engine.utils'
+import { fmtDate } from '@/lib/utils/date.utils'
+import { getAllUpcomingThursdays } from '@/lib/utils/attendance.utils'
 
 const BATCH_SIZE = 2
 const DELAY_MS = 1000

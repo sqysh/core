@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
-import { auth } from '@/app/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import SuperLogsClient from '@/app/(authenticated)/(active)/super/logs/SuperLogsClient'
-import { getLogs } from '@/app/lib/actions/log/getLogs'
+import { getLogs } from '@/lib/actions/log/getLogs'
 
 export default async function LogsPage() {
   const session = await auth()

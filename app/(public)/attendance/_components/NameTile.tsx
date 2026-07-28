@@ -1,5 +1,5 @@
-import Picture from '@/app/components/_shared/Picture'
-import { getInitials } from '@/app/lib/utils/shared.utils'
+import Picture from '@/components/_shared/Picture'
+import { getInitials } from '@/lib/utils/shared.utils'
 import { Member } from '@/types/attendance.types'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'

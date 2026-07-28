@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { chapterId } from '@/app/lib/constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 import VisitorDayClient from './VisitorDayClient'
 
 export interface GroupStats {

@@ -23,7 +23,6 @@
     "@auth/prisma-adapter": "^2.10.0",
     "@next/third-parties": "^16.0.7",
     "@prisma/client": "^5.22.0",
-    "@reduxjs/toolkit": "^2.5.0",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.92",
     "@stripe/react-stripe-js": "^6.1.0",
@@ -40,10 +39,10 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-redux": "^9.1.2",
     "recharts": "^3.10.0",
     "resend": "^4.6.0",
-    "stripe": "^22.1.0"
+    "stripe": "^22.1.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { MembershipStatus, UserRole } from '@prisma/client'
-import { lastSeenColor, lastSeenLabel } from '@/app/lib/utils/date.utils'
-import { formatPhone } from '@/app/lib/utils/phone.utils'
+import { lastSeenColor, lastSeenLabel } from '@/lib/utils/date.utils'
+import { formatPhone } from '@/lib/utils/phone.utils'
 
 interface Member {
   id: string

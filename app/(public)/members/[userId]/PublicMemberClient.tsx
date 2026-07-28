@@ -4,18 +4,12 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, Globe, MapPin, Phone, Mail, Target } from 'lucide-react'
 import { User } from '@/types/user.types'
-import FadeUp from '../../../components/_shared/FadeUp'
-import { formatPhone } from '@/app/lib/utils/phone.utils'
+import FadeUp from '../../../../components/_shared/FadeUp'
+import { formatPhone } from '@/lib/utils/phone.utils'
 import { useSession } from 'next-auth/react'
-import { getInitials } from '@/app/lib/utils/shared.utils'
+import { getInitials } from '@/lib/utils/shared.utils'
 import SixtySecondsTV from '../_components/SixtySecondsTVClient'
-import {
-  FacebookIcon,
-  LinkedInIcon,
-  ThreadsIcon,
-  XIcon,
-  YoutubeIcon
-} from '@/app/components/_shared/social-media.icons'
+import { FacebookIcon, LinkedInIcon, ThreadsIcon, XIcon, YoutubeIcon } from '@/components/_shared/social-media.icons'
 import { InfoRow } from './_components/InfoRow'
 import { SocialLink } from './_components/SocialLink'
 import { MiniMemberCard } from './_components/MiniMemberCard'

@@ -1,4 +1,4 @@
-import { getInitials } from '@/app/lib/utils/shared.utils'
+import { getInitials } from '@/lib/utils/shared.utils'
 import { Member } from '@/types/attendance.types'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
