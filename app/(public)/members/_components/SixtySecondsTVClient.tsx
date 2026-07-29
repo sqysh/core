@@ -1,8 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
-export default function SixtySecondsTV() {
+export default function SixtySecondsTV({ profileImage }: { profileImage: string | null }) {
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#f4f6fa] text-[#0f172a]">
       {/* ── News top bar ── */}
@@ -16,9 +18,13 @@ export default function SixtySecondsTV() {
             Coastal Referral Exchange · North Shore Chapter · Thursday Morning Meeting
           </span>
         </div>
-        <div className="flex items-center pr-6">
-          <span className="font-mono text-xs tracking-[0.12em] text-blue-300">60 Seconds</span>
-        </div>
+        <Link
+          href="/members"
+          className="flex items-center gap-2 px-6 border-l border-white/10 text-blue-300 hover:bg-[#2d6fad] hover:text-white transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
+        >
+          <ArrowLeft size={14} aria-hidden="true" />
+          <span className="font-mono text-xs tracking-[0.15em] uppercase font-bold">All Members</span>
+        </Link>
       </div>
 
       {/* ── Main ── */}
@@ -81,7 +87,7 @@ export default function SixtySecondsTV() {
                 {['Small businesses', 'Growing teams', 'Leaving a PEO', 'Any employer with payroll'].map((tag) => (
                   <span
                     key={tag}
-                    className="font-mono text-[11px] tracking-[0.1em] uppercase text-[#1a3558] border border-slate-200 bg-slate-50 px-4 py-2"
+                    className="font-mono text-[11px] tracking-widest uppercase text-[#1a3558] border border-slate-200 bg-slate-50 px-4 py-2"
                   >
                     {tag}
                   </span>
@@ -93,26 +99,39 @@ export default function SixtySecondsTV() {
 
         {/* ── Right sidebar ── */}
         <div className="w-96 shrink-0 flex flex-col bg-slate-50">
+          {/* Headshot — news-style portrait bug */}
+          <div className="relative w-full aspect-[4/5] shrink-0 bg-[#1a3558] overflow-hidden border-b-4 border-[#2d6fad]">
+            {profileImage ? (
+              <img src={profileImage} alt="Page Driscoll" className="w-full h-full object-cover" />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-sora font-black text-[72px] text-white/10 select-none">PD</span>
+              </div>
+            )}
+            {/* Lower-third name plate over the photo */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#1a3558] via-[#1a3558]/85 to-transparent px-5 pt-10 pb-4">
+              <p className="font-sora font-black text-[20px] text-white leading-none">Page Driscoll</p>
+              <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-blue-300 mt-1.5">
+                Commonwealth Payroll &amp; HR
+              </p>
+            </div>
+          </div>
+
           <div className="bg-[#1a3558] px-5 py-4">
             <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-blue-300">By the numbers</span>
           </div>
 
-          <div className="border-b border-slate-200 px-5 py-6">
+          <div className="border-b border-slate-200 px-5 py-5">
             <p className="font-sora font-black text-[52px] text-[#0f172a] leading-none">20</p>
             <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-slate-400 mt-2">Years in business</p>
           </div>
 
-          <div className="border-b border-slate-200 px-5 py-6">
-            <p className="font-sora font-black text-[52px] text-[#0f172a] leading-none">7</p>
-            <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-slate-400 mt-2">Service areas</p>
-          </div>
-
-          <div className="border-b border-slate-200 px-5 py-6">
+          <div className="border-b border-slate-200 px-5 py-5">
             <p className="font-sora font-bold text-[28px] text-[#2d6fad] leading-none">Marblehead, MA</p>
             <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-slate-400 mt-2">North Shore local</p>
           </div>
 
-          <div className="border-b border-slate-200 px-5 py-6">
+          <div className="border-b border-slate-200 px-5 py-5">
             <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#2d6fad] mb-4">Get in touch</p>
             <div className="flex flex-col gap-3">
               {['877-245-1159', 'sales@commpayhr.com', 'commpayhr.com'].map((val) => (
@@ -124,7 +143,7 @@ export default function SixtySecondsTV() {
             </div>
           </div>
 
-          <div className="px-5 py-6 flex-1 flex flex-col justify-end">
+          <div className="px-5 py-5 flex-1 flex flex-col justify-end min-h-0">
             <p className="text-[15px] text-slate-400 leading-relaxed italic">
               "Professional, dependable, and available at a moment's notice."
             </p>
@@ -135,7 +154,7 @@ export default function SixtySecondsTV() {
 
       {/* ── Chyron ── */}
       <div className="flex items-stretch h-16 border-t-4 border-[#2d6fad] bg-white shrink-0">
-        <div className="flex flex-col justify-center px-5 bg-[#1a3558] border-r-4 border-[#2d6fad] shrink-0 min-w-[200px]">
+        <div className="flex flex-col justify-center px-5 bg-[#1a3558] border-r-4 border-[#2d6fad] shrink-0 min-w-50">
           <p className="font-sora font-black text-[16px] text-white leading-none">Page Driscoll</p>
           <p className="font-mono text-[10px] tracking-[0.12em] uppercase text-blue-300 mt-1">
             Commonwealth Payroll &amp; HR

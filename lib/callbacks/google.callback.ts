@@ -3,11 +3,9 @@ import prisma from '@/prisma/client'
 import { createLog } from '../utils/api/createLog'
 
 export async function handleGoogleCallback(user: NextAuthUser, account: Account, profile?: Profile): Promise<boolean> {
-  console.log('HANDLE GOOGLE CALLBACK: ', profile)
   if (!user.email) return false
 
   const email = (profile?.email ?? user.email)?.toLowerCase()
-  // console.log('EMAIL in - handleGoogleCallback -: ', email)
 
   // Registered sign-in accounts are the source of truth. Display email is a
   // transitional fallback — remove once every member has a UserEmail row.

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/auth'
-import { getAdminDashboardData } from '@/lib/actions/dashboard/getAdminDashboardData'
+import { getAdminDashboardData } from '@/lib/actions/admin/getAdminDashboardData'
 import AdminDashboardClient from './AdminDashboardClient'
 
 export default async function AdminDashPage() {

@@ -2,7 +2,7 @@
 
 import { Users, Activity, DollarSign, Clock, FileText, LayoutDashboard } from 'lucide-react'
 import Link from 'next/link'
-import { AdminDashboardData } from '@/lib/actions/dashboard/getAdminDashboardData'
+import { AdminDashboardData } from '@/lib/actions/admin/getAdminDashboardData'
 import { StatTile } from '@/app/(authenticated)/(active)/admin/_components/StatTile'
 import { RecentActivityItem } from '@/app/(authenticated)/(active)/admin/_components/RecentActivityItem'
 import { SectionLabel } from '@/components/_shared/SectionLabel'

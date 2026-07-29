@@ -78,12 +78,6 @@ export function MembershipSetupForm({ onClose, joinMonth, setJoinMonth, joinDay,
       return
     }
 
-    console.log('[membership] setupIntent result', {
-      status: setupIntent?.status,
-      paymentMethod: paymentMethodId, // ← extracted correctly?
-      error: error?.message
-    })
-
     // 3. NOW create the subscriptions with the confirmed card as default
     const finalizeRes = await finalizeMembership({
       paymentMethodId,

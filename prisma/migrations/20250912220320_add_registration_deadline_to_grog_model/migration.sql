@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Grog" ADD COLUMN     "registrationDeadline" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

@@ -1,6 +1,0 @@
--- AlterTable
-ALTER TABLE "User" ALTER COLUMN "location" DROP NOT NULL,
-ALTER COLUMN "businessLicenseNumber" DROP NOT NULL,
-ALTER COLUMN "isLicensed" DROP NOT NULL,
-ALTER COLUMN "title" DROP NOT NULL,
-ALTER COLUMN "yearsInBusiness" DROP NOT NULL;

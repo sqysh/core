@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, Globe, MapPin, Phone, Mail, Target } from 'lucide-react'
-import { User } from '@/types/user.types'
 import FadeUp from '../../../../components/_shared/FadeUp'
 import { formatPhone } from '@/lib/utils/phone.utils'
 import { useSession } from 'next-auth/react'
@@ -13,6 +12,7 @@ import { FacebookIcon, LinkedInIcon, ThreadsIcon, XIcon, YoutubeIcon } from '@/c
 import { InfoRow } from './_components/InfoRow'
 import { SocialLink } from './_components/SocialLink'
 import { MiniMemberCard } from './_components/MiniMemberCard'
+import MemberListings from './_components/MemberListings'
 
 type Props = {
   user: {
@@ -37,15 +37,17 @@ type Props = {
     youtubeUrl: string | null
     weeklyTreasureWishlist: string | null
   }
-  users: User[]
+  users: any[]
+  eileenListings: any[]
 }
 
-export default function PublicMemberClient({ user, users }: Props) {
+export default function PublicMemberClient({ user, users, eileenListings }: Props) {
   const otherMembers = users.filter((m) => m.id !== user.id && m.isPublic)
   const session = useSession()
   const isLoggedIn = session.status === 'authenticated'
 
-  if (user.id === 'cmizav9ql000hy0u41tjgqqko') return <SixtySecondsTV />
+  if (user.id === 'cmizav9ql000hy0u41tjgqqko' && session.data?.user?.role === 'SUPER_USER')
+    return <SixtySecondsTV profileImage={user.profileImage} />
 
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
@@ -145,6 +147,7 @@ export default function PublicMemberClient({ user, users }: Props) {
                   <InfoRow
                     icon={Globe}
                     value={user.website}
+                    title={user.company}
                     href={user.website?.startsWith('http') ? user.website : `https://${user.website}`}
                   />
                 </div>
@@ -257,6 +260,8 @@ export default function PublicMemberClient({ user, users }: Props) {
                 </div>
               </FadeUp>
             )}
+
+            <MemberListings listings={eileenListings} />
           </div>
         </div>
 

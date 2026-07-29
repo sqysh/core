@@ -1,5 +1,5 @@
 import { ActivityType } from '@/types/dashboard.types'
-import { fetchRecentActivity } from '../actions/dashboard/fetchRecentActivity'
+import { fetchRecentActivity } from '../actions/dashboard/queries/fetchRecentActivity'
 import { timeAgo } from './date.utils'
 
 /**

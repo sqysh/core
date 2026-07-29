@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/auth'
 import DashboardClient from '@/app/(authenticated)/(active)/dashboard/DashboardClient'
-import { getDashboardPageData } from '@/lib/actions/dashboard/getDashboardPageData'
+import { getUserDashboard } from '@/lib/actions/dashboard/getUserDashboard'
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user) redirect('/login')
 
-  const result = await getDashboardPageData()
+  const result = await getUserDashboard()
 
   if (!result.success || !result.data) {
     return <DashboardError />

@@ -1,3 +1,5 @@
+import isValidEmail from '@/lib/regex/isValidEmail'
+
 export function validateUserData(data: any) {
   const errors: { field: string; message: string }[] = []
 
@@ -10,7 +12,7 @@ export function validateUserData(data: any) {
 
   if (!data.email || typeof data.email !== 'string' || data.email.trim().length === 0) {
     errors.push({ field: 'email', message: 'Email is required' })
-  } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+  } else if (!isValidEmail(data.email)) {
     errors.push({ field: 'email', message: 'Invalid email format' })
   } else if (data.email.length > 255) {
     errors.push({ field: 'email', message: 'Email too long' })

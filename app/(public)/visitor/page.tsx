@@ -36,7 +36,6 @@ export async function getGroupStats(): Promise<{
       data: { totalRevenue, totalParleys, totalReferrals }
     }
   } catch (err) {
-    console.error('[getGroupStats]', err)
     return { success: false, error: 'Failed to load group stats' }
   }
 }

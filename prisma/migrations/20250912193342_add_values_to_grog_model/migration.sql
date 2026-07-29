@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Grog" ADD COLUMN     "isPublic" BOOLEAN NOT NULL DEFAULT true,
-ADD COLUMN     "requiresRSVP" BOOLEAN NOT NULL DEFAULT false;
