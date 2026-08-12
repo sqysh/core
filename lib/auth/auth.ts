@@ -8,7 +8,6 @@ import { handleGoogleCallback } from '../callbacks/google.callback'
 import { UserRole } from '@prisma/client'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60,

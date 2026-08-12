@@ -17,7 +17,8 @@ import {
   ScrollText,
   ClipboardCheck,
   Layout,
-  ArrowLeft
+  ArrowLeft,
+  Lightbulb
 } from 'lucide-react'
 
 const NAV = [
@@ -29,6 +30,7 @@ const NAV = [
   { label: 'Referrals', href: '/super/referrals', icon: Share2 },
   { label: 'Closed Business', href: '/super/closed-business', icon: DollarSign },
   { label: 'Presenter Queue', href: '/super/presenter-queue', icon: Mic },
+  { label: 'Guiding Light', href: '/super/guiding-light', icon: Lightbulb },
   { label: 'Events', href: '/super/events', icon: CalendarDays },
   { label: 'Visitors', href: '/super/visitors', icon: Eye },
   { label: 'Visitor Days', href: '/super/visitor-days', icon: CalendarX },

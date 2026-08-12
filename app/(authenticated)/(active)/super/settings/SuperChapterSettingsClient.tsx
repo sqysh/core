@@ -17,7 +17,7 @@ interface Chapter {
   hasUnlockedMuster: boolean
 }
 
-export function SuperChapterSettingsClient({ chapter }: { chapter: Chapter }) {
+export default function SuperChapterSettingsClient({ chapter }: { chapter: Chapter }) {
   const router = useRouter()
   const [form, setForm] = useState(chapter)
   const [saving, setSaving] = useState(false)

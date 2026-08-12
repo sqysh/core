@@ -2,11 +2,11 @@ import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { SuperSettingsClient } from './SuperSettingsClient'
+import SuperChapterSettingsClient from './SuperChapterSettingsClient'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SuperSettingsPage() {
+export default async function SuperChapterSettingsPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
   if (session.user.role !== 'SUPER_USER') redirect('/dashboard')
@@ -25,5 +25,5 @@ export default async function SuperSettingsPage() {
     }
   })
 
-  return <SuperSettingsClient chapter={chapter} />
+  return <SuperChapterSettingsClient chapter={chapter} />
 }

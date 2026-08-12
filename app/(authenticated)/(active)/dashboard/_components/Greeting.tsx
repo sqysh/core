@@ -52,12 +52,7 @@ export function Greeting({ currentUser }) {
           Profile
         </Link>
 
-        <Link href="/attendance/history" className={sharedCls}>
-          <UserCircle className="hidden sm:block sm:w-3 sm:h-3" />
-          Attendance
-        </Link>
-
-        {isAdmin && (
+        {(isAdmin || isSuperUser) && (
           <Link href="/admin" className={sharedCls}>
             <LayoutDashboard className="hidden sm:block sm:w-3 sm:h-3" />
             Admin

@@ -5,7 +5,7 @@ import AdminDashboardClient from './AdminDashboardClient'
 
 export default async function AdminDashPage() {
   const session = await auth()
-  if (session.user.role !== 'ADMIN') redirect('/dashboard')
+  if (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_USER') redirect('/dashboard')
 
   const result = await getAdminDashboardData()
 

@@ -3,32 +3,36 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useSounds } from '@/lib/hooks/useSounds'
-import { ACTIONS } from '@/lib/constants/member/dashboard.constants'
-import { ModalKey, QuickActionsProps } from '@/types/dashboard.types'
-import { QuickActionButton } from './QuickActionButton'
+import { Member, ModalKey } from '@/types/dashboard.types'
 import { ReferralModal } from './ReferralModal'
 import { ClosedBusinessModal } from './ClosedBusinessModal'
 import { F2FModal } from './F2FModal'
 
-export default function QuickActions({ members, variant }: QuickActionsProps) {
-  const [activeModal, setActiveModal] = useState<ModalKey>(null)
+export interface QuickActionsProps {
+  members: Member[]
+  variant: 'card' | 'compact'
+  initialModal: any
+  onModalClose: () => void
+}
+
+export default function QuickActions({ members, variant, initialModal, onModalClose }: QuickActionsProps) {
+  const [activeModal, setActiveModal] = useState<ModalKey>(initialModal ?? null)
   const router = useRouter()
-  const { play } = useSounds({ enabled: true, volume: 0.4 })
 
   const searchParams = useSearchParams()
+
   useEffect(() => {
     const action = searchParams.get('action')
     if (action === 'f2f' || action === 'referral' || action === 'closed') setActiveModal(action)
   }, [searchParams])
 
-  function openModal(key: ModalKey) {
-    play('se9')
-    setActiveModal(key)
-  }
+  useEffect(() => {
+    if (initialModal) setActiveModal(initialModal)
+  }, [initialModal])
+
   function closeModal() {
-    play('se10')
     setActiveModal(null)
+    onModalClose?.()
   }
   function onSuccess() {
     router.refresh()
@@ -37,12 +41,6 @@ export default function QuickActions({ members, variant }: QuickActionsProps) {
 
   return (
     <>
-      <div className={variant === 'card' ? 'flex flex-col gap-3' : 'grid grid-cols-1 xs:grid-cols-3 gap-3 mb-6'}>
-        {ACTIONS.map((a) => (
-          <QuickActionButton key={a.key} action={a} onClick={() => openModal(a.key)} />
-        ))}
-      </div>
-
       {activeModal && (
         <motion.div
           initial={{ opacity: 0 }}

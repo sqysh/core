@@ -14,6 +14,7 @@ import { UserRole } from '@prisma/client'
 import SuperSignInEmailsManager from '@/app/(authenticated)/(active)/super/_components/SuperSignInEmailsManager'
 import { SuperDashStatusBadge } from '@/app/(authenticated)/(active)/super/_components/SuperDashStatusBadge'
 import { Toggle } from '@/components/_shared/Toggle'
+import { fmtDate } from '@/lib/utils/date.utils'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 const MEMBERSHIP_STATUSES = ['PENDING', 'ACTIVE', 'REJECTED'] as const
@@ -128,7 +129,7 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
   }
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
+    <div className="bg-bg-light dark:bg-bg-dark">
       <div className="px-6 pb-24">
         {/* ── Header ── */}
         <div className="pt-7 pb-6 border-b border-border-light dark:border-border-dark mb-8 flex items-center justify-between">
@@ -168,26 +169,14 @@ export default function SuperDashMemberEditClient({ member }: { member: SuperMem
               <p className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark">
                 Joined
               </p>
-              <p className="text-[12px] font-mono text-text-light dark:text-text-dark">
-                {new Date(member.createdAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
-              </p>
+              <p className="text-[12px] font-mono text-text-light dark:text-text-dark">{fmtDate(member.createdAt)}</p>
             </div>
             <div className="text-right">
               <p className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark">
                 Last Login
               </p>
               <p className="text-[12px] font-mono text-text-light dark:text-text-dark">
-                {member.lastLoginAt
-                  ? new Date(member.lastLoginAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })
-                  : '—'}
+                {member.lastLoginAt ? fmtDate(member.lastLoginAt) : '—'}
               </p>
             </div>
             <div className="text-right">

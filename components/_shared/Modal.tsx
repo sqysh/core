@@ -43,7 +43,7 @@ export function Modal({
           onMouseUp={(e) => {
             if (mouseDownTarget.current === e.currentTarget) onClose()
           }}
-          className="fixed inset-x-0 bottom-0 z-50 flex justify-center"
+          className="fixed inset-x-0 bottom-0 z-100 flex justify-center"
           initial={{ y: 28, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 28, opacity: 0 }}

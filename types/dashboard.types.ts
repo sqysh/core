@@ -61,17 +61,29 @@ export interface MemberDashboardProps {
     error?: string
   }
   exclusions: { reason: string; date: string }[]
+  guidingLight: {
+    currentJudge: { id: string; name: string }
+    records: {
+      meetingDate: string
+      id: string
+      winner: {
+        name: string
+        id: string
+        company: string
+        profileImage: string
+      }
+      judgedBy: {
+        name: string
+        id: string
+      }
+    }[]
+  }
 }
 
 export interface Member {
   id: string
   name: string
   industry: string | null
-}
-
-export interface QuickActionsProps {
-  members: Member[]
-  variant: 'card' | 'compact'
 }
 
 export type ModalKey = 'f2f' | 'referral' | 'closed' | null

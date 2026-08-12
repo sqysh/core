@@ -110,22 +110,25 @@ model User {
   quarterlySubscriptionId  String?
 
   // ── Relations ─────────────────────────────────────────────────────────────
-  chapter           Chapter         @relation(fields: [chapterId], references: [id])
-  accounts          Account[]
-  sessions          Session[]
-  logs              Log[]
-  orders            Order[]
-  paymentMethods    PaymentMethod[]
-  presenterQueue    PresenterQueue?
-  visitorInvites    Visitor[]       @relation("VisitorInvites")
-  givenCredits      Anchor[]        @relation("AnchorGiver")
-  receivedCredits   Anchor[]        @relation("AnchorReceiver")
-  requestedMeetings Parley[]        @relation("ParleyRequester")
-  receivedMeetings  Parley[]        @relation("ParleyRecipient")
-  giver             TreasureMap[]   @relation("TreasureMapGiver")
-  receiver          TreasureMap[]   @relation("TreasureMapReceiver")
-  attendances       Attendance[]
-  alternateEmails   UserEmail[]
+  chapter              Chapter               @relation(fields: [chapterId], references: [id])
+  accounts             Account[]
+  sessions             Session[]
+  logs                 Log[]
+  orders               Order[]
+  paymentMethods       PaymentMethod[]
+  presenterQueue       PresenterQueue?
+  visitorInvites       Visitor[]             @relation("VisitorInvites")
+  givenCredits         Anchor[]              @relation("AnchorGiver")
+  receivedCredits      Anchor[]              @relation("AnchorReceiver")
+  requestedMeetings    Parley[]              @relation("ParleyRequester")
+  receivedMeetings     Parley[]              @relation("ParleyRecipient")
+  giver                TreasureMap[]         @relation("TreasureMapGiver")
+  receiver             TreasureMap[]         @relation("TreasureMapReceiver")
+  attendances          Attendance[]
+  alternateEmails      UserEmail[]
+  guidingLightsWon     GuidingLight[]        @relation("GuidingLightWinner")
+  guidingLightsJudged  GuidingLight[]        @relation("GuidingLightJudge")
+  guidingLightNominees GuidingLightNominee[] @relation("GuidingLightNominees")
 
   // DEPRECATED
   secondaryEmail             String? @unique
@@ -200,17 +203,17 @@ model Anchor {
 }
 
 model Chapter {
-  id                String        @id @default(cuid())
+  id                String         @id @default(cuid())
   name              String
   location          String
   meetingDay        String
   meetingTime       String
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  meetingFrequency  String        @default("WEEKLY")
-  hasUnlockedBooty  Boolean       @default(false)
-  hasUnlockedGrog   Boolean       @default(false)
-  hasUnlockedMuster Boolean       @default(false)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  meetingFrequency  String         @default("WEEKLY")
+  hasUnlockedBooty  Boolean        @default(false)
+  hasUnlockedGrog   Boolean        @default(false)
+  hasUnlockedMuster Boolean        @default(false)
   anchors           Anchor[]
   events            Event[]
   parleys           Parley[]
@@ -218,6 +221,7 @@ model Chapter {
   users             User[]
   visitors          Visitor[]
   meetings          Meeting[]
+  guidingLights     GuidingLight[]
 }
 
 model Event {
@@ -445,6 +449,48 @@ model UserEmail {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model GuidingLight {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  meetingDate DateTime
+
+  winnerId String?
+  winner   User?   @relation("GuidingLightWinner", fields: [winnerId], references: [id])
+
+  judgedById String?
+  judgedBy   User?   @relation("GuidingLightJudge", fields: [judgedById], references: [id])
+
+  status GuidingLightStatus @default(OPEN)
+
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+
+  nominees GuidingLightNominee[]
+
+  @@index([winnerId])
+  @@index([judgedById])
+  @@index([chapterId])
+  @@index([meetingDate])
+}
+
+model GuidingLightNominee {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  guidingLightId String
+  guidingLight   GuidingLight @relation(fields: [guidingLightId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation("GuidingLightNominees", fields: [userId], references: [id])
+
+  @@unique([guidingLightId, userId])
+  @@index([guidingLightId])
+  @@index([userId])
+}
+
+enum GuidingLightStatus {
+  OPEN
+  REVEALED
 }
 
 enum UserRole {

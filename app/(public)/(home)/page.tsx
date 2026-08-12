@@ -1,19 +1,24 @@
-'use client'
+import prisma from '@/prisma/client'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import HomeClient from './HomeClient'
 
-import { PurposeOverview } from './_components/PurposeOverview'
-import { MemberExpectations } from './_components/MemberExpectations'
-import { CTASection } from './_components/CTASection'
-import HeroSection from './_components/HeroSection'
-import { AboutSection } from './_components/AboutSection'
+export const dynamic = 'force-dynamic'
 
-export default function Home() {
-  return (
-    <>
-      <HeroSection />
-      <AboutSection />
-      <PurposeOverview />
-      <MemberExpectations />
-      <CTASection />
-    </>
-  )
+export default async function HomePage() {
+  const [openRound, lastRevealed] = await Promise.all([
+    prisma.guidingLight.findFirst({
+      where: { chapterId, status: 'OPEN' },
+      orderBy: { meetingDate: 'desc' },
+      select: { judgedBy: { select: { id: true, name: true } } }
+    }),
+    prisma.guidingLight.findFirst({
+      where: { chapterId, status: 'REVEALED' },
+      orderBy: { meetingDate: 'desc' },
+      select: { winner: { select: { id: true, name: true } } }
+    })
+  ])
+
+  const currentJudge = openRound?.judgedBy ?? lastRevealed?.winner ?? null
+
+  return <HomeClient currentJudge={currentJudge} />
 }

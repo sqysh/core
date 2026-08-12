@@ -5,16 +5,19 @@ import Link from 'next/link'
 import PresenterSchedule from './_components/PresentersSchedule'
 import { MemberList } from './_components/MemberList'
 import { HistoryTabs } from './_components/HistoryTabs'
-import FadeUp from '../../../../components/_shared/FadeUp'
-import { SectionLabel } from '../../../../components/_shared/SectionLabel'
+import FadeUp from '@/components/_shared/FadeUp'
+import { SectionLabel } from '@/components/_shared/SectionLabel'
 import { Greeting } from './_components/Greeting'
 import { ActivityStats } from './_components/ActivityStats'
 import { EventButton } from './_components/EventButton'
 import { EventsList } from './_components/EventsList'
 import VisitorPanel from './_components/VisitorPanel'
-import { MemberDashboardProps } from '@/types/dashboard.types'
+import { MemberDashboardProps, ModalKey } from '@/types/dashboard.types'
 import { AttendancePanel } from '@/app/(authenticated)/(active)/dashboard/_components/AttendancePanel'
 import MembershipSetupPanel from '@/app/(authenticated)/(active)/dashboard/_components/MembershipSetupPanel'
+import { GuidingLightPanel } from './_components/GuidingLightPanel'
+import { useState } from 'react'
+import FloatingQuickActions from './_components/FloatingQuickActions'
 
 export default function DashboardClient({
   currentUser,
@@ -27,8 +30,11 @@ export default function DashboardClient({
   closestVisitorDay,
   membership,
   attendances,
-  exclusions
+  exclusions,
+  guidingLight
 }: MemberDashboardProps) {
+  const [floatingModal, setFloatingModal] = useState<ModalKey>(null)
+
   // Unwrap action results into clean shapes for child components
   const scheduleData = schedule.data ?? []
   const attendanceData = attendances.data ?? {
@@ -38,8 +44,8 @@ export default function DashboardClient({
   }
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
-      <main className="max-w-170 mx-auto px-4 pb-12">
+    <main id="main-content" className="min-h-screen bg-bg-light dark:bg-bg-dark">
+      <div className="max-w-170 mx-auto px-4 pb-28">
         {/* ── Greeting ── */}
         <FadeUp delay={0.025} className="pt-7 pb-5">
           <Greeting currentUser={currentUser} />
@@ -55,10 +61,14 @@ export default function DashboardClient({
         </FadeUp>
 
         {/* ── Quick actions ── */}
-        <FadeUp delay={0.15} className="pt-6">
-          <SectionLabel>Quick Actions</SectionLabel>
-          <QuickActions members={members} variant="card" />
-        </FadeUp>
+        <QuickActions
+          members={members}
+          variant="card"
+          initialModal={floatingModal}
+          onModalClose={() => setFloatingModal(null)}
+        />
+
+        <FloatingQuickActions onAction={(key: string) => setFloatingModal(key as ModalKey)} />
 
         {/* Activity Stats */}
         <FadeUp delay={0.15} className="pt-6">
@@ -76,6 +86,12 @@ export default function DashboardClient({
             membership={membership}
             memberCreatedAt={currentUser.createdAt}
           />
+        </FadeUp>
+
+        {/* ── Guiding Light ── */}
+        <FadeUp delay={0.15} className="pt-6">
+          <SectionLabel>Guiding Light</SectionLabel>
+          <GuidingLightPanel currentJudge={guidingLight.currentJudge} records={guidingLight.records} />
         </FadeUp>
 
         {/* ── Events ── */}
@@ -113,7 +129,7 @@ export default function DashboardClient({
           <SectionLabel>Members</SectionLabel>
           <MemberList members={members} />
         </FadeUp>
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }

@@ -150,7 +150,7 @@ export function VisitorVisual() {
                 Invite Sent
               </p>
               <p className="text-[11px] sm:text-xs font-nunito text-text-light dark:text-text-dark truncate">
-                {['Jane Smith', 'Marcus Lee', 'Anna Roy'][i]} · Thursday meeting
+                {['Jane Smith', 'Marcus Lee', 'Andrew Royk'][i]} · Thursday meeting
               </p>
             </div>
             <span className="text-[9px] sm:text-f10 font-mono text-primary-light dark:text-primary-dark shrink-0">

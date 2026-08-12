@@ -3,6 +3,24 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+const hideLink = (path: string) =>
+  [
+    '/admin',
+    '/members',
+    '/application',
+    '/login',
+    '/dashboard',
+    '/super',
+    '/profile',
+    '/onboarding',
+    '/visitor-day',
+    '/visitor',
+    '/attendance',
+    '/check-in',
+    '/events',
+    '/guiding-light'
+  ].some((str) => path.includes(str))
+
 export const Footer = () => {
   const path = usePathname()
 
@@ -10,6 +28,8 @@ export const Footer = () => {
     `text-f10 font-mono tracking-[0.15em] uppercase transition-colors duration-150 ${
       active ? 'text-primary-dark' : 'text-on-dark hover:text-text-dark'
     }`
+
+  if (hideLink(path)) return
 
   return (
     <footer className="bg-navbar-light dark:bg-navbar-dark border-t border-border-dark">
