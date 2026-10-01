@@ -27,7 +27,7 @@ export async function getAttendanceHistory(): Promise<{
 }> {
   const session = await auth()
   try {
-    const [members, meetings, corrections] = await Promise.all([
+    const [members, meetings, corrections, subscriptionStarts] = await Promise.all([
       prisma.user
         .findMany({
           where: { chapterId, membershipStatus: 'ACTIVE' },
@@ -55,8 +55,24 @@ export async function getAttendanceHistory(): Promise<{
           type: 'ATTENDANCE_CORRECTION'
         },
         select: { meetingId: true, userId: true }
+      }),
+      prisma.order.findMany({
+        where: {
+          chapterId,
+          status: 'ACTIVE',
+          type: { in: ['ANNUAL', 'QUARTERLY'] }
+        },
+        select: { userId: true, createdAt: true },
+        orderBy: { createdAt: 'asc' }
       })
     ])
+
+    const firstSubDate = new Map<string, Date>()
+    for (const order of subscriptionStarts) {
+      if (!firstSubDate.has(order.userId)) {
+        firstSubDate.set(order.userId, order.createdAt)
+      }
+    }
 
     const rows: AttendanceRow[] = meetings.map((m) => ({
       id: m.id,
@@ -80,8 +96,7 @@ export async function getAttendanceHistory(): Promise<{
       success: true,
       data: { members, rows }
     }
-  } catch (err) {
-    console.error('[getAttendanceHistory]', err)
+  } catch {
     return { success: false, error: 'Failed to load attendance history' }
   }
 }

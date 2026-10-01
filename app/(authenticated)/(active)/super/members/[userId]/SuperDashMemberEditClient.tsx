@@ -17,7 +17,7 @@ import { Toggle } from '@/components/_shared/Toggle'
 import { fmtDate } from '@/lib/utils/date.utils'
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
-const MEMBERSHIP_STATUSES = ['PENDING', 'ACTIVE', 'REJECTED'] as const
+const MEMBERSHIP_STATUSES = ['PENDING', 'INACTIVE', 'SUSPENDED'] as MembershipStatus[]
 
 const inputCls =
   'w-full h-12 bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark px-3.5 font-nunito text-[15px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light/20 dark:focus:ring-primary-dark/20 transition-colors rounded-none disabled:opacity-50'
