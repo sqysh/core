@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils/currency.utils'
-import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { triggerReaction } from '@/lib/actions/visitor-day/triggerReaction'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -109,21 +109,22 @@ export default function VisitorClient({
   const [reactionCounts, setReactionCounts] = useState<Record<string, number>>({})
   const router = useRouter()
 
-  // ── Pusher setup ──────────────────────────────────────────────────────────
   useEffect(() => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe('visitor-reactions')
+    const channel = getPusherClient().subscribe('visitor-reactions')
 
-    channel.bind('reaction', (data: { emoji: string }) => {
+    const onReaction = (data: { emoji: string }) => {
       spawnFloater(data.emoji)
       setReactionCounts((prev) => ({
         ...prev,
         [data.emoji]: (prev[data.emoji] ?? 0) + 1
       }))
-    })
+    }
+
+    channel.bind('reaction', onReaction)
 
     return () => {
-      channel.unbind_all()
+      channel.unbind('reaction', onReaction)
+      releaseChannel('visitor-reactions')
     }
   }, [])
 

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { QRCodeSVG } from 'qrcode.react'
-import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { FloatingEmojiEl } from '../../../components/_shared/FloatingEmoji'
 import { FloatingEmoji } from '@/types/attendance.types'
 import { formatCurrency } from '@/lib/utils/currency.utils'
@@ -51,16 +51,20 @@ export default function VisitorDayTV({
   }
 
   useEffect(() => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe('visitor-reactions')
-    channel.bind('reaction', (data: { emoji: string; count: number }) => {
+    const channel = getPusherClient().subscribe('visitor-reactions')
+
+    const onReaction = (data: { emoji: string; count: number }) => {
       const id = `${Date.now()}-${Math.random()}`
       const x = 10 + Math.random() * 80
       setFloaters((prev) => [...prev, { id, emoji: data.emoji, x }])
       setTotalReactions(data.count)
-    })
+    }
+
+    channel.bind('reaction', onReaction)
+
     return () => {
-      channel.unbind_all()
+      channel.unbind('reaction', onReaction)
+      releaseChannel('visitor-reactions')
     }
   }, [])
 

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { GAME_REGISTRY } from '@/lib/games/registry'
-import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 
 export default function GameAnnounceListener() {
   const router = useRouter()
@@ -15,8 +15,7 @@ export default function GameAnnounceListener() {
   pathnameRef.current = pathname
 
   useEffect(() => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe(GAME_REGISTRY.WHEEL.channel)
+    const channel = getPusherClient().subscribe(GAME_REGISTRY.WHEEL.channel)
 
     const onAnnounced = () => {
       // Don't yank the host off the TV view, and don't redirect if already there
@@ -27,8 +26,10 @@ export default function GameAnnounceListener() {
     channel.bind('game-announced', onAnnounced)
 
     return () => {
-      // Only remove this handler — leave the shared socket + subscription alive
+      // This listener lives in the layout, so it outlives the wheel pages and is the last
+      // holder of the channel. The pages only unbind their own handlers.
       channel.unbind('game-announced', onAnnounced)
+      releaseChannel(GAME_REGISTRY.WHEEL.channel)
     }
   }, [router])
 

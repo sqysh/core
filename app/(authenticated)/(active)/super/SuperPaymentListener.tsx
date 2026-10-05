@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { useSounds } from '@/lib/hooks/useSounds'
 
 export function SuperPaymentListener() {
@@ -10,16 +10,18 @@ export function SuperPaymentListener() {
   const router = useRouter()
 
   useEffect(() => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe('super-admin')
+    const channel = getPusherClient().subscribe('super-admin')
 
-    channel.bind('membership-payment', () => {
+    const onPayment = () => {
       play('se14')
       router.refresh()
-    })
+    }
+
+    channel.bind('membership-payment', onPayment)
 
     return () => {
-      channel.unbind_all()
+      channel.unbind('membership-payment', onPayment)
+      releaseChannel('super-admin')
     }
   }, [play, router])
 

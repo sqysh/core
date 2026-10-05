@@ -44,10 +44,6 @@ export default function WheelPhoneClient({ userId, initialGame }: Props) {
     const pusher = getPusherClient()
     const channel = pusher.subscribe(GAME_REGISTRY.WHEEL.channel)
 
-    channel.bind_global((eventName: string, data: unknown) => {
-      console.log('PHONE received:', eventName, data)
-    })
-
     const onDrafted = (d: WheelGame) => {
       setGame(d)
       setError(null)

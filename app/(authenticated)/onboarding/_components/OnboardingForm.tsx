@@ -1,12 +1,12 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { CreditCard, Lock, Loader2 } from 'lucide-react'
 import { createOnboardingSubscriptions } from '@/lib/actions/stripe/createOnboardingSubscriptions'
 import { useSession } from 'next-auth/react'
-import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { useAppStore } from '@/lib/store/appStore'
 
 export default function OnboardingForm() {
@@ -24,33 +24,47 @@ export default function OnboardingForm() {
 
   const hasRouted = useRef(false)
 
+  const cleanupRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    return () => cleanupRef.current?.()
+  }, [])
+
   const setupPusherListener = () => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe(`user-${userId}`)
+    if (!userId) return
+
+    const channelName = `user-${userId}`
+    const channel = getPusherClient().subscribe(channelName)
 
     let annualConfirmed = false
     let quarterlyConfirmed = false
 
-    const timeout = setTimeout(() => {
-      if (!hasRouted.current) {
-        hasRouted.current = true
-        channel.unbind_all()
-        pusher.unsubscribe(`user-${userId}`)
-        router.push('/onboarding/welcome')
-      }
-    }, 15000)
+    const cleanup = () => {
+      clearTimeout(timeout)
+      channel.unbind('subscription-confirmed', onConfirmed)
+      releaseChannel(channelName)
+      cleanupRef.current = null
+    }
 
-    channel.bind('subscription-confirmed', (data: { type: 'ANNUAL' | 'QUARTERLY' }) => {
+    const finish = () => {
+      if (hasRouted.current) return
+      hasRouted.current = true
+      cleanup()
+      router.push('/onboarding/welcome')
+    }
+
+    // Webhooks can lag. Rather than stranding someone who already paid, route them
+    // through and let the welcome page reflect whatever has landed by then
+    const timeout = setTimeout(finish, 15000)
+
+    const onConfirmed = (data: { type: 'ANNUAL' | 'QUARTERLY' }) => {
       if (data.type === 'ANNUAL') annualConfirmed = true
       if (data.type === 'QUARTERLY') quarterlyConfirmed = true
+      if (annualConfirmed && quarterlyConfirmed) finish()
+    }
 
-      if (annualConfirmed && quarterlyConfirmed && !hasRouted.current) {
-        hasRouted.current = true
-        clearTimeout(timeout)
-        channel.unbind_all()
-        router.push('/onboarding/welcome')
-      }
-    })
+    channel.bind('subscription-confirmed', onConfirmed)
+    cleanupRef.current = cleanup
   }
 
   const handleSubmit = async () => {

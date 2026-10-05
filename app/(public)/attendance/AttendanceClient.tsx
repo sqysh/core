@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { QRCodeSVG } from 'qrcode.react'
 import { useSounds } from '@/lib/hooks/useSounds'
-import { getPusherClient } from '@/lib/pusher/pusherClient'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { FloatingEmoji, Member } from '@/types/attendance.types'
 import { FloatingEmojiEl } from '../../../components/_shared/FloatingEmoji'
 import { NextMeetingCountdown } from './_components/NextMeetingCountdown'
@@ -54,24 +54,28 @@ export default function AttendanceClient({
     const pusher = getPusherClient()
 
     const attendanceChannel = pusher.subscribe('meeting-attendance')
-    attendanceChannel.bind('check-in', (data: { userId: string; checkedInAt: string }) => {
+    const onCheckIn = (data: { userId: string; checkedInAt: string }) => {
       play('se0')
       setCheckedInIds((prev) => new Map([...prev, [data.userId, data.checkedInAt]]))
       setJustCheckedInId(data.userId)
       setTimeout(() => setJustCheckedInId(null), 3000)
-    })
+    }
+    attendanceChannel.bind('check-in', onCheckIn)
 
     const reactionChannel = pusher.subscribe('visitor-reactions')
-    reactionChannel.bind('reaction', (data: { emoji: string; count: number }) => {
+    const onReaction = (data: { emoji: string; count: number }) => {
       const id = `${Date.now()}-${Math.random()}`
       const x = 10 + Math.random() * 80
       setFloaters((prev) => [...prev, { id, emoji: data.emoji, x }])
       setTotalReactions(data.count)
-    })
+    }
+    reactionChannel.bind('reaction', onReaction)
 
     return () => {
-      attendanceChannel.unbind_all()
-      reactionChannel.unbind_all()
+      attendanceChannel.unbind('check-in', onCheckIn)
+      reactionChannel.unbind('reaction', onReaction)
+      releaseChannel('meeting-attendance')
+      releaseChannel('visitor-reactions')
     }
   }, [play])
 

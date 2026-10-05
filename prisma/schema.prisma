@@ -129,6 +129,10 @@ model User {
   guidingLightsWon     GuidingLight[]        @relation("GuidingLightWinner")
   guidingLightsJudged  GuidingLight[]        @relation("GuidingLightJudge")
   guidingLightNominees GuidingLightNominee[] @relation("GuidingLightNominees")
+  ballotsCast          Ballot[]              @relation("BallotVoter")
+  ballotsReceived      Ballot[]              @relation("BallotVotedFor")
+  leadershipTerms      LeadershipTerm[]      @relation("LeadershipTermHolder")
+  leadershipOverrides  LeadershipTerm[]      @relation("LeadershipTermOverriddenBy")
 
   // DEPRECATED
   secondaryEmail             String? @unique
@@ -203,17 +207,17 @@ model Anchor {
 }
 
 model Chapter {
-  id                String         @id @default(cuid())
+  id                String           @id @default(cuid())
   name              String
   location          String
   meetingDay        String
   meetingTime       String
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  meetingFrequency  String         @default("WEEKLY")
-  hasUnlockedBooty  Boolean        @default(false)
-  hasUnlockedGrog   Boolean        @default(false)
-  hasUnlockedMuster Boolean        @default(false)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  meetingFrequency  String           @default("WEEKLY")
+  hasUnlockedBooty  Boolean          @default(false)
+  hasUnlockedGrog   Boolean          @default(false)
+  hasUnlockedMuster Boolean          @default(false)
   anchors           Anchor[]
   events            Event[]
   parleys           Parley[]
@@ -222,6 +226,8 @@ model Chapter {
   visitors          Visitor[]
   meetings          Meeting[]
   guidingLights     GuidingLight[]
+  elections         Election[]
+  leadershipTerms   LeadershipTerm[]
 }
 
 model Event {
@@ -488,6 +494,68 @@ model GuidingLightNominee {
   @@index([userId])
 }
 
+model Election {
+  id        String         @id @default(cuid())
+  year      Int
+  status    ElectionStatus @default(VOTING_OPEN)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+
+  ballots Ballot[]
+
+  @@unique([chapterId, year])
+  @@index([chapterId])
+}
+
+model Ballot {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  position LeadershipPosition
+
+  election   Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  electionId String
+
+  voter   User   @relation("BallotVoter", fields: [voterId], references: [id])
+  voterId String
+
+  votedFor   User   @relation("BallotVotedFor", fields: [votedForId], references: [id])
+  votedForId String
+
+  @@unique([electionId, position, voterId])
+  @@index([electionId])
+  @@index([voterId])
+  @@index([votedForId])
+}
+
+model LeadershipTerm {
+  id        String             @id @default(cuid())
+  position  LeadershipPosition
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean            @default(false)
+  createdAt DateTime           @default(now())
+
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id])
+
+  holder   User   @relation("LeadershipTermHolder", fields: [holderId], references: [id])
+  holderId String
+
+  manualOverride Boolean @default(false)
+  overriddenBy   User?   @relation("LeadershipTermOverriddenBy", fields: [overriddenById], references: [id])
+  overriddenById String?
+  overrideReason String?
+
+  @@index([chapterId])
+  @@index([holderId])
+  @@index([overriddenById])
+  @@index([isActive])
+}
+
 enum GuidingLightStatus {
   OPEN
   REVEALED
@@ -568,4 +636,20 @@ enum OrderStatus {
   CANCELLED
   PAST_DUE
   INCOMPLETE
+}
+
+enum LeadershipPosition {
+  HOST
+  VP
+  TREASURER
+  DIGITAL_OPERATIONS_MANAGER
+  SOCIAL_MEDIA_MANAGER
+  EDUCATION_COORDINATOR
+  MEMBERSHIP_COMMITTEE
+}
+
+enum ElectionStatus {
+  VOTING_OPEN
+  VOTING_CLOSED
+  COMPLETE
 }

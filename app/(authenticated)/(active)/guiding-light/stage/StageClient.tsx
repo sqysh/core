@@ -120,16 +120,18 @@ export default function StageClient({ members, isSuperUser, openRoundId, judgeNa
   )
 
   useEffect(() => {
-    const pusher = getPusherClient()
-    const channel = pusher.subscribe('guiding-light')
+    const channel = getPusherClient().subscribe('guiding-light')
 
-    channel.bind('winner-selected', (data: { winner: Winner; judgedBy: { name: string } | null }) => {
+    const onWinnerSelected = (data: { winner: Winner; judgedBy: { name: string } | null }) => {
       setJudgedByName(data.judgedBy?.name ?? null)
       startSpin(data.winner)
-    })
+    }
 
+    channel.bind('winner-selected', onWinnerSelected)
+
+    // No releaseChannel here. GuidingLightListener in the layout owns this channel
     return () => {
-      channel.unbind_all()
+      channel.unbind('winner-selected', onWinnerSelected)
     }
   }, [startSpin])
 
