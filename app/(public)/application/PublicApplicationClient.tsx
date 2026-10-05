@@ -3,7 +3,7 @@
 import { createUser } from '@/lib/actions/user/createUser'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertCircle, ArrowLeft } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { ApplicationForm } from '@/app/(public)/application/_components/ApplicationForm'
 import Link from 'next/link'
@@ -23,7 +23,12 @@ const EMPTY_INPUTS: ApplicationFormInputs = {
 }
 
 export default function PublicApplicationClient() {
-  const [inputs, setInputs] = useState<ApplicationFormInputs>(EMPTY_INPUTS)
+  const searchParams = useSearchParams()
+  const prefilledIndustry = searchParams.get('industry') ?? ''
+  const [inputs, setInputs] = useState<ApplicationFormInputs>({
+    ...EMPTY_INPUTS,
+    industry: prefilledIndustry
+  })
   const [errors, setErrors] = useState<Partial<Record<keyof ApplicationFormInputs, string>>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -104,6 +109,17 @@ export default function PublicApplicationClient() {
           <h1 className="font-sora font-black text-[28px] text-text-light dark:text-text-dark tracking-tight leading-none">
             Apply for Membership
           </h1>
+          {prefilledIndustry && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-[13px] font-nunito text-muted-light dark:text-muted-dark mt-2.5"
+            >
+              Applying for the{' '}
+              <span className="text-primary-light dark:text-primary-dark font-semibold">{prefilledIndustry}</span> seat
+            </motion.p>
+          )}
         </motion.div>
 
         <AnimatePresence>

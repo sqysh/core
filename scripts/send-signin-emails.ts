@@ -1,12 +1,8 @@
+import { chapterId } from '@/lib/constants/api/chapterId'
 import prisma from '../prisma/client'
-import { Resend } from 'resend'
-import { chapterId } from '../app/lib/constants/api/chapterId'
-import {
-  signInActionRequiredTemplate,
-  signInHeadsUpTemplate
-} from '../app/lib/email/templates/sign-in-migration.template'
+import { resend } from '@/lib/resend/resend'
+import { signInActionRequiredTemplate, signInHeadsUpTemplate } from '@/lib/email/templates/sign-in-migration.template'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const DEADLINE = 'Wednesday, July 29'
 const DRY_RUN = process.argv.includes('--send') === false
 

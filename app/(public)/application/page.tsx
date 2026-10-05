@@ -1,5 +1,11 @@
 import PublicApplicationClient from '@/app/(public)/application/PublicApplicationClient'
 
-export default async function PublicApplicationPage() {
-  return <PublicApplicationClient />
+import { Suspense } from 'react'
+
+export default function ApplicationPage() {
+  return (
+    <Suspense>
+      <PublicApplicationClient />
+    </Suspense>
+  )
 }

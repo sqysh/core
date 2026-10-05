@@ -17,7 +17,11 @@ const SOUND_PATHS = {
   se13: '/sound-effects/se-13.mp3',
   se14: '/sound-effects/se-14.mp3',
   se15: '/sound-effects/se-15.mp3',
-  spin: '/sound-effects/wof/spin.mp3'
+  spin: '/sound-effects/wof/spin.mp3',
+  punch: '/sound-effects/punch.mp3',
+  flawless: '/sound-effects/flawless-victory.wav',
+  hit: '/sound-effects/hit-drum.mp3',
+  finish: '/sound-effects/finish.wav'
 } as const
 
 type SoundKey = keyof typeof SOUND_PATHS

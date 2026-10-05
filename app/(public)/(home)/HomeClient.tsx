@@ -13,6 +13,7 @@ import { initiateGuidingLight } from '@/lib/actions/guiding-light/initiateGuidin
 import { createGame } from '@/lib/actions/games/createGame'
 import { announceGame } from '@/lib/actions/games/wheel/announceGame'
 import { seedGuidingLight } from '@/lib/actions/guiding-light/seedGuidingLight'
+import { generateWeeklyMatches } from '@/lib/actions/1-2-1/generateWeeklyMatches'
 
 export default function HomeClient({ currentJudge }: { currentJudge: { id: string; name: string } }) {
   const { data: session } = useSession()
@@ -20,6 +21,7 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
   const [launching, setLaunching] = useState(false)
   const isSuperUser = session?.user?.role === 'SUPER_USER'
   const [initiating, setInitiating] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
   async function handleInitiateGuidingLight() {
     setInitiating(true)
@@ -38,7 +40,14 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
 
   async function handleSeed() {
     await seedGuidingLight()
-    router.refresh() // re-runs the server page query, button label updates
+    router.refresh()
+  }
+
+  async function handleGenerateMatchups() {
+    setGenerating(true)
+    const res = await generateWeeklyMatches()
+    setGenerating(false)
+    if (res.success) router.push('/matchups')
   }
 
   return (
@@ -51,6 +60,8 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
           onInitiateGuidingLight={handleInitiateGuidingLight}
           onLaunchGame={handleLaunchGame}
           onSeedGL={handleSeed}
+          onGenerateMatchups={handleGenerateMatchups}
+          generating={generating}
         />
       )}
       <HeroSection isLoggedIn={!!session?.user?.id} />

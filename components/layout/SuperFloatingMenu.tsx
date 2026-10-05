@@ -4,23 +4,25 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield } from 'lucide-react'
 
-interface Props {
-  onLaunchGame: () => void
-  launching: boolean
-  onInitiateGuidingLight: () => void
-  initiating: boolean
-  onSeedGL: () => void
-  currentJudge: { name: string } | null
-}
-
 export default function SuperFloatingMenu({
   onLaunchGame,
   launching,
   onInitiateGuidingLight,
   initiating,
   onSeedGL,
-  currentJudge
-}: Props) {
+  currentJudge,
+  onGenerateMatchups,
+  generating
+}: {
+  onLaunchGame: () => void
+  launching: boolean
+  onInitiateGuidingLight: () => void
+  initiating: boolean
+  onSeedGL: () => void
+  currentJudge: { name: string } | null
+  onGenerateMatchups: () => void
+  generating: boolean
+}) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -56,6 +58,18 @@ export default function SuperFloatingMenu({
               className="h-9 px-4 bg-bg-dark/90 backdrop-blur border border-amber-300/40 text-amber-300 font-mono text-[9px] tracking-[0.15em] uppercase hover:border-amber-300/70 transition-colors disabled:opacity-40 whitespace-nowrap"
             >
               {launching ? 'Starting…' : 'Sqywheel of Fortune'}
+            </button>
+
+            {/* Matchups */}
+            <button
+              onClick={() => {
+                onGenerateMatchups()
+                setOpen(false)
+              }}
+              disabled={generating}
+              className="h-9 px-4 bg-bg-dark/90 backdrop-blur border border-red-500/40 text-red-400 font-mono text-[9px] tracking-[0.15em] uppercase hover:border-red-500/70 transition-colors disabled:opacity-40 whitespace-nowrap"
+            >
+              {generating ? 'Matching…' : '1-2-1 Matchups'}
             </button>
 
             {/* Seed GL — dev only */}

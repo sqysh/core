@@ -17,7 +17,9 @@
     "seed:game-test": "node --env-file=.env scripts/seed-game-test.js",
     "seed:game-test:clean": "node --env-file=.env scripts/seed-game-test.js --clean",
     "seed:game-test:reset": "npm run seed:game-test:clean && npm run seed:game-test",
-    "seed:test-member": "node --env-file=.env scripts/seed-test-member.js"
+    "seed:test-member": "node --env-file=.env scripts/seed-test-member.js",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
