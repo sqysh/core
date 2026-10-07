@@ -3,11 +3,11 @@
 import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { LeadershipPosition } from '@prisma/client'
 import { pusher } from '@/lib/pusher/pusher'
-import { ELECTED_POSITIONS } from '@/lib/constants/leadership.constants'
+import { ELECTED_POSITIONS, POSITIONS } from '@/lib/constants/leadership.constants'
+import { LeadershipPosition } from '@prisma/client'
 
-export async function submitBallot(picks: Record<LeadershipPosition, string>) {
+export async function submitBallot(picks: Record<LeadershipPosition, string[]>) {
   const session = await auth()
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
@@ -21,8 +21,16 @@ export async function submitBallot(picks: Record<LeadershipPosition, string>) {
   if (!election) return { success: false, error: 'No election found' }
   if (election.status !== 'VOTING_OPEN') return { success: false, error: 'Voting is closed' }
 
-  const missing = ELECTED_POSITIONS.filter((p) => !picks[p])
-  if (missing.length) return { success: false, error: 'Every position needs a pick' }
+  for (const position of ELECTED_POSITIONS) {
+    const chosen = picks[position] ?? []
+    const seats = POSITIONS[position].seats
+    if (chosen.length !== seats) {
+      return { success: false, error: `${POSITIONS[position].label} needs ${seats} ${seats === 1 ? 'pick' : 'picks'}` }
+    }
+    if (new Set(chosen).size !== chosen.length) {
+      return { success: false, error: `Duplicate pick in ${POSITIONS[position].label}` }
+    }
+  }
 
   const already = await prisma.ballot.findFirst({
     where: { electionId: election.id, voterId: session.user.id },
@@ -31,27 +39,22 @@ export async function submitBallot(picks: Record<LeadershipPosition, string>) {
   if (already) return { success: false, error: 'You already voted' }
 
   await prisma.ballot.createMany({
-    data: ELECTED_POSITIONS.map((position) => ({
-      electionId: election.id,
-      voterId: session.user.id,
-      position,
-      votedForId: picks[position]
-    })),
+    data: ELECTED_POSITIONS.flatMap((position) =>
+      picks[position].map((votedForId) => ({
+        electionId: election.id,
+        voterId: session.user.id,
+        position,
+        votedForId
+      }))
+    ),
     skipDuplicates: true
   })
 
   const voterCount = await prisma.ballot
-    .findMany({
-      where: { electionId: election.id },
-      select: { voterId: true },
-      distinct: ['voterId']
-    })
+    .findMany({ where: { electionId: election.id }, select: { voterId: true }, distinct: ['voterId'] })
     .then((rows) => rows.length)
 
-  await pusher.trigger('election-status', 'ballot-submitted', {
-    voterId: session.user.id,
-    voterCount
-  })
+  await pusher.trigger('election-status', 'ballot-submitted', { voterId: session.user.id, voterCount })
 
   return { success: true }
 }

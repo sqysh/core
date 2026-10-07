@@ -12,7 +12,9 @@ export default function SuperFloatingMenu({
   onSeedGL,
   currentJudge,
   onGenerateMatchups,
-  generating
+  generating,
+  onOpenElection,
+  openingElection
 }: {
   onLaunchGame: () => void
   launching: boolean
@@ -22,6 +24,8 @@ export default function SuperFloatingMenu({
   currentJudge: { name: string } | null
   onGenerateMatchups: () => void
   generating: boolean
+  onOpenElection: () => void
+  openingElection: boolean
 }) {
   const [open, setOpen] = useState(false)
 
@@ -70,6 +74,18 @@ export default function SuperFloatingMenu({
               className="h-9 px-4 bg-bg-dark/90 backdrop-blur border border-red-500/40 text-red-400 font-mono text-[9px] tracking-[0.15em] uppercase hover:border-red-500/70 transition-colors disabled:opacity-40 whitespace-nowrap"
             >
               {generating ? 'Matching…' : '1-2-1 Matchups'}
+            </button>
+
+            {/* Election */}
+            <button
+              onClick={() => {
+                onOpenElection()
+                setOpen(false)
+              }}
+              disabled={openingElection}
+              className="h-9 px-4 bg-bg-dark/90 backdrop-blur border border-violet-400/40 text-violet-300 font-mono text-[9px] tracking-[0.15em] uppercase hover:border-violet-400/70 transition-colors disabled:opacity-40 whitespace-nowrap"
+            >
+              {openingElection ? 'Opening…' : 'Open Election'}
             </button>
 
             {/* Seed GL — dev only */}

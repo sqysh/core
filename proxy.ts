@@ -7,8 +7,8 @@ const protectedAPIRoutes = ['/api/pdf/member-directory', '/billing']
 export async function proxy(req: NextRequest) {
   const { nextUrl } = req
 
-  // ── Skip middleware for static assets + cron ──────────────────────────────
   if (
+    nextUrl.pathname.startsWith('/api/auth/') ||
     nextUrl.pathname.startsWith('/api/cron/') ||
     nextUrl.pathname.startsWith('/_next') ||
     nextUrl.pathname.includes('.') ||

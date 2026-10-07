@@ -14,6 +14,7 @@ import { createGame } from '@/lib/actions/games/createGame'
 import { announceGame } from '@/lib/actions/games/wheel/announceGame'
 import { seedGuidingLight } from '@/lib/actions/guiding-light/seedGuidingLight'
 import { generateWeeklyMatches } from '@/lib/actions/1-2-1/generateWeeklyMatches'
+import { openElection } from '@/lib/actions/election/openElection'
 
 export default function HomeClient({ currentJudge }: { currentJudge: { id: string; name: string } }) {
   const { data: session } = useSession()
@@ -22,6 +23,7 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
   const isSuperUser = session?.user?.role === 'SUPER_USER'
   const [initiating, setInitiating] = useState(false)
   const [generating, setGenerating] = useState(false)
+  const [openingElection, setOpeningElection] = useState(false)
 
   async function handleInitiateGuidingLight() {
     setInitiating(true)
@@ -50,6 +52,13 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
     if (res.success) router.push('/matchups')
   }
 
+  async function handleOpenElection() {
+    setOpeningElection(true)
+    const res = await openElection()
+    setOpeningElection(false)
+    if (res.success) router.push('/election')
+  }
+
   return (
     <>
       {isSuperUser && (
@@ -62,6 +71,8 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
           onSeedGL={handleSeed}
           onGenerateMatchups={handleGenerateMatchups}
           generating={generating}
+          onOpenElection={handleOpenElection}
+          openingElection={openingElection}
         />
       )}
       <HeroSection isLoggedIn={!!session?.user?.id} />

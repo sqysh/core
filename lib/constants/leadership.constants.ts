@@ -34,3 +34,7 @@ export const APPOINTED_HOLDERS: Partial<Record<LeadershipPosition, string>> = {
   TREASURER: 'rzyas8cegrox0w9n3l9p4bf6',
   DIGITAL_OPERATIONS_MANAGER: 'rzyas8cegrox0w9n3l9p4bf6'
 }
+
+export const APPOINTED_EMAIL = 'greg@sqysh.com'
+
+export const APPOINTED_POSITIONS = POSITION_ORDER.filter((p) => !POSITIONS[p].isElected)

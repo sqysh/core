@@ -525,7 +525,7 @@ model Ballot {
   votedFor   User   @relation("BallotVotedFor", fields: [votedForId], references: [id])
   votedForId String
 
-  @@unique([electionId, position, voterId])
+  @@unique([electionId, position, voterId, votedForId])
   @@index([electionId])
   @@index([voterId])
   @@index([votedForId])

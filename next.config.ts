@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['10.0.0.91'],
+  allowedDevOrigins: ['10.0.0.204'],
   serverExternalPackages: ['@prisma/client', '@prisma/engines'],
 
   typescript: {
