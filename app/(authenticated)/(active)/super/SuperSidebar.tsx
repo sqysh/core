@@ -18,7 +18,8 @@ import {
   ClipboardCheck,
   Layout,
   ArrowLeft,
-  Lightbulb
+  Lightbulb,
+  Vote
 } from 'lucide-react'
 
 const NAV = [
@@ -31,6 +32,7 @@ const NAV = [
   { label: 'Closed Business', href: '/super/closed-business', icon: DollarSign },
   { label: 'Presenter Queue', href: '/super/presenter-queue', icon: Mic },
   { label: 'Guiding Light', href: '/super/guiding-light', icon: Lightbulb },
+  { label: 'Election', href: '/super/election', icon: Vote },
   { label: 'Events', href: '/super/events', icon: CalendarDays },
   { label: 'Visitors', href: '/super/visitors', icon: Eye },
   { label: 'Visitor Days', href: '/super/visitor-days', icon: CalendarX },
