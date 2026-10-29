@@ -2,13 +2,13 @@ import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import BallotClient from './BallotClient'
+import ElectionBallotClient from './ElectionBallotClient'
 import { LeadershipPosition } from '@prisma/client'
 import { APPOINTED_EMAIL } from '@/lib/constants/leadership.constants'
 
 export const dynamic = 'force-dynamic'
 
-export default async function BallotPage() {
+export default async function ElectionBallotPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
@@ -30,8 +30,7 @@ export default async function BallotPage() {
     prisma.user.findMany({
       where: {
         chapterId,
-        membershipStatus: 'ACTIVE',
-        ...(appointee && { id: { not: appointee.id } })
+        membershipStatus: 'ACTIVE'
       },
       select: { id: true, name: true, company: true, profileImage: true },
       orderBy: { name: 'asc' }
@@ -52,7 +51,7 @@ export default async function BallotPage() {
   }, {})
 
   return (
-    <BallotClient
+    <ElectionBallotClient
       members={members}
       year={year}
       alreadyVoted={!!existing}

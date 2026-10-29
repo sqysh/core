@@ -26,6 +26,7 @@ export async function proxy(req: NextRequest) {
   const isProtectedPage =
     nextUrl.pathname.startsWith('/dashboard') ||
     nextUrl.pathname.startsWith('/super/dashboard') ||
+    nextUrl.pathname.startsWith('/election') ||
     nextUrl.pathname.startsWith('/check-in')
   const isSuperUserRoute = nextUrl.pathname.startsWith('/super/dashboard')
 

@@ -5,9 +5,13 @@ import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { pusher } from '@/lib/pusher/pusher'
 import { ELECTED_POSITIONS, POSITIONS } from '@/lib/constants/leadership.constants'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
+import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 
-export async function submitBallot(picks: Record<LeadershipPosition, string[]>) {
+export async function submitBallot(
+  picks: Record<LeadershipPosition, string[]>,
+  answers: Record<string, QuestionAnswer>
+) {
   const session = await auth()
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
@@ -32,6 +36,10 @@ export async function submitBallot(picks: Record<LeadershipPosition, string[]>) 
     }
   }
 
+  for (const q of BALLOT_QUESTIONS) {
+    if (!answers[q.key]) return { success: false, error: `Please answer: ${q.title}` }
+  }
+
   const already = await prisma.ballot.findFirst({
     where: { electionId: election.id, voterId: session.user.id },
     select: { id: true }
@@ -47,6 +55,16 @@ export async function submitBallot(picks: Record<LeadershipPosition, string[]>) 
         votedForId
       }))
     ),
+    skipDuplicates: true
+  })
+
+  await prisma.questionResponse.createMany({
+    data: BALLOT_QUESTIONS.map((q) => ({
+      electionId: election.id,
+      voterId: session.user.id,
+      questionKey: q.key,
+      answer: answers[q.key]
+    })),
     skipDuplicates: true
   })
 

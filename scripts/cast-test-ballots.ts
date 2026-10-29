@@ -1,10 +1,13 @@
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { APPOINTED_EMAIL, APPOINTED_HOLDERS, ELECTED_POSITIONS, POSITIONS } from '@/lib/constants/leadership.constants'
+import { EXCLUDED_VOTER_EMAILS } from '@/lib/constants/election.constants'
+import { ELECTED_POSITIONS, POSITIONS } from '@/lib/constants/leadership.constants'
+import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 import { pusher } from '@/lib/pusher/pusher'
 import prisma from '@/prisma/client'
 
 const DELAY_MS = Number(process.argv.find((a) => a.startsWith('--delay='))?.split('=')[1] ?? 1500)
 const CLEAN = process.argv.includes('--clean')
+const CHECK_IN = process.argv.includes('--check-in')
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -31,8 +34,11 @@ async function main() {
   }
 
   if (CLEAN) {
-    const { count } = await prisma.ballot.deleteMany({ where: { electionId: election.id } })
-    console.log(`Deleted ${count} ballots.`)
+    const [ballots, responses] = await Promise.all([
+      prisma.ballot.deleteMany({ where: { electionId: election.id } }),
+      prisma.questionResponse.deleteMany({ where: { electionId: election.id } })
+    ])
+    console.log(`Deleted ${ballots.count} ballots, ${responses.count} question responses.`)
     return
   }
 
@@ -42,9 +48,31 @@ async function main() {
     orderBy: { name: 'asc' }
   })
 
-  const candidates = allMembers.filter((m) => m.email !== APPOINTED_EMAIL)
-  // Appointed holders aren't on the ballot as candidates
-  const appointed = new Set(Object.values(APPOINTED_HOLDERS))
+  if (CHECK_IN) {
+    const today = new Date()
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+
+    let meeting = await prisma.meeting.findFirst({
+      where: { chapterId, date: { gte: start, lt: end } },
+      select: { id: true }
+    })
+
+    if (!meeting) {
+      meeting = await prisma.meeting.create({
+        data: { chapterId, date: new Date() },
+        select: { id: true }
+      })
+      console.log('Created a meeting for today.')
+    }
+
+    const { count } = await prisma.attendance.createMany({
+      data: allMembers.map((m) => ({ meetingId: meeting!.id, userId: m.id })),
+      skipDuplicates: true
+    })
+
+    console.log(`Checked in ${count} members.\n`)
+  }
 
   const voted = await prisma.ballot.findMany({
     where: { electionId: election.id },
@@ -53,20 +81,30 @@ async function main() {
   })
   const votedIds = new Set(voted.map((b) => b.voterId))
 
-  const toVote = allMembers.filter((m) => !votedIds.has(m.id))
+  const toVote = allMembers.filter((m) => !votedIds.has(m.id) && !EXCLUDED_VOTER_EMAILS.includes(m.email))
 
   console.log(`${allMembers.length} members, ${votedIds.size} voted, casting ${toVote.length}\n`)
 
   for (const voter of toVote) {
     await prisma.ballot.createMany({
       data: ELECTED_POSITIONS.flatMap((position) =>
-        sample(candidates, POSITIONS[position].seats).map((c) => ({
+        sample(allMembers, POSITIONS[position].seats).map((c) => ({
           electionId: election.id,
           voterId: voter.id,
           position,
           votedForId: c.id
         }))
       ),
+      skipDuplicates: true
+    })
+
+    await prisma.questionResponse.createMany({
+      data: BALLOT_QUESTIONS.map((q) => ({
+        electionId: election.id,
+        voterId: voter.id,
+        questionKey: q.key,
+        answer: q.options[Math.floor(Math.random() * q.options.length)].value
+      })),
       skipDuplicates: true
     })
 

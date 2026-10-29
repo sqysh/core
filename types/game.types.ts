@@ -37,4 +37,8 @@ export interface LobbyMember {
   profileVideo: string | null
 }
 
-export type GameActionResult<T = SerializedGame> = { success: true; data: T } | { success: false; error: string }
+export type GameActionResult = {
+  success: boolean
+  data?: SerializedGame<unknown>
+  error?: string
+}

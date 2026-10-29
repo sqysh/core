@@ -133,6 +133,7 @@ model User {
   ballotsReceived      Ballot[]              @relation("BallotVotedFor")
   leadershipTerms      LeadershipTerm[]      @relation("LeadershipTermHolder")
   leadershipOverrides  LeadershipTerm[]      @relation("LeadershipTermOverriddenBy")
+  questionResponses    QuestionResponse[]
 
   // DEPRECATED
   secondaryEmail             String? @unique
@@ -504,7 +505,8 @@ model Election {
   chapterId String
   chapter   Chapter @relation(fields: [chapterId], references: [id])
 
-  ballots Ballot[]
+  ballots           Ballot[]
+  questionResponses QuestionResponse[]
 
   @@unique([chapterId, year])
   @@index([chapterId])
@@ -554,6 +556,29 @@ model LeadershipTerm {
   @@index([holderId])
   @@index([overriddenById])
   @@index([isActive])
+}
+
+model QuestionResponse {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  questionKey String
+  answer      QuestionAnswer
+
+  election   Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  electionId String
+
+  voter   User   @relation(fields: [voterId], references: [id])
+  voterId String
+
+  @@unique([electionId, questionKey, voterId])
+  @@index([electionId])
+}
+
+enum QuestionAnswer {
+  YES
+  NO
+  INTERESTED
 }
 
 enum GuidingLightStatus {
@@ -640,7 +665,7 @@ enum OrderStatus {
 
 enum LeadershipPosition {
   HOST
-  VP
+  CO_DIRECTOR
   TREASURER
   DIGITAL_OPERATIONS_MANAGER
   SOCIAL_MEDIA_MANAGER

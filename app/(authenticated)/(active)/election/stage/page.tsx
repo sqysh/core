@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import ElectionStageClient from './ElectionStageClient'
+import { getTodayAttendance } from '@/lib/actions/meeting/getTodayAttendance'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +20,7 @@ export default async function ElectionStagePage() {
 
   if (!election) redirect('/dashboard')
 
-  const [members, voted] = await Promise.all([
+  const [allMembers, voted, checkedInIds] = await Promise.all([
     prisma.user.findMany({
       where: { chapterId, membershipStatus: 'ACTIVE' },
       select: { id: true, name: true, company: true, profileImage: true },
@@ -29,15 +30,15 @@ export default async function ElectionStagePage() {
       where: { electionId: election.id },
       select: { voterId: true },
       distinct: ['voterId']
-    })
+    }),
+    getTodayAttendance()
   ])
 
-  return (
-    <ElectionStageClient
-      year={year}
-      members={members}
-      initialVotedIds={voted.map((v) => v.voterId)}
-      isSuperUser={session.user.role === 'SUPER_USER'}
-    />
-  )
+  const votedIds = voted.map((v) => v.voterId)
+  // Eligible voters are whoever checked in today plus anyone who voted remotely
+  const eligibleIds = new Set([...checkedInIds, ...votedIds])
+
+  const members = allMembers.filter((m) => eligibleIds.has(m.id))
+
+  return <ElectionStageClient year={year} members={members} initialVotedIds={votedIds} />
 }

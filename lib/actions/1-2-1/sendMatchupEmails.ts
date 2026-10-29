@@ -56,20 +56,19 @@ export async function sendMatchupEmails() {
     }
   }
 
-  const results = await Promise.allSettled(
-    [...assignments.values()].map(({ member, partners }) =>
-      resend.emails.send({
-        from: 'CORE <hello@coastalreferralxchange.com>',
-        to: [member.email, ...member.alternateEmails.map((e) => e.email)],
-        subject: partners.length > 1 ? 'Your 1-2-1s this week' : 'Your 1-2-1 this week',
-        html: oneTwoOneMatchTemplate(
-          member.name.split(' ')[0],
-          partners.map((p) => ({ name: p.name, company: p.company, email: p.email, phone: p.phone }))
-        )
-      })
+  const payload = [...assignments.values()].map(({ member, partners }) => ({
+    from: 'CORE <hello@coastalreferralxchange.com>',
+    to: [member.email, ...member.alternateEmails.map((e) => e.email)],
+    subject: partners.length > 1 ? 'Your 1-2-1s this week' : 'Your 1-2-1 this week',
+    html: oneTwoOneMatchTemplate(
+      member.name.split(' ')[0],
+      partners.map((p) => ({ name: p.name, company: p.company, email: p.email, phone: p.phone }))
     )
-  )
+  }))
 
-  const failed = results.filter((r) => r.status === 'rejected').length
-  return { success: true, sent: results.length - failed, failed }
+  const { data, error } = await resend.batch.send(payload)
+
+  if (error) return { success: false, error: error.message }
+
+  return { success: true, sent: data?.data.length ?? 0 }
 }

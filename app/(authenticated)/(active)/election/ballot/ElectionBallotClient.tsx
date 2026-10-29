@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, ChevronLeft } from 'lucide-react'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
 import { POSITIONS, ELECTED_POSITIONS, APPOINTED_POSITIONS } from '@/lib/constants/leadership.constants'
 import { submitBallot } from '@/lib/actions/election/submitBallot'
 import { getInitials } from '@/lib/utils/shared.utils'
+import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 
 interface Member {
   id: string
@@ -34,7 +35,7 @@ function Avatar({ member, size = 40 }: { member: Member; size?: number }) {
   )
 }
 
-export default function BallotClient({
+export default function ElectionBallotClient({
   members,
   year,
   alreadyVoted,
@@ -53,6 +54,12 @@ export default function BallotClient({
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(alreadyVoted)
   const [error, setError] = useState<string | null>(null)
+  const [answers, setAnswers] = useState<Record<string, QuestionAnswer>>({})
+  const [returnToReview, setReturnToReview] = useState(false)
+
+  const totalSteps = ELECTED_POSITIONS.length + BALLOT_QUESTIONS.length
+  const isQuestionStep = step >= ELECTED_POSITIONS.length
+  const question = isQuestionStep ? BALLOT_QUESTIONS[step - ELECTED_POSITIONS.length] : null
 
   const byId = new Map(members.map((m) => [m.id, m]))
 
@@ -61,32 +68,52 @@ export default function BallotClient({
     const current = picks[position] ?? []
     const has = current.includes(memberId)
 
-    const next = has ? current.filter((id) => id !== memberId) : [...current, memberId]
+    // Single-seat positions swap the pick; multi-seat accumulate up to the cap
+    const next = has ? current.filter((id) => id !== memberId) : seats === 1 ? [memberId] : [...current, memberId]
+
     if (next.length > seats) return
 
     setPicks((prev) => ({ ...prev, [position]: next }))
 
-    // Single-seat positions advance on tap; multi-seat wait for the Next button
     if (seats === 1 && !has) {
-      if (reviewing) return
-      if (step < ELECTED_POSITIONS.length - 1) setStep((s) => s + 1)
+      if (returnToReview) {
+        setReturnToReview(false)
+        setReviewing(true)
+        return
+      }
+      if (step < totalSteps - 1) setStep((s) => s + 1)
       else setReviewing(true)
     }
   }
 
   function advance() {
-    if (reviewing) return
-    if (step < ELECTED_POSITIONS.length - 1) setStep((s) => s + 1)
+    if (returnToReview) {
+      setReturnToReview(false)
+      setReviewing(true)
+      return
+    }
+    if (step < totalSteps - 1) setStep((s) => s + 1)
     else setReviewing(true)
   }
 
   async function handleSubmit() {
     setSubmitting(true)
     setError(null)
-    const res = await submitBallot(picks as Record<LeadershipPosition, string[]>)
+    const res = await submitBallot(picks as Record<LeadershipPosition, string[]>, answers)
     setSubmitting(false)
     if (res.success) setSubmitted(true)
     else setError(res.error ?? 'Something went wrong')
+  }
+
+  function answer(key: string, value: QuestionAnswer) {
+    setAnswers((prev) => ({ ...prev, [key]: value }))
+    if (returnToReview) {
+      setReturnToReview(false)
+      setReviewing(true)
+      return
+    }
+    if (step < totalSteps - 1) setStep((s) => s + 1)
+    else setReviewing(true)
   }
 
   if (submitted) {
@@ -136,6 +163,7 @@ export default function BallotClient({
                 onClick={() => {
                   setStep(ELECTED_POSITIONS.indexOf(position))
                   setReviewing(false)
+                  setReturnToReview(true)
                 }}
                 className="w-full flex items-center gap-3 px-5 py-3.5 text-left hover:bg-surface-light dark:hover:bg-surface-dark transition-colors"
               >
@@ -172,6 +200,28 @@ export default function BallotClient({
               </div>
             )
           })}
+
+          {BALLOT_QUESTIONS.map((q) => {
+            const chosen = q.options.find((o) => o.value === answers[q.key])
+            return (
+              <button
+                key={q.key}
+                onClick={() => {
+                  setStep(ELECTED_POSITIONS.length + BALLOT_QUESTIONS.indexOf(q))
+                  setReviewing(false)
+                  setReturnToReview(true)
+                }}
+                className="w-full px-5 py-3.5 text-left hover:bg-surface-light dark:hover:bg-surface-dark transition-colors"
+              >
+                <p className="text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark">
+                  {q.title}
+                </p>
+                <p className="font-sora font-bold text-[15px] text-text-light dark:text-text-dark mt-0.5">
+                  {chosen?.label ?? '—'}
+                </p>
+              </button>
+            )
+          })}
         </div>
 
         {error && (
@@ -188,6 +238,72 @@ export default function BallotClient({
           >
             {submitting ? 'Submitting…' : 'Submit ballot'}
           </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (question) {
+    return (
+      <div className="min-h-screen bg-bg-light dark:bg-bg-dark pb-8">
+        <div className="px-5 pt-7 pb-5 border-b border-border-light dark:border-border-dark">
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => setStep((s) => s - 1)}
+              className="inline-flex items-center gap-1 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark"
+            >
+              <ChevronLeft size={13} />
+              Back
+            </button>
+            <p className="text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark">
+              {step + 1} of {totalSteps}
+            </p>
+          </div>
+
+          <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-1">
+            Group question
+          </p>
+          <h1 className="font-sora font-black text-[24px] text-text-light dark:text-text-dark tracking-tight leading-tight">
+            {question.title}
+          </h1>
+          <p className="font-nunito text-[14px] text-muted-light dark:text-muted-dark mt-2 leading-relaxed">
+            {question.summary}
+          </p>
+        </div>
+
+        <div className="px-5 py-5 flex flex-col gap-3.5 border-b border-border-light dark:border-border-dark">
+          {question.detail.map((para, i) => (
+            <p key={i} className="font-nunito text-[13.5px] text-muted-light dark:text-muted-dark leading-relaxed">
+              {para}
+            </p>
+          ))}
+        </div>
+
+        <div className="divide-y divide-border-light dark:divide-border-dark">
+          {question.options.map((opt) => {
+            const selected = answers[question.key] === opt.value
+            return (
+              <button
+                key={opt.value}
+                onClick={() => answer(question.key, opt.value)}
+                className={`w-full flex items-center gap-3 px-5 py-4 text-left transition-colors ${
+                  selected
+                    ? 'bg-primary-light/10 dark:bg-primary-dark/10'
+                    : 'hover:bg-surface-light dark:hover:bg-surface-dark'
+                }`}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-sora font-bold text-[16px] text-text-light dark:text-text-dark">{opt.label}</p>
+                  {opt.hint && (
+                    <p className="text-[12px] font-nunito text-muted-light dark:text-muted-dark mt-0.5">{opt.hint}</p>
+                  )}
+                </div>
+                {selected && (
+                  <Check size={18} className="text-primary-light dark:text-primary-dark shrink-0" strokeWidth={3} />
+                )}
+              </button>
+            )
+          })}
         </div>
       </div>
     )
@@ -213,7 +329,7 @@ export default function BallotClient({
             <span />
           )}
           <p className="text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark">
-            {step + 1} of {ELECTED_POSITIONS.length}
+            {step + 1} of {totalSteps}
           </p>
         </div>
 
@@ -232,6 +348,18 @@ export default function BallotClient({
           <p className="text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark mt-2">
             Currently · {currentHolders[position]!.map((h) => h.name).join(', ')}
           </p>
+        )}
+        {meta.note && (
+          <div className="mt-4 border-l-2 border-primary-light dark:border-primary-dark pl-4 flex flex-col gap-2.5">
+            <p className="text-f10 font-mono tracking-[0.18em] uppercase text-primary-light dark:text-primary-dark">
+              Why this seat is back
+            </p>
+            {meta.note.map((para, i) => (
+              <p key={i} className="font-nunito text-[13px] text-muted-light dark:text-muted-dark leading-relaxed">
+                {para}
+              </p>
+            ))}
+          </div>
         )}
       </div>
 

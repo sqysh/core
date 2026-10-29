@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CircleCheck, Circle } from 'lucide-react'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
-import { getElectionResults, type PositionResult } from '@/lib/actions/election/getElectionResults'
-import ResultsReveal from './_components/ResultsReveal'
+import { getElectionResults, QuestionResult, type PositionResult } from '@/lib/actions/election/getElectionResults'
+import ResultsReveal from '../_components/ResultsReveal'
 
 export interface Member {
   id: string
@@ -41,11 +41,11 @@ export default function ElectionStageClient({
   year: number
   members: Member[]
   initialVotedIds: string[]
-  isSuperUser: boolean
 }) {
   const [votedIds, setVotedIds] = useState<Set<string>>(new Set(initialVotedIds))
   const [flash, setFlash] = useState<string | null>(null)
   const [phase, setPhase] = useState<Phase>('open')
+  const [questions, setQuestions] = useState<QuestionResult[]>([])
   const [results, setResults] = useState<PositionResult[] | null>(null)
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
@@ -83,6 +83,7 @@ export default function ElectionStageClient({
       const res = await getElectionResults()
       if (res.success) {
         setResults(res.results)
+        setQuestions(res.questions)
         setPhase('revealing')
       }
     }
@@ -98,7 +99,15 @@ export default function ElectionStageClient({
   }, [complete, phase, total, initialVotedIds.length])
 
   if ((phase === 'revealing' || phase === 'done') && results) {
-    return <ResultsReveal results={results} year={year} members={members} onDone={() => setPhase('done')} />
+    return (
+      <ResultsReveal
+        results={results}
+        questions={questions}
+        year={year}
+        members={members}
+        onDone={() => setPhase('done')}
+      />
+    )
   }
 
   const flashed = flash ? members.find((m) => m.id === flash) : null

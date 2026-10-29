@@ -4,7 +4,8 @@ import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { POSITION_ORDER, POSITIONS, APPOINTED_EMAIL } from '@/lib/constants/leadership.constants'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
+import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 
 export interface PositionResult {
   position: LeadershipPosition
@@ -15,6 +16,13 @@ export interface PositionResult {
   winners: { id: string; name: string; company: string; profileImage: string | null; votes: number }[]
   runnersUp: { name: string; votes: number }[]
   tieCandidates: { id: string; name: string; company: string; profileImage: string | null; votes: number }[]
+}
+
+export interface QuestionResult {
+  key: string
+  title: string
+  total: number
+  counts: { value: QuestionAnswer; label: string; count: number }[]
 }
 
 export async function getElectionResults() {
@@ -29,7 +37,7 @@ export async function getElectionResults() {
   })
   if (!election) return { success: false as const, error: 'No election found' }
 
-  const [tally, members] = await Promise.all([
+  const [tally, members, questionTally] = await Promise.all([
     prisma.ballot.groupBy({
       by: ['position', 'votedForId'],
       where: { electionId: election.id },
@@ -38,6 +46,11 @@ export async function getElectionResults() {
     prisma.user.findMany({
       where: { chapterId, membershipStatus: 'ACTIVE' },
       select: { id: true, name: true, company: true, profileImage: true, email: true }
+    }),
+    prisma.questionResponse.groupBy({
+      by: ['questionKey', 'answer'],
+      where: { electionId: election.id },
+      _count: { answer: true }
     })
   ])
 
@@ -111,5 +124,19 @@ export async function getElectionResults() {
     }
   })
 
-  return { success: true as const, results }
+  const questions: QuestionResult[] = BALLOT_QUESTIONS.map((q) => {
+    const rows = questionTally.filter((t) => t.questionKey === q.key)
+    return {
+      key: q.key,
+      title: q.title,
+      total: rows.reduce((sum, r) => sum + r._count.answer, 0),
+      counts: q.options.map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+        count: rows.find((r) => r.answer === opt.value)?._count.answer ?? 0
+      }))
+    }
+  })
+
+  return { success: true as const, results, questions }
 }

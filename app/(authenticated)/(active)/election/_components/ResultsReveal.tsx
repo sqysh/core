@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LeadershipPosition } from '@prisma/client'
 import { getInitials } from '@/lib/utils/shared.utils'
 import { resolveTie } from '@/lib/actions/election/resolveTie'
-import type { PositionResult } from '@/lib/actions/election/getElectionResults'
+import type { PositionResult, QuestionResult } from '@/lib/actions/election/getElectionResults'
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
 import { ArrowRightLeft, Check, Plus, X } from 'lucide-react'
-import { Member } from '../ElectionStageClient'
+import { Member } from '../stage/ElectionStageClient'
 import { finalizeElection } from '@/lib/actions/election/finalizeElection'
+import Link from 'next/link'
 
 type Roster = Partial<
   Record<LeadershipPosition, { id: string; name: string; company: string; profileImage: string | null }[]>
@@ -65,12 +66,14 @@ export default function ResultsReveal({
   results,
   year,
   members,
-  onDone
+  onDone,
+  questions
 }: {
   results: PositionResult[]
   year: number
   members: Member[]
   onDone: () => void
+  questions: QuestionResult[]
 }) {
   const [index, setIndex] = useState(0)
   const [finished, setFinished] = useState(false)
@@ -186,6 +189,7 @@ export default function ResultsReveal({
 
     if (res.success) {
       setFinalized(true)
+      setEditing(false)
       setJustFinalized(true)
       timeoutsRef.current.push(setTimeout(() => setJustFinalized(false), 3200))
     } else setFinalizeError(res.error ?? 'Something went wrong')
@@ -269,102 +273,129 @@ export default function ResultsReveal({
 
   if (finished) {
     const board = roster ?? {}
+    const seatsFilled = Object.values(board).flat().length
 
     return (
       <div className="h-screen w-screen overflow-hidden bg-[#141829] flex flex-col">
-        <div className="flex items-stretch h-20 bg-[#2a1b52] shrink-0">
-          <div className="flex items-center px-8 bg-[#4c3a8a]">
-            <span className="font-mono text-[18px] tracking-[0.22em] text-white">
+        <div className="flex items-stretch shrink-0" style={{ height: '6vh' }}>
+          <div className="flex items-center bg-[#4c3a8a]" style={{ paddingInline: '2.2vmin' }}>
+            <span className="font-mono text-white" style={{ fontSize: '1.3vmin', letterSpacing: '0.22em' }}>
               {editing ? 'ADJUSTING' : 'CERTIFIED'}
             </span>
           </div>
-          <div className="flex-1 flex items-center pl-9">
-            <span className="font-mono text-[18px] tracking-[0.24em] text-violet-200">
+          <div className="flex-1 flex items-center bg-[#2a1b52]" style={{ paddingLeft: '2.4vmin' }}>
+            <span className="font-mono text-violet-200" style={{ fontSize: '1.3vmin', letterSpacing: '0.24em' }}>
               OFFICIAL RESULTS · {year}&ndash;{year + 1} SEASON
             </span>
           </div>
-          <div className="flex items-center gap-6 pr-8">
-            <button
-              onClick={() => setEditing((v) => !v)}
-              className="h-9 px-5 border border-white/20 text-white/60 font-mono text-[13px] tracking-[0.15em] uppercase hover:border-white/50 hover:text-white transition-colors"
-            >
-              {editing ? 'Done' : 'Adjust'}
-            </button>
+          <div className="flex items-center bg-[#2a1b52]" style={{ paddingRight: '2.2vmin' }}>
+            <div className="flex items-center bg-[#2a1b52]" style={{ paddingRight: '2.2vmin', gap: '1.2vmin' }}>
+              {finalized ? (
+                <>
+                  <Link
+                    href="/"
+                    className="border border-white/25 text-white/70 font-mono uppercase hover:border-white/60 hover:text-white transition-colors"
+                    style={{ fontSize: '1.1vmin', letterSpacing: '0.15em', padding: '0.8vmin 2vmin' }}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="/super/election"
+                    className="border border-violet-400/50 text-violet-200 font-mono uppercase hover:border-violet-300 hover:text-white transition-colors"
+                    style={{ fontSize: '1.1vmin', letterSpacing: '0.15em', padding: '0.8vmin 2vmin' }}
+                  >
+                    Super
+                  </Link>
+                </>
+              ) : (
+                <button
+                  onClick={() => setEditing((v) => !v)}
+                  className="border border-white/25 text-white/70 font-mono uppercase hover:border-white/60 hover:text-white transition-colors"
+                  style={{ fontSize: '1.1vmin', letterSpacing: '0.15em', padding: '0.8vmin 2vmin' }}
+                >
+                  {editing ? 'Done' : 'Adjust'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center px-16 min-h-0 overflow-y-auto py-8">
-          <div className="max-w-6xl w-full mx-auto">
+        <div className="flex-1 flex min-h-0">
+          <div className="flex-1 flex flex-col justify-center min-h-0" style={{ paddingInline: '3vmin' }}>
             {POSITION_ORDER.map((position, i) => {
               const people = board[position] ?? []
               const meta = POSITIONS[position]
+              const canEdit = editing && meta.isElected
 
               return (
                 <motion.div
                   key={position}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: editing ? 0 : 0.55 + i * 0.12, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                  className="grid grid-cols-[360px_1fr_auto] items-start gap-10 border-b border-white/10 py-4"
+                  transition={{ delay: canEdit ? 0 : 0.55 + i * 0.12, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  className="grid items-center border-b border-white/10"
+                  style={{ gridTemplateColumns: '22vmin 1fr auto', gap: '2.5vmin', paddingBlock: '1.5vmin' }}
                 >
-                  <span className="font-mono text-[18px] tracking-[0.18em] uppercase text-violet-300/60 pt-1">
+                  <span
+                    className="font-mono uppercase text-violet-300/60 leading-tight"
+                    style={{ fontSize: '1.5vmin', letterSpacing: '0.16em' }}
+                  >
                     {meta.label}
+                    {!meta.isElected && <span className="text-white/20"> · appointed</span>}
                   </span>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <div className="flex flex-wrap items-center" style={{ gap: '0.6vmin 2.4vmin' }}>
                     {people.length === 0 && (
-                      <span
-                        className="font-sora font-black text-white/25"
-                        style={{ fontSize: 'clamp(22px,2.6vmin,34px)' }}
-                      >
+                      <span className="font-sora font-black text-white/25" style={{ fontSize: '2.6vmin' }}>
                         —
                       </span>
                     )}
 
                     {people.map((p) => (
-                      <span key={p.id} className="flex items-center gap-2">
-                        <span
-                          className="font-sora font-black text-white leading-tight"
-                          style={{ fontSize: 'clamp(22px,2.6vmin,34px)' }}
-                        >
+                      <span key={p.id} className="flex items-center" style={{ gap: '1vmin' }}>
+                        <span className="font-sora font-black text-white leading-tight" style={{ fontSize: '2.6vmin' }}>
                           {p.name}
                         </span>
-                        {editing && (
-                          <span className="flex items-center gap-1">
+                        {canEdit && (
+                          <span className="flex items-center" style={{ gap: '0.5vmin' }}>
                             <button
                               onClick={() => setPicker({ mode: 'move', position, memberId: p.id })}
-                              className="w-7 h-7 flex items-center justify-center border border-white/20 text-white/50 hover:border-violet-400 hover:text-violet-300 transition-colors"
+                              className="flex items-center justify-center border border-white/25 text-white/50 hover:border-violet-400 hover:text-violet-300 transition-colors"
+                              style={{ width: '2.6vmin', height: '2.6vmin' }}
                               aria-label={`Move ${p.name}`}
                             >
-                              <ArrowRightLeft size={13} />
+                              <ArrowRightLeft style={{ width: '1.3vmin', height: '1.3vmin' }} />
                             </button>
                             <button
                               onClick={() => removeFrom(position, p.id)}
-                              className="w-7 h-7 flex items-center justify-center border border-white/20 text-white/50 hover:border-red-400 hover:text-red-400 transition-colors"
+                              className="flex items-center justify-center border border-white/25 text-white/50 hover:border-red-400 hover:text-red-400 transition-colors"
+                              style={{ width: '2.6vmin', height: '2.6vmin' }}
                               aria-label={`Remove ${p.name}`}
                             >
-                              <X size={13} />
+                              <X style={{ width: '1.3vmin', height: '1.3vmin' }} />
                             </button>
                           </span>
                         )}
                       </span>
                     ))}
 
-                    {editing && (
+                    {canEdit && (
                       <button
                         onClick={() => setPicker({ mode: 'add', position })}
-                        className="w-7 h-7 flex items-center justify-center border border-white/20 text-white/50 hover:border-violet-400 hover:text-violet-300 transition-colors"
+                        className="flex items-center justify-center border border-white/25 text-white/50 hover:border-violet-400 hover:text-violet-300 transition-colors"
+                        style={{ width: '2.6vmin', height: '2.6vmin' }}
                         aria-label={`Add to ${meta.label}`}
                       >
-                        <Plus size={14} />
+                        <Plus style={{ width: '1.4vmin', height: '1.4vmin' }} />
                       </button>
                     )}
                   </div>
 
                   <span
-                    className={`font-mono text-[15px] tracking-[0.15em] uppercase whitespace-nowrap pt-2 ${
+                    className={`font-mono uppercase whitespace-nowrap ${
                       people.length === meta.seats ? 'text-white/25' : 'text-amber-400'
                     }`}
+                    style={{ fontSize: '1.2vmin', letterSpacing: '0.15em' }}
                   >
                     {people.length} of {meta.seats}
                   </span>
@@ -372,22 +403,114 @@ export default function ResultsReveal({
               )
             })}
           </div>
+
+          {questions.length > 0 && (
+            <div
+              className="shrink-0 border-l border-white/10 flex flex-col justify-center"
+              style={{ width: '28vw', paddingInline: '2.6vmin', gap: '4vmin' }}
+            >
+              <p
+                className="font-mono uppercase text-violet-300/60"
+                style={{ fontSize: '1.3vmin', letterSpacing: '0.2em' }}
+              >
+                Group questions
+              </p>
+
+              {questions.map((q, qi) => {
+                const top = Math.max(...q.counts.map((c) => c.count))
+
+                return (
+                  <motion.div
+                    key={q.key}
+                    initial={{ opacity: 0, x: 18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 + qi * 0.15, duration: 0.45 }}
+                  >
+                    <p
+                      className="font-sora font-bold text-white leading-snug"
+                      style={{ fontSize: '1.7vmin', marginBottom: '0.4vmin' }}
+                    >
+                      {q.title}
+                    </p>
+                    <p
+                      className="font-mono uppercase text-white/25"
+                      style={{ fontSize: '1.05vmin', letterSpacing: '0.15em', marginBottom: '1.4vmin' }}
+                    >
+                      {q.total} voted
+                    </p>
+
+                    <div className="flex flex-col" style={{ gap: '0.8vmin' }}>
+                      {q.counts.map((c) => {
+                        const pct = q.total ? Math.round((c.count / q.total) * 100) : 0
+                        const leading = c.count === top && c.count > 0
+
+                        return (
+                          <div
+                            key={c.value}
+                            className="grid items-center"
+                            style={{ gridTemplateColumns: '7vmin 1fr 3vmin', gap: '1.2vmin' }}
+                          >
+                            <span
+                              className={`font-mono uppercase truncate ${
+                                leading ? 'text-violet-200' : 'text-white/35'
+                              }`}
+                              style={{ fontSize: '1.1vmin', letterSpacing: '0.1em' }}
+                            >
+                              {c.label}
+                            </span>
+
+                            <div className="bg-white/5 relative overflow-hidden" style={{ height: '2.2vmin' }}>
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ delay: 1.1 + qi * 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                                className={`h-full ${leading ? 'bg-violet-400' : 'bg-white/15'}`}
+                              />
+                            </div>
+
+                            <span
+                              className={`font-sora font-black text-right tabular-nums ${
+                                leading ? 'text-white' : 'text-white/35'
+                              }`}
+                              style={{ fontSize: '1.7vmin' }}
+                            >
+                              {c.count}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center justify-between px-8 py-5 bg-[#1e1735] shrink-0">
-          <p className="font-mono text-[16px] tracking-[0.2em] text-violet-200">
-            {Object.values(board).flat().length} SEATS FILLED
+        <div
+          className="flex items-center justify-between bg-[#1e1735] shrink-0"
+          style={{ paddingInline: '2.2vmin', paddingBlock: '1.4vmin' }}
+        >
+          <p className="font-mono text-violet-200" style={{ fontSize: '1.2vmin', letterSpacing: '0.2em' }}>
+            {seatsFilled} SEATS FILLED
           </p>
 
-          <div className="flex items-center gap-6">
-            {finalizeError && <p className="font-mono text-[14px] text-red-400">{finalizeError}</p>}
+          <div className="flex items-center" style={{ gap: '2vmin' }}>
+            {finalizeError && (
+              <p className="font-mono text-red-400" style={{ fontSize: '1.1vmin' }}>
+                {finalizeError}
+              </p>
+            )}
             {finalized ? (
-              <p className="font-mono text-[16px] tracking-[0.2em] text-emerald-400">FINALIZED</p>
+              <p className="font-mono text-emerald-400" style={{ fontSize: '1.2vmin', letterSpacing: '0.2em' }}>
+                FINALIZED
+              </p>
             ) : (
               <button
                 onClick={handleFinalize}
                 disabled={finalizing || editing}
-                className="h-11 px-8 bg-violet-500 text-white font-sora font-black text-[14px] tracking-[0.12em] uppercase hover:bg-violet-400 transition-colors disabled:opacity-30"
+                className="bg-violet-500 text-white font-sora font-black uppercase hover:bg-violet-400 transition-colors disabled:opacity-30"
+                style={{ fontSize: '1.2vmin', letterSpacing: '0.12em', padding: '1.1vmin 3vmin' }}
               >
                 {finalizing ? 'Saving…' : 'Finalize'}
               </button>
@@ -398,12 +521,12 @@ export default function ResultsReveal({
         <AnimatePresence>
           {picker && (
             <>
-              <motion.div
+              <div
                 onClick={() => setPicker(null)}
                 className="fixed inset-0 z-40"
                 style={{ backgroundColor: 'rgba(0,0,0,0.78)' }}
               />
-              <motion.div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+              <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
                 <div className="pointer-events-auto w-120 max-h-[70vh] border border-violet-400/30 bg-[#141829] flex flex-col">
                   <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
                     <span className="font-mono text-[13px] tracking-[0.2em] uppercase text-violet-300">
@@ -432,7 +555,7 @@ export default function ResultsReveal({
                             <p className="font-mono text-[12px] text-white/35 mt-0.5">{m.company}</p>
                           </button>
                         ))
-                      : POSITION_ORDER.filter((p) => p !== picker.position).map((p) => (
+                      : POSITION_ORDER.filter((p) => p !== picker.position && POSITIONS[p].isElected).map((p) => (
                           <button
                             key={p}
                             onClick={() => {
@@ -449,7 +572,7 @@ export default function ResultsReveal({
                         ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </>
           )}
         </AnimatePresence>

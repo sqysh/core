@@ -10,8 +10,8 @@ const END = new Date('2026-12-31T23:59:59Z')
 
 const CURRENT: { name: string; position: LeadershipPosition }[] = [
   { name: 'Brendan Ward', position: 'HOST' },
-  { name: 'Eileen Jonah', position: 'VP' },
-  { name: 'Martin Connolly', position: 'VP' },
+  { name: 'Eileen Jonah', position: 'CO_DIRECTOR' },
+  { name: 'Martin Connolly', position: 'CO_DIRECTOR' },
   { name: 'Page Driscoll', position: 'EDUCATION_COORDINATOR' },
   { name: 'Kerry Casey', position: 'SOCIAL_MEDIA_MANAGER' },
   { name: 'Alex Argeros', position: 'TREASURER' },
@@ -19,7 +19,7 @@ const CURRENT: { name: string; position: LeadershipPosition }[] = [
   { name: 'Angela Turpin', position: 'MEMBERSHIP_COMMITTEE' },
   { name: 'Jake VanMeter', position: 'MEMBERSHIP_COMMITTEE' },
   { name: 'Brian Theirrien', position: 'MEMBERSHIP_COMMITTEE' },
-  { name: 'Dennis Ford Eagan', position: 'MEMBERSHIP_COMMITTEE' }
+  { name: 'Dennis Ford Eagan, Esq.', position: 'MEMBERSHIP_COMMITTEE' }
 ]
 
 async function main() {

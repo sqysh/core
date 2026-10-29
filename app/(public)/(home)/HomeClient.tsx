@@ -15,6 +15,7 @@ import { announceGame } from '@/lib/actions/games/wheel/announceGame'
 import { seedGuidingLight } from '@/lib/actions/guiding-light/seedGuidingLight'
 import { generateWeeklyMatches } from '@/lib/actions/1-2-1/generateWeeklyMatches'
 import { openElection } from '@/lib/actions/election/openElection'
+import { announceElection } from '@/lib/actions/election/announceElection'
 
 export default function HomeClient({ currentJudge }: { currentJudge: { id: string; name: string } }) {
   const { data: session } = useSession()
@@ -27,21 +28,31 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
 
   async function handleInitiateGuidingLight() {
     setInitiating(true)
-    await initiateGuidingLight()
+    const res = await initiateGuidingLight()
     setInitiating(false)
+    if (!res.success) {
+      console.error('[guiding light]', res.error)
+      return
+    }
     router.push('/guiding-light/stage')
   }
 
   async function handleLaunchGame() {
     if (launching) return
     setLaunching(true)
-    await createGame('WHEEL') // 1. create the game FIRST
-    await announceGame() // 2. then tell everyone to go to /games
-    router.push('/games?view=tv') // 3. host to the TV
+    const created = await createGame('WHEEL')
+    if (!created.success) {
+      setLaunching(false)
+      console.error('[game]', created.error)
+      return
+    }
+    await announceGame()
+    router.push('/games?view=tv')
   }
 
   async function handleSeed() {
-    await seedGuidingLight()
+    const res = await seedGuidingLight()
+    if (!res.success) console.error('[seed gl]', res.error)
     router.refresh()
   }
 
@@ -49,14 +60,24 @@ export default function HomeClient({ currentJudge }: { currentJudge: { id: strin
     setGenerating(true)
     const res = await generateWeeklyMatches()
     setGenerating(false)
-    if (res.success) router.push('/matchups')
+    if (!res.success) {
+      console.error('[matchups]', res.error)
+      return
+    }
+    router.push('/matchups')
   }
 
   async function handleOpenElection() {
     setOpeningElection(true)
-    const res = await openElection()
+    const opened = await openElection()
+    if (!opened.success) {
+      setOpeningElection(false)
+      console.error('[election]', opened.error)
+      return
+    }
+    await announceElection()
     setOpeningElection(false)
-    if (res.success) router.push('/election')
+    router.push('/election/stage')
   }
 
   return (
