@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { getUserAttendance } from '../attendance/getUserAttendance'
-import { BillingOrder } from '@/types/billing.types'
+import { BillingOrder, BillingPaymentMethod } from '@/types/billing.types'
 
 export async function getBillingData(): Promise<{
   success: boolean
@@ -11,6 +11,7 @@ export async function getBillingData(): Promise<{
     subscriptions: BillingOrder[]
     corrections: BillingOrder[]
     missedMeetings: { meetingId: string; date: string }[]
+    paymentMethod: BillingPaymentMethod | null
   }
   error?: string
 }> {
@@ -18,7 +19,7 @@ export async function getBillingData(): Promise<{
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
   try {
-    const [orders, attendanceResult] = await Promise.all([
+    const [orders, attendanceResult, paymentMethod] = await Promise.all([
       prisma.order.findMany({
         where: { userId: session.user.id },
         orderBy: { createdAt: 'desc' },
@@ -36,7 +37,12 @@ export async function getBillingData(): Promise<{
           meeting: { select: { date: true } }
         }
       }),
-      getUserAttendance()
+      getUserAttendance(),
+      prisma.paymentMethod.findFirst({
+        where: { userId: session.user.id },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, brand: true, last4: true, expMonth: true, expYear: true }
+      })
     ])
 
     const serialize = (o: (typeof orders)[0]): BillingOrder => ({
@@ -62,7 +68,8 @@ export async function getBillingData(): Promise<{
       data: {
         subscriptions: orders.filter((o) => o.type === 'ANNUAL' || o.type === 'QUARTERLY').map(serialize),
         corrections: orders.filter((o) => o.type === 'ATTENDANCE_CORRECTION').map(serialize),
-        missedMeetings
+        missedMeetings,
+        paymentMethod
       }
     }
   } catch (err) {

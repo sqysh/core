@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
-import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle, Loader2, LucideIcon } from 'lucide-react'
+import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle, Loader2, LucideIcon, Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getTodayLabel } from '@/lib/utils/date.utils'
@@ -18,7 +18,13 @@ const idleCls =
 const activeCls =
   'border-primary-light dark:border-primary-dark text-primary-light dark:text-primary-dark bg-primary-light/10 dark:bg-primary-dark/10 font-bold'
 
-export function Greeting({ currentUser }: { currentUser: { name: string } }) {
+export function Greeting({
+  currentUser,
+  showBilling = false
+}: {
+  currentUser: { name: string }
+  showBilling?: boolean
+}) {
   const { data: session } = useSession()
   const pathname = usePathname()
   const [signingOut, setSigningOut] = useState(false)
@@ -31,6 +37,7 @@ export function Greeting({ currentUser }: { currentUser: { name: string } }) {
   const links: { href: string; label: string; icon: LucideIcon; show: boolean }[] = [
     { href: '/', label: 'Home', icon: Home, show: true },
     { href: '/profile', label: 'Profile', icon: UserCircle, show: true },
+    { href: '/billing', label: 'Billing', icon: Receipt, show: showBilling },
     { href: '/admin', label: 'Admin', icon: LayoutDashboard, show: isAdmin || isSuperUser },
     { href: '/super/dashboard', label: 'Super', icon: ShieldCheck, show: isSuperUser }
   ]

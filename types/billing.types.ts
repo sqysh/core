@@ -19,8 +19,17 @@ export interface BillingPaymentMethod {
   expYear: number
 }
 
+export interface BillingPaymentMethod {
+  id: string
+  brand: string
+  last4: string
+  expMonth: number
+  expYear: number
+}
+
 export interface BillingClientProps {
   subscriptions: BillingOrder[]
   corrections: BillingOrder[]
   missedMeetings: { meetingId: string; date: string }[]
+  paymentMethod: BillingPaymentMethod | null
 }

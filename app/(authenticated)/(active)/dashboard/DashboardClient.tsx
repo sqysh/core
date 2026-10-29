@@ -96,7 +96,10 @@ export default function DashboardClient({
   const scheduleData = schedule.data ?? []
   const attendanceData = attendances.data ?? { rows: [], attended: 0, total: 0 }
 
-  const ids = JUMP_LINKS.map((l) => l.id)
+  const membershipComplete = !!membership.annualOrder && !!membership.quarterlyOrder
+
+  const jumpLinks = membershipComplete ? JUMP_LINKS.filter((l) => l.id !== 'membership') : JUMP_LINKS
+  const ids = jumpLinks.map((l) => l.id)
   const { active: activeSection, select } = useActiveSection(ids)
 
   return (
@@ -104,7 +107,7 @@ export default function DashboardClient({
       <div className="max-w-170 mx-auto px-4 pb-28">
         {/* ── Greeting ── */}
         <FadeUp delay={0.025} className="pt-7 pb-5">
-          <Greeting currentUser={currentUser} />
+          <Greeting currentUser={currentUser} showBilling={membershipComplete} />
         </FadeUp>
 
         <FadeUp delay={0.05}>
@@ -117,7 +120,7 @@ export default function DashboardClient({
           aria-label="Jump to section"
         >
           <div className="flex items-center gap-5 overflow-x-auto no-scrollbar">
-            {JUMP_LINKS.map(({ id, label }) => {
+            {jumpLinks.map(({ id, label }) => {
               const active = activeSection === id
               return (
                 <a
@@ -147,9 +150,11 @@ export default function DashboardClient({
         </nav>
 
         {/* ── Membership setup ── */}
-        <FadeUp delay={0.1} className="pt-6 scroll-mt-16" id="membership">
-          <MembershipSetupPanel membership={membership} />
-        </FadeUp>
+        {!membershipComplete && (
+          <FadeUp delay={0.1} className="pt-6 scroll-mt-16" id="membership">
+            <MembershipSetupPanel membership={membership} />
+          </FadeUp>
+        )}
 
         {/* ── Quick actions ── */}
         <QuickActions

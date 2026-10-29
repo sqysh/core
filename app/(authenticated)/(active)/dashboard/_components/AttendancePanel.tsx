@@ -121,7 +121,7 @@ export function AttendancePanel({
         {/* View history link */}
         <Link
           href="/attendance/history"
-          className="flex items-center gap-3 px-4 h-14 border-b border-border-light dark:border-border-dark hover:bg-surface-light dark:hover:bg-surface-dark transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+          className="flex items-center gap-3 px-4 h-14 hover:bg-surface-light dark:hover:bg-surface-dark transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
         >
           <LinkBody
             icon={<History size={16} className="text-muted-light dark:text-muted-dark shrink-0" aria-hidden="true" />}
@@ -135,42 +135,6 @@ export function AttendancePanel({
             </span>
           </LinkBody>
         </Link>
-
-        {/* Missed meetings section — only renders when there are missed rows */}
-        {missedRows.length > 0 && (
-          <>
-            <div className="px-4 py-2.5 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-              <p className="text-f10 font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark">
-                Missed · {missedRows.length} {missedRows.length === 1 ? 'meeting' : 'meetings'}
-              </p>
-            </div>
-            <div className="divide-y divide-border-light dark:divide-border-dark">
-              {missedRows.map((row, i) => (
-                <motion.div
-                  key={row.meetingId}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.25, delay: i * 0.03 }}
-                  className="flex items-center gap-3 pl-4 pr-2 border-l-2 border-l-slate-400 dark:border-l-slate-600"
-                >
-                  <span
-                    className="shrink-0 w-4 h-4 border-2 border-slate-400 dark:border-slate-600"
-                    aria-hidden="true"
-                  />
-                  <p className="text-[15px] font-sora font-semibold leading-tight flex-1 text-text-light dark:text-text-dark">
-                    {fmtDate(row.date)}
-                  </p>
-                  <button
-                    onClick={() => handleReinstateClick(row.meetingId, row.date)}
-                    className="shrink-0 h-12 px-3 text-[14px] font-mono text-primary-light dark:text-primary-dark hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-                  >
-                    Reinstate →
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </>
   )
