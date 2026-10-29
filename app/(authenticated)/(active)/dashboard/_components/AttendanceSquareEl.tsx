@@ -24,20 +24,23 @@ export function AttendanceSquareEl({
   const isMissed = sq.status === 'missed' && sq.meetingId
 
   const base =
-    'relative w-[11px] h-[11px] shrink-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark'
+    'relative w-4 h-4 shrink-0 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark'
 
   let stateClass = ''
   if (sq.status === 'attended') {
-    stateClass = 'bg-green-500 dark:bg-green-400 hover:bg-green-600 dark:hover:bg-green-300'
+    stateClass = 'bg-primary-light dark:bg-primary-dark hover:opacity-80'
   } else if (sq.status === 'reinstated') {
-    stateClass = 'bg-amber-500 dark:bg-amber-400 hover:bg-amber-600 dark:hover:bg-amber-300'
+    stateClass = 'bg-primary-light/45 dark:bg-primary-dark/45 hover:opacity-80'
   } else if (sq.status === 'missed') {
-    stateClass = 'bg-red-500 dark:bg-red-400 hover:bg-red-600 dark:hover:bg-red-300 cursor-pointer'
+    stateClass =
+      'bg-transparent border-2 border-slate-400 dark:border-slate-600 hover:border-slate-500 dark:hover:border-slate-500 cursor-pointer'
   } else if (sq.status === 'future') {
     stateClass = 'bg-muted-light/15 dark:bg-muted-dark/15'
   }
 
-  const todayRing = sq.isToday ? 'ring-1 ring-primary-light dark:ring-primary-dark' : ''
+  const todayRing = sq.isToday
+    ? 'ring-2 ring-offset-1 ring-primary-light dark:ring-primary-dark ring-offset-bg-light dark:ring-offset-bg-dark'
+    : ''
 
   if (sq.status === 'excluded') {
     return (
@@ -47,10 +50,8 @@ export function AttendanceSquareEl({
         transition={{ duration: 0.2, delay: index * 0.008 }}
         title={label}
         aria-label={label}
-        className={`${base} ${todayRing} border border-border-light dark:border-border-dark flex items-center justify-center`}
-      >
-        <span className="w-0.5 h-0.5 rounded-full bg-muted-light/50 dark:bg-muted-dark/50" aria-hidden="true" />
-      </motion.div>
+        className={`${base} ${todayRing} border border-dashed border-border-light dark:border-border-dark`}
+      />
     )
   }
 

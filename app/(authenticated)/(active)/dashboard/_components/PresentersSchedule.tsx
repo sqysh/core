@@ -50,29 +50,29 @@ export default function PresenterSchedule({
     <div className={className}>
       {/* ── Next up hero ── */}
       <div className="border border-border-light dark:border-border-dark mb-3">
-        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark">
-          <Mic size={12} className="text-primary-light dark:text-primary-dark" aria-hidden="true" />
-          <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark">
-            {alreadyPresented ? 'Presented Today' : 'Presenting Next'}
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark">
+          <Mic size={16} className="text-primary-light dark:text-primary-dark shrink-0" aria-hidden="true" />
+          <p className="text-f10 font-mono tracking-[0.12em] uppercase text-primary-light dark:text-primary-dark">
+            {alreadyPresented ? 'Presented today' : 'Presenting next'}
           </p>
         </div>
         <div className="px-4 py-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="font-sora font-black text-[18px] text-text-light dark:text-text-dark tracking-tight leading-none mb-1">
+          <div className="min-w-0">
+            <p className="font-sora font-black text-[22px] text-text-light dark:text-text-dark tracking-tight leading-none mb-1.5 truncate">
               {next.isYou ? (alreadyPresented ? 'You' : 'You!') : next.name}
             </p>
-            <p className="text-[12px] font-nunito text-muted-light dark:text-muted-dark">{next.company}</p>
+            <p className="text-[14px] font-nunito text-muted-light dark:text-muted-dark truncate">{next.company}</p>
           </div>
           <div className="text-right shrink-0">
-            <p className="font-sora font-black text-[15px] text-primary-light dark:text-primary-dark">
+            <p className="font-sora font-black text-[17px] text-primary-light dark:text-primary-dark">
               {daysUntil(next.date)}
             </p>
-            <p className="text-f10 font-mono text-muted-light dark:text-muted-dark">{fmtDate(next.date)}</p>
+            <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark mt-0.5">{fmtDate(next.date)}</p>
           </div>
         </div>
         {next.isYou && (
-          <div className="px-4 py-2.5 bg-primary-light/8 dark:bg-primary-dark/8 border-t border-primary-light/20 dark:border-primary-dark/20">
-            <p className="text-[12px] font-nunito text-primary-light dark:text-primary-dark font-medium">
+          <div className="px-4 py-3 bg-primary-light/8 dark:bg-primary-dark/8 border-t border-primary-light/20 dark:border-primary-dark/20">
+            <p className="text-[15px] font-nunito text-primary-light dark:text-primary-dark font-medium">
               {alreadyPresented
                 ? "Nice work — that's your slot done for this rotation."
                 : "You're up next — prepare your 10-minute presentation."}
@@ -110,7 +110,7 @@ export default function PresenterSchedule({
         {hidden.length > 0 && (
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-t border-border-light dark:border-border-dark text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+            className="w-full h-12 flex items-center justify-center gap-2 px-4 border-t border-border-light dark:border-border-dark text-[14px] font-mono text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
             {expanded ? 'Show less' : `Show ${hidden.length} more`}
             <span aria-hidden="true">{expanded ? '−' : '+'}</span>
@@ -127,37 +127,37 @@ function PresenterRow({ presenter: s, index: i }: { presenter: ScheduledPresente
 
   return (
     <motion.li
-      className={`flex items-center gap-2.5 px-3 py-2.5 transition-colors ${
+      className={`flex items-center gap-3 px-3 py-3 transition-colors ${
         s.isYou
           ? 'bg-primary-light/5 dark:bg-primary-dark/5'
           : isOff
-            ? 'bg-red-50 dark:bg-red-400/5 opacity-60'
+            ? 'bg-surface-light dark:bg-surface-dark'
             : isVisitor
-              ? 'bg-amber-50 dark:bg-amber-400/5'
+              ? 'bg-primary-light/3 dark:bg-primary-dark/3'
               : 'bg-bg-light dark:bg-bg-dark'
       }`}
     >
       <div
-        className={`w-6 h-6 shrink-0 flex items-center justify-center border text-f9 font-mono font-bold ${
+        className={`w-8 h-8 shrink-0 flex items-center justify-center border text-[12px] font-mono font-bold ${
           isOff
-            ? 'bg-red-50 dark:bg-red-400/5 border-red-200 dark:border-red-400/20 text-red-400'
+            ? 'border-dashed border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark'
             : isVisitor
-              ? 'bg-amber-50 dark:bg-amber-400/5 border-amber-200 dark:border-amber-400/20 text-amber-500'
+              ? 'border-primary-light/40 dark:border-primary-dark/40 text-primary-light dark:text-primary-dark'
               : s.isYou
                 ? 'bg-primary-light/10 dark:bg-primary-dark/10 border-primary-light/30 dark:border-primary-dark/30 text-primary-light dark:text-primary-dark'
                 : 'bg-surface-light dark:bg-surface-dark border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark'
         }`}
       >
-        {isOff ? '✕' : isVisitor ? '★' : getInitials(s.name)}
+        {isOff ? '—' : isVisitor ? '★' : getInitials(s.name)}
       </div>
 
       <div className="flex-1 min-w-0">
         <p
-          className={`text-[12.5px] font-sora font-bold truncate ${
+          className={`text-[15px] font-sora font-bold truncate ${
             isOff
-              ? 'text-red-400 dark:text-red-400'
+              ? 'text-muted-light dark:text-muted-dark'
               : isVisitor
-                ? 'text-amber-600 dark:text-amber-400'
+                ? 'text-primary-light dark:text-primary-dark'
                 : s.isYou
                   ? 'text-primary-light dark:text-primary-dark'
                   : 'text-text-light dark:text-text-dark'
@@ -169,9 +169,11 @@ function PresenterRow({ presenter: s, index: i }: { presenter: ScheduledPresente
       </div>
 
       <div className="text-right shrink-0">
-        <p className="text-f10 font-mono text-muted-light dark:text-muted-dark">{fmtDate(s.date)}</p>
+        <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark">{fmtDate(s.date)}</p>
         {s.isNext && (
-          <p className="text-f9 font-mono uppercase tracking-widest text-primary-light dark:text-primary-dark">Next</p>
+          <p className="text-f10 font-mono uppercase tracking-[0.12em] text-primary-light dark:text-primary-dark mt-0.5">
+            Next
+          </p>
         )}
       </div>
     </motion.li>

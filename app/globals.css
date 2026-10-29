@@ -83,9 +83,9 @@
   --text-f7--line-height: 1rem;
   --text-f8: 0.5rem;
   --text-f8--line-height: 1rem;
-  --text-f9: 0.5625rem;
+  --text-f9: 0.75rem;
   --text-f9--line-height: 1rem;
-  --text-f10: 0.625rem;
+  --text-f10: 0.8125rem;
   --text-f10--line-height: 1rem;
 }
 
@@ -94,6 +94,10 @@ body {
   background-color: var(--color-bg-light);
   color: var(--color-text-light);
   font-family: var(--font-nunito), Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 .dark body {

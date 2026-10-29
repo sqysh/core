@@ -16,9 +16,65 @@ import { MemberDashboardProps, ModalKey } from '@/types/dashboard.types'
 import { AttendancePanel } from '@/app/(authenticated)/(active)/dashboard/_components/AttendancePanel'
 import MembershipSetupPanel from '@/app/(authenticated)/(active)/dashboard/_components/MembershipSetupPanel'
 import { GuidingLightPanel } from './_components/GuidingLightPanel'
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import FloatingQuickActions from './_components/FloatingQuickActions'
 import LeadershipPanel from './_components/LeadershipPanel'
+
+const JUMP_LINKS = [
+  { id: 'membership', label: 'Membership' },
+  { id: 'attendance', label: 'Attendance' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'presenters', label: 'Presenters' },
+  { id: 'guiding-light', label: 'Guiding Light' },
+  { id: 'leadership', label: 'Leadership' },
+  { id: 'events', label: 'Events' },
+  { id: 'visitors', label: 'Visitors' },
+  { id: 'history', label: 'History' },
+  { id: 'members', label: 'Members' }
+]
+
+export function useActiveSection(ids: string[], offset = 120) {
+  const [active, setActive] = useState(ids[0])
+  const lockedRef = useRef<string | null>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const select = useCallback((id: string) => {
+    lockedRef.current = id
+    setActive(id)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      lockedRef.current = null
+    }, 800)
+  }, [])
+
+  useEffect(() => {
+    function onScroll() {
+      if (lockedRef.current) return
+
+      const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2
+      if (atBottom) {
+        setActive(ids[ids.length - 1])
+        return
+      }
+
+      let current = ids[0]
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= offset) current = id
+      }
+      setActive(current)
+    }
+
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [ids, offset])
+
+  return { active, select }
+}
 
 export default function DashboardClient({
   currentUser,
@@ -37,13 +93,11 @@ export default function DashboardClient({
 }: MemberDashboardProps) {
   const [floatingModal, setFloatingModal] = useState<ModalKey>(null)
 
-  // Unwrap action results into clean shapes for child components
   const scheduleData = schedule.data ?? []
-  const attendanceData = attendances.data ?? {
-    rows: [],
-    attended: 0,
-    total: 0
-  }
+  const attendanceData = attendances.data ?? { rows: [], attended: 0, total: 0 }
+
+  const ids = JUMP_LINKS.map((l) => l.id)
+  const { active: activeSection, select } = useActiveSection(ids)
 
   return (
     <main id="main-content" className="min-h-screen bg-bg-light dark:bg-bg-dark">
@@ -57,8 +111,43 @@ export default function DashboardClient({
           <div className="h-px bg-border-light dark:bg-border-dark" role="separator" />
         </FadeUp>
 
+        {/* ── Jump nav ── */}
+        <nav
+          className="sticky top-0 z-30 -mx-4 px-4 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark"
+          aria-label="Jump to section"
+        >
+          <div className="flex items-center gap-5 overflow-x-auto no-scrollbar">
+            {JUMP_LINKS.map(({ id, label }) => {
+              const active = activeSection === id
+              return (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    select(id)
+                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }}
+                  data-active={active || undefined}
+                  aria-current={active ? 'true' : undefined}
+                  ref={(el) => {
+                    if (active && el) el.scrollIntoView({ block: 'nearest', inline: 'center' })
+                  }}
+                  className={`shrink-0 h-12 flex items-center text-[14px] font-mono border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark ${
+                    active
+                      ? 'text-primary-light dark:text-primary-dark border-primary-light dark:border-primary-dark font-bold'
+                      : 'text-muted-light dark:text-muted-dark border-transparent hover:text-primary-light dark:hover:text-primary-dark'
+                  }`}
+                >
+                  {label}
+                </a>
+              )
+            })}
+          </div>
+        </nav>
+
         {/* ── Membership setup ── */}
-        <FadeUp delay={0.1} className="pt-6">
+        <FadeUp delay={0.1} className="pt-6 scroll-mt-16" id="membership">
           <MembershipSetupPanel membership={membership} />
         </FadeUp>
 
@@ -72,13 +161,8 @@ export default function DashboardClient({
 
         <FloatingQuickActions onAction={(key: string) => setFloatingModal(key as ModalKey)} />
 
-        {/* Activity Stats */}
-        <FadeUp delay={0.15} className="pt-6">
-          <SectionLabel>Your Activity</SectionLabel>
-          <ActivityStats stats={stats} />
-        </FadeUp>
-
-        <FadeUp delay={0.15} className="pt-6">
+        {/* ── Your attendance ── */}
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="attendance">
           <SectionLabel>Your Attendance</SectionLabel>
           <AttendancePanel
             attended={attendanceData.attended}
@@ -90,49 +174,59 @@ export default function DashboardClient({
           />
         </FadeUp>
 
+        {/* ── Your activity ── */}
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="activity">
+          <SectionLabel>Your Activity</SectionLabel>
+          <ActivityStats stats={stats} />
+        </FadeUp>
+
+        {/* ── Presenter schedule ── */}
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="presenters">
+          <SectionLabel>Presenter Schedule</SectionLabel>
+          <PresenterSchedule schedule={scheduleData} />
+        </FadeUp>
+
         {/* ── Guiding Light ── */}
-        <FadeUp delay={0.15} className="pt-6">
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="guiding-light">
           <SectionLabel>Guiding Light</SectionLabel>
           <GuidingLightPanel currentJudge={guidingLight.currentJudge} records={guidingLight.records} />
         </FadeUp>
 
         {/* ── Leadership ── */}
-        <FadeUp delay={0.15} className="pt-6">
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="leadership">
+          <SectionLabel>Leadership Team</SectionLabel>
           <LeadershipPanel season={leadership.season} seats={leadership.seats} totalSeats={leadership.totalSeats} />
         </FadeUp>
 
         {/* ── Events ── */}
-        <FadeUp delay={0.15} className="pt-6">
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="events">
           <SectionLabel>Events</SectionLabel>
           <EventButton />
           <EventsList events={events} />
-          <Link
-            href="/events"
-            className="mt-2 inline-flex items-center gap-1.5 text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-          >
-            View Past →
-          </Link>
+          <div className="px-4 py-3 border-b border-x border-border-light dark:border-border-dark">
+            <Link
+              href="/events"
+              className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+            >
+              View Past →
+            </Link>
+          </div>
         </FadeUp>
 
         {/* ── Visitors ── */}
-        <FadeUp delay={0.15} className="pt-6">
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="visitors">
           <SectionLabel>Visitors</SectionLabel>
           <VisitorPanel visitors={visitors} closestVisitorDay={closestVisitorDay} />
         </FadeUp>
 
         {/* ── History ── */}
-        <FadeUp delay={0.15} className="pt-6">
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="history">
           <SectionLabel>History</SectionLabel>
           <HistoryTabs recentActivity={recentActivity} />
         </FadeUp>
 
-        {/* Presenter Schedle */}
-        <FadeUp delay={0.15} className="pt-6">
-          <PresenterSchedule schedule={scheduleData} className="pt-6" />
-        </FadeUp>
-
         {/* ── Members ── */}
-        <FadeUp delay={0.15} className="pt-6">
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="members">
           <SectionLabel>Members</SectionLabel>
           <MemberList members={members} />
         </FadeUp>

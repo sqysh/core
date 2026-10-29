@@ -9,6 +9,7 @@ import { Visitor } from '@/types/visitor.types'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useSounds } from '@/lib/hooks/useSounds'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,13 +51,13 @@ function VisitorRow({ visitor }: { visitor: Visitor }) {
   const dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-border-light dark:border-border-dark last:border-b-0">
+    <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border-light dark:border-border-dark last:border-b-0">
       {/* Date chip */}
       <div className="shrink-0 w-14 text-center">
-        <p className="text-f10 font-mono tracking-widest uppercase text-primary-light dark:text-primary-dark leading-none">
+        <p className="text-f10 font-mono tracking-[0.12em] uppercase text-primary-light dark:text-primary-dark leading-none">
           {dateLabel.split(' ')[0]}
         </p>
-        <p className="text-base font-sora font-bold text-text-light dark:text-text-dark leading-tight">
+        <p className="text-[20px] font-sora font-bold text-text-light dark:text-text-dark leading-tight mt-0.5">
           {dateLabel.split(' ')[1]}
         </p>
       </div>
@@ -66,15 +67,15 @@ function VisitorRow({ visitor }: { visitor: Visitor }) {
 
       {/* Info */}
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-sora font-semibold text-text-light dark:text-text-dark truncate leading-tight">
+        <p className="text-[15px] font-sora font-semibold text-text-light dark:text-text-dark truncate leading-tight">
           {visitor.firstName} {visitor.lastName}
         </p>
-        <p className="text-xs font-nunito text-muted-light dark:text-muted-dark truncate mt-0.5">{visitor.email}</p>
+        <p className="text-[14px] font-nunito text-muted-light dark:text-muted-dark truncate mt-0.5">{visitor.email}</p>
       </div>
 
       {/* Invited by (if shown) */}
       {visitor.invitedBy && (
-        <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark shrink-0 hidden sm:block">
+        <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark shrink-0 hidden sm:block">
           via {visitor.invitedBy.name}
         </p>
       )}
@@ -180,7 +181,7 @@ export default function VisitorPanel({
       <div className="border border-border-light dark:border-border-dark">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border-light dark:border-border-dark flex items-center justify-between gap-3">
-          <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark">
+          <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark">
             {visitors.length > 0
               ? `${visitors.length} upcoming ${visitors.length === 1 ? 'visitor' : 'visitors'}`
               : 'No visitors logged yet'}
@@ -188,7 +189,7 @@ export default function VisitorPanel({
           <button
             onClick={onOpen}
             aria-label="Add a visitor"
-            className="shrink-0 h-8 px-3 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-f10 font-mono tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark inline-flex items-center gap-1.5"
+            className="shrink-0 h-11 px-4 border border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-[14px] font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark inline-flex items-center gap-1.5"
           >
             + Add
           </button>
@@ -202,24 +203,24 @@ export default function VisitorPanel({
             ))}
           </div>
         ) : (
-          <div className="px-4 py-3">
-            <p className="text-xs font-nunito text-muted-light dark:text-muted-dark leading-relaxed">
+          <div className="px-4 py-4">
+            <p className="text-[15px] font-nunito text-muted-light dark:text-muted-dark leading-relaxed">
               Bringing a guest to a meeting? Log them here so the group knows who to expect.
             </p>
-            <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark mt-2">
+            <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark mt-2.5">
               No Visitor Day scheduled ·{' '}
-              <span className="text-primary-light dark:text-primary-dark">Add a visitor for any Thursday</span>
+              <span className="text-primary-light dark:text-primary-dark">add a visitor for any Thursday</span>
             </p>
           </div>
         )}
 
         {/* View past */}
-        <div className="px-4 py-3 border-t border-border-light dark:border-border-dark">
+        <div className="px-4 border-t border-border-light dark:border-border-dark">
           <Link
             href="/visitors"
-            className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+            className="inline-flex items-center gap-1.5 h-12 text-[14px] font-mono text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            View Past →
+            <LinkBody label="View past" icon={<span aria-hidden="true">→</span>} spinnerClass="w-4 h-4" iconAfter />
           </Link>
         </div>
       </div>

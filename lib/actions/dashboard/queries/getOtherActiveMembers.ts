@@ -8,7 +8,15 @@ export async function getOtherActiveMembers(user: Pick<User, 'chapterId' | 'id'>
       id: { not: user.id },
       membershipStatus: 'ACTIVE'
     },
-    select: { id: true, name: true, industry: true, phone: true, email: true, weeklyTreasureWishlist: true },
+    select: {
+      id: true,
+      name: true,
+      industry: true,
+      phone: true,
+      email: true,
+      weeklyTreasureWishlist: true,
+      profileImage: true
+    },
     orderBy: { name: 'asc' }
   })
 

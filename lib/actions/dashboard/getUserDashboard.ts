@@ -44,7 +44,8 @@ export async function getUserDashboard() {
         hasQuarterlySubscription: true,
         weeklyTreasureWishlist: true,
         chapter: { select: { name: true } },
-        createdAt: true
+        createdAt: true,
+        profileImage: true
       }
     })
     if (!user) return { success: false, error: 'User not found' }
@@ -93,7 +94,8 @@ export async function getUserDashboard() {
       hasAnnualSubscription: user.hasAnnualSubscription,
       hasQuarterlySubscription: user.hasQuarterlySubscription,
       weeklyTreasureWishlist: user.weeklyTreasureWishlist,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      profileImage: user.profileImage
     }
 
     const stats = {

@@ -11,6 +11,7 @@ import { fmtDate } from '@/lib/utils/date.utils'
 import { UserAttendanceRow } from '@/types/attendance.types'
 import { useAppStore } from '@/lib/store/appStore'
 import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 export interface AttendancePanelProps {
   rows: UserAttendanceRow[]
@@ -24,6 +25,13 @@ export interface AttendancePanelProps {
   }
   memberCreatedAt: Date
 }
+
+const LEGEND = [
+  { label: 'Attended', swatch: 'bg-primary-light dark:bg-primary-dark' },
+  { label: 'Reinstated', swatch: 'bg-primary-light/45 dark:bg-primary-dark/45' },
+  { label: 'Missed', swatch: 'border-2 border-slate-400 dark:border-slate-600' },
+  { label: 'Off', swatch: 'border border-dashed border-border-light dark:border-border-dark' }
+] as const
 
 export function AttendancePanel({
   rows,
@@ -73,43 +81,28 @@ export function AttendancePanel({
 
       <div className="border border-border-light dark:border-border-dark">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-border-light dark:border-border-dark flex items-center justify-between gap-3">
-          <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark">
-            Your Attendance
+        <div className="px-4 py-3.5 border-b border-border-light dark:border-border-dark flex items-center justify-between gap-3">
+          <p className="text-f10 font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark">
+            Your attendance
           </p>
-          <p className="text-f10 font-mono tracking-widest uppercase text-primary-light dark:text-primary-dark">
+          <p className="text-[15px] font-mono font-bold text-primary-light dark:text-primary-dark">
             {attended} / {total} · {pct}%
           </p>
         </div>
 
         {/* Full year heat strip — the focal point */}
-        <div className="px-4 py-3 border-b border-border-light dark:border-border-dark">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-2.5">
-            <p className="text-[9px] font-mono tracking-[0.18em] uppercase text-muted-light dark:text-muted-dark">
-              The Year Ahead · 52 Thursdays
+        <div className="px-4 py-4 border-b border-border-light dark:border-border-dark">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3">
+            <p className="text-f10 font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark">
+              The year ahead · 52 Thursdays
             </p>
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[9px] font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark">
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 dark:bg-green-400 shrink-0" aria-hidden="true" />
-                Attended
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 bg-amber-500 dark:bg-amber-400 shrink-0" aria-hidden="true" />
-                Reinstated
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-2 h-2 bg-red-500 dark:bg-red-400 shrink-0" aria-hidden="true" />
-                Missed
-              </span>
-              <span className="flex items-center gap-1">
-                <span
-                  className="w-2 h-2 border border-border-light dark:border-border-dark flex items-center justify-center shrink-0"
-                  aria-hidden="true"
-                >
-                  <span className="w-0.5 h-0.5 bg-muted-light/60 dark:bg-muted-dark/60 rounded-full" />
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] font-mono text-muted-light dark:text-muted-dark">
+              {LEGEND.map(({ label, swatch }) => (
+                <span key={label} className="flex items-center gap-1.5">
+                  <span className={`w-3.5 h-3.5 shrink-0 ${swatch}`} aria-hidden="true" />
+                  {label}
                 </span>
-                Off
-              </span>
+              ))}
             </div>
           </div>
 
@@ -128,22 +121,26 @@ export function AttendancePanel({
         {/* View history link */}
         <Link
           href="/attendance/history"
-          className="flex items-center gap-3 px-4 py-3 border-b border-border-light dark:border-border-dark hover:bg-surface-light dark:hover:bg-surface-dark transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+          className="flex items-center gap-3 px-4 h-14 border-b border-border-light dark:border-border-dark hover:bg-surface-light dark:hover:bg-surface-dark transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
         >
-          <History size={13} className="text-muted-light dark:text-muted-dark shrink-0" aria-hidden="true" />
-          <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark flex-1 group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
-            View Full History
-          </p>
-          <span className="text-f10 font-mono text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
-            →
-          </span>
+          <LinkBody
+            icon={<History size={16} className="text-muted-light dark:text-muted-dark shrink-0" aria-hidden="true" />}
+            spinnerClass="w-4 h-4 text-muted-light dark:text-muted-dark"
+          >
+            <p className="text-[14px] font-mono text-text-light dark:text-text-dark flex-1 group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
+              View full history
+            </p>
+            <span className="text-[14px] font-mono text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
+              →
+            </span>
+          </LinkBody>
         </Link>
 
         {/* Missed meetings section — only renders when there are missed rows */}
         {missedRows.length > 0 && (
           <>
-            <div className="px-4 py-2 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
-              <p className="text-[9px] font-mono tracking-[0.18em] uppercase text-muted-light dark:text-muted-dark">
+            <div className="px-4 py-2.5 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark">
+              <p className="text-f10 font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark">
                 Missed · {missedRows.length} {missedRows.length === 1 ? 'meeting' : 'meetings'}
               </p>
             </div>
@@ -154,14 +151,18 @@ export function AttendancePanel({
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.25, delay: i * 0.03 }}
-                  className="flex items-center gap-3 px-4 py-2.5 border-l-2 border-l-red-500/40 dark:border-l-red-400/40"
+                  className="flex items-center gap-3 pl-4 pr-2 border-l-2 border-l-slate-400 dark:border-l-slate-600"
                 >
-                  <p className="text-[13px] font-sora font-semibold leading-tight flex-1 text-muted-light dark:text-muted-dark">
+                  <span
+                    className="shrink-0 w-4 h-4 border-2 border-slate-400 dark:border-slate-600"
+                    aria-hidden="true"
+                  />
+                  <p className="text-[15px] font-sora font-semibold leading-tight flex-1 text-text-light dark:text-text-dark">
                     {fmtDate(row.date)}
                   </p>
                   <button
                     onClick={() => handleReinstateClick(row.meetingId, row.date)}
-                    className="text-f10 font-mono tracking-widest uppercase text-text-light/50 dark:text-text-dark/50 hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+                    className="shrink-0 h-12 px-3 text-[14px] font-mono text-primary-light dark:text-primary-dark hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
                   >
                     Reinstate →
                   </button>

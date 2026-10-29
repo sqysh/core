@@ -1,81 +1,88 @@
+'use client'
+
+import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
-import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle } from 'lucide-react'
+import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle, Loader2, LucideIcon } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { getTodayLabel } from '@/lib/utils/date.utils'
 import { getGreeting } from '@/lib/utils/shared.utils'
 import { LinkBody } from '@/components/_shared/LinkBody'
 
 const sharedCls =
-  'flex items-center gap-1.5 xs:gap-2 h-7 xs:h-8 px-2.5 xs:px-3 sm:px-4 border border-border-light dark:border-border-dark text-[9px] xs:text-[10px] font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark'
-const navIconCls = 'hidden sm:block sm:w-3 sm:h-3'
+  'flex items-center gap-2 h-11 px-4 border text-[14px] font-mono tracking-normal whitespace-nowrap shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark'
 
-export function Greeting({ currentUser }) {
-  const session = useSession()
+const idleCls =
+  'border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark'
+
+const activeCls =
+  'border-primary-light dark:border-primary-dark text-primary-light dark:text-primary-dark bg-primary-light/10 dark:bg-primary-dark/10 font-bold'
+
+export function Greeting({ currentUser }: { currentUser: { name: string } }) {
+  const { data: session } = useSession()
+  const pathname = usePathname()
+  const [signingOut, setSigningOut] = useState(false)
+
   const firstName = currentUser.name.split(' ')[0]
-  const greeting = getGreeting()
-  const today = getTodayLabel()
-  const isAdmin = session.data?.user?.role === 'ADMIN'
+  const role = session?.user?.role
+  const isAdmin = role === 'ADMIN'
+  const isSuperUser = role === 'SUPER_USER'
 
-  const isSuperUser = session.data?.user?.role === 'SUPER_USER'
+  const links: { href: string; label: string; icon: LucideIcon; show: boolean }[] = [
+    { href: '/', label: 'Home', icon: Home, show: true },
+    { href: '/profile', label: 'Profile', icon: UserCircle, show: true },
+    { href: '/admin', label: 'Admin', icon: LayoutDashboard, show: isAdmin || isSuperUser },
+    { href: '/super/dashboard', label: 'Super', icon: ShieldCheck, show: isSuperUser }
+  ]
+
+  async function handleSignOut() {
+    setSigningOut(true)
+    try {
+      await signOut({ redirectTo: '/login' })
+    } catch {
+      setSigningOut(false)
+    }
+  }
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Top row */}
-      <div className="flex items-start justify-between gap-2">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 pr-2">
-          <p className="text-[9px] xs:text-f10 font-mono tracking-[0.18em] uppercase text-primary-light dark:text-primary-dark mb-1">
-            {today}
+          <p className="text-f10 font-mono tracking-[0.12em] uppercase text-primary-light dark:text-primary-dark mb-1.5">
+            {getTodayLabel()}
           </p>
-
-          <h1 className="font-black text-[22px] xs:text-[26px] sm:text-[30px] text-text-light dark:text-text-dark tracking-tight leading-[1.1] truncate">
-            {greeting}, {firstName}.
+          <h1 className="font-black text-[26px] xs:text-[30px] sm:text-[34px] text-text-light dark:text-text-dark tracking-tight leading-[1.1] truncate">
+            {getGreeting()}, {firstName}.
           </h1>
         </div>
 
-        {/* ALWAYS top right */}
         <button
-          onClick={() => signOut({ redirectTo: '/login' })}
-          className="shrink-0 mt-1 text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+          onClick={handleSignOut}
+          disabled={signingOut}
+          className="shrink-0 w-11 h-11 -mr-2 flex items-center justify-center text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           aria-label="Sign out"
         >
-          <LogOut size={15} />
+          {signingOut ? <Loader2 size={20} className="animate-spin" /> : <LogOut size={20} />}
         </button>
       </div>
 
-      {/* Nav row - NEVER wraps */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-        <Link href="/" className={sharedCls}>
-          <LinkBody icon={<Home className={navIconCls} />} label="Home" spinnerClass="hidden sm:block sm:w-3 sm:h-3" />
-        </Link>
-
-        <Link href="/profile" className={sharedCls}>
-          <LinkBody
-            icon={<UserCircle className={navIconCls} />}
-            label="Profile"
-            spinnerClass="hidden sm:block sm:w-3 sm:h-3"
-          />
-        </Link>
-
-        {(isAdmin || isSuperUser) && (
-          <Link href="/admin" className={sharedCls}>
-            <LinkBody
-              icon={<LayoutDashboard className={navIconCls} />}
-              label="Admin"
-              spinnerClass="hidden sm:block sm:w-3 sm:h-3"
-            />
-          </Link>
-        )}
-
-        {isSuperUser && (
-          <Link href="/super/dashboard" className={sharedCls}>
-            <LinkBody
-              icon={<ShieldCheck className={navIconCls} />}
-              label="Super"
-              spinnerClass="hidden sm:block sm:w-3 sm:h-3"
-            />
-          </Link>
-        )}
-      </div>
+      <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4" aria-label="Primary">
+        {links
+          .filter((l) => l.show)
+          .map(({ href, label, icon: Icon }) => {
+            const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
+            return (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active ? 'page' : undefined}
+                className={`${sharedCls} ${active ? activeCls : idleCls}`}
+              >
+                <LinkBody icon={<Icon className="w-4 h-4" />} label={label} spinnerClass="w-4 h-4" />
+              </Link>
+            )
+          })}
+      </nav>
     </div>
   )
 }

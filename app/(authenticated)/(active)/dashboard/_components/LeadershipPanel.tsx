@@ -16,7 +16,7 @@ interface Seat {
 const FEATURED: LeadershipPosition[] = ['HOST', 'CO_DIRECTOR']
 
 function Avatar({ holder, size = 'sm' }: { holder: Seat['holder']; size?: 'sm' | 'md' }) {
-  const dim = size === 'sm' ? 'w-7 h-7 text-[9px]' : 'w-10 h-10 text-[11px]'
+  const dim = size === 'sm' ? 'w-9 h-9 text-[11px]' : 'w-11 h-11 text-[13px]'
   return (
     <div
       className={`${dim} shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center`}
@@ -49,25 +49,25 @@ export default function LeadershipPanel({
 
   return (
     <div className="border border-border-light dark:border-border-dark overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark">
-        <span className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">Leadership</span>
-        <span className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-primary-light dark:text-primary-dark">
-          {season}
+      <div className="flex items-center justify-between gap-3 px-4 py-3.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark">
+        <span className="text-f10 font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark">
+          Leadership
         </span>
+        <span className="text-[14px] font-mono text-primary-light dark:text-primary-dark">{season}</span>
       </div>
 
-      <div className="px-4 py-3 bg-primary-light/5 dark:bg-primary-dark/5 border-b border-border-light dark:border-border-dark flex flex-col gap-3">
+      <div className="px-4 py-4 bg-primary-light/5 dark:bg-primary-dark/5 border-b border-border-light dark:border-border-dark flex flex-col gap-4">
         {featured.map((s) => (
           <div key={s.id} className="flex items-center gap-3 min-w-0">
             <Avatar holder={s.holder} size="md" />
             <div className="min-w-0">
-              <p className="text-[9px] font-mono tracking-[0.15em] uppercase text-primary-light dark:text-primary-dark">
+              <p className="text-f10 font-mono tracking-[0.12em] uppercase text-primary-light dark:text-primary-dark">
                 {POSITIONS[s.position].label}
               </p>
-              <p className="font-sora font-bold text-[14px] text-text-light dark:text-text-dark truncate mt-0.5">
+              <p className="font-sora font-bold text-[16px] text-text-light dark:text-text-dark truncate mt-1">
                 {s.holder.name}
               </p>
-              <p className="text-[10px] font-mono text-muted-light dark:text-muted-dark truncate">{s.holder.company}</p>
+              <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark truncate">{s.holder.company}</p>
             </div>
           </div>
         ))}
@@ -75,13 +75,13 @@ export default function LeadershipPanel({
 
       <div className="divide-y divide-border-light dark:divide-border-dark">
         {rest.map((s) => (
-          <div key={s.id} className="flex items-center gap-2.5 px-4 py-3 min-w-0">
+          <div key={s.id} className="flex items-center gap-3 px-4 py-3 min-w-0">
             <Avatar holder={s.holder} />
             <div className="min-w-0 flex-1">
-              <p className="font-sora font-bold text-[13px] text-text-light dark:text-text-dark truncate">
+              <p className="font-sora font-bold text-[15px] text-text-light dark:text-text-dark truncate">
                 {s.holder.name}
               </p>
-              <p className="text-[10px] font-mono text-muted-light dark:text-muted-dark truncate">
+              <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark truncate mt-0.5">
                 {POSITIONS[s.position].label}
               </p>
             </div>
@@ -91,11 +91,12 @@ export default function LeadershipPanel({
 
       <Link
         href="/leadership"
-        className="flex items-center justify-between px-4 py-3 border-t border-border-light dark:border-border-dark text-[10px] font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors"
+        className="flex items-center justify-between gap-2 px-4 h-14 border-t border-border-light dark:border-border-dark text-[14px] font-mono text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
       >
         <LinkBody
           label={remaining > 0 ? `View all · ${remaining} more` : 'View all'}
-          icon={<ArrowRight className="w-3 h-3" />}
+          icon={<ArrowRight className="w-4 h-4" />}
+          spinnerClass="w-4 h-4"
           iconAfter
         />
       </Link>

@@ -10,7 +10,8 @@ export default function FadeUp({
   y = 16,
   margin = '-32px',
   ease = [0.25, 0.46, 0.45, 0.94] as number[],
-  className = ''
+  className = '',
+  id
 }: {
   children: React.ReactNode
   delay?: number
@@ -19,12 +20,14 @@ export default function FadeUp({
   margin?: string | any
   ease?: number[] | string | any
   className?: string
+  id?: string
 }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin })
   return (
     <motion.div
       ref={ref}
+      id={id}
       initial={{ opacity: 0, y }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration, delay, ease }}
