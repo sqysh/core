@@ -99,10 +99,15 @@ export default function ElectionBallotClient({
   async function handleSubmit() {
     setSubmitting(true)
     setError(null)
-    const res = await submitBallot(picks as Record<LeadershipPosition, string[]>, answers)
-    setSubmitting(false)
-    if (res.success) setSubmitted(true)
-    else setError(res.error ?? 'Something went wrong')
+    try {
+      const res = await submitBallot(picks as Record<LeadershipPosition, string[]>, answers)
+      if (res.success) setSubmitted(true)
+      else setError(res.error ?? 'Something went wrong')
+    } catch {
+      setError('Submission failed. Check your connection and try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   function answer(key: string, value: QuestionAnswer) {

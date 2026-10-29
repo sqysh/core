@@ -7,6 +7,7 @@ import { pusher } from '@/lib/pusher/pusher'
 import { ELECTED_POSITIONS, POSITIONS } from '@/lib/constants/leadership.constants'
 import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
 import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function submitBallot(
   picks: Record<LeadershipPosition, string[]>,
@@ -15,64 +16,76 @@ export async function submitBallot(
   const session = await auth()
   if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
-  const year = new Date().getFullYear()
+  try {
+    const year = new Date().getFullYear()
 
-  const election = await prisma.election.findUnique({
-    where: { chapterId_year: { chapterId, year } },
-    select: { id: true, status: true }
-  })
+    const election = await prisma.election.findUnique({
+      where: { chapterId_year: { chapterId, year } },
+      select: { id: true, status: true }
+    })
 
-  if (!election) return { success: false, error: 'No election found' }
-  if (election.status !== 'VOTING_OPEN') return { success: false, error: 'Voting is closed' }
+    if (!election) return { success: false, error: 'No election found' }
+    if (election.status !== 'VOTING_OPEN') return { success: false, error: 'Voting is closed' }
 
-  for (const position of ELECTED_POSITIONS) {
-    const chosen = picks[position] ?? []
-    const seats = POSITIONS[position].seats
-    if (chosen.length !== seats) {
-      return { success: false, error: `${POSITIONS[position].label} needs ${seats} ${seats === 1 ? 'pick' : 'picks'}` }
+    for (const position of ELECTED_POSITIONS) {
+      const chosen = picks[position] ?? []
+      const seats = POSITIONS[position].seats
+      if (chosen.length !== seats) {
+        return {
+          success: false,
+          error: `${POSITIONS[position].label} needs ${seats} ${seats === 1 ? 'pick' : 'picks'}`
+        }
+      }
+      if (new Set(chosen).size !== chosen.length) {
+        return { success: false, error: `Duplicate pick in ${POSITIONS[position].label}` }
+      }
     }
-    if (new Set(chosen).size !== chosen.length) {
-      return { success: false, error: `Duplicate pick in ${POSITIONS[position].label}` }
+
+    for (const q of BALLOT_QUESTIONS) {
+      if (!answers[q.key]) return { success: false, error: `Please answer: ${q.title}` }
     }
+
+    const already = await prisma.ballot.findFirst({
+      where: { electionId: election.id, voterId: session.user.id },
+      select: { id: true }
+    })
+    if (already) return { success: false, error: 'You already voted' }
+
+    await prisma.$transaction([
+      prisma.ballot.createMany({
+        data: ELECTED_POSITIONS.flatMap((position) =>
+          picks[position].map((votedForId) => ({
+            electionId: election.id,
+            voterId: session.user.id,
+            position,
+            votedForId
+          }))
+        ),
+        skipDuplicates: true
+      }),
+      prisma.questionResponse.createMany({
+        data: BALLOT_QUESTIONS.map((q) => ({
+          electionId: election.id,
+          voterId: session.user.id,
+          questionKey: q.key,
+          answer: answers[q.key]
+        })),
+        skipDuplicates: true
+      })
+    ])
+
+    const voterCount = await prisma.ballot
+      .findMany({ where: { electionId: election.id }, select: { voterId: true }, distinct: ['voterId'] })
+      .then((rows) => rows.length)
+
+    await pusher.trigger('election-status', 'ballot-submitted', { voterId: session.user.id, voterCount })
+
+    return { success: true }
+  } catch (error) {
+    await createLog('error', 'submitBallot failed', {
+      name: 'SubmitBallotError',
+      error: error instanceof Error ? error.message : String(error)
+    })
+    return { success: false, error: 'Could not submit. Please try again.' }
   }
-
-  for (const q of BALLOT_QUESTIONS) {
-    if (!answers[q.key]) return { success: false, error: `Please answer: ${q.title}` }
-  }
-
-  const already = await prisma.ballot.findFirst({
-    where: { electionId: election.id, voterId: session.user.id },
-    select: { id: true }
-  })
-  if (already) return { success: false, error: 'You already voted' }
-
-  await prisma.ballot.createMany({
-    data: ELECTED_POSITIONS.flatMap((position) =>
-      picks[position].map((votedForId) => ({
-        electionId: election.id,
-        voterId: session.user.id,
-        position,
-        votedForId
-      }))
-    ),
-    skipDuplicates: true
-  })
-
-  await prisma.questionResponse.createMany({
-    data: BALLOT_QUESTIONS.map((q) => ({
-      electionId: election.id,
-      voterId: session.user.id,
-      questionKey: q.key,
-      answer: answers[q.key]
-    })),
-    skipDuplicates: true
-  })
-
-  const voterCount = await prisma.ballot
-    .findMany({ where: { electionId: election.id }, select: { voterId: true }, distinct: ['voterId'] })
-    .then((rows) => rows.length)
-
-  await pusher.trigger('election-status', 'ballot-submitted', { voterId: session.user.id, voterCount })
-
-  return { success: true }
 }
