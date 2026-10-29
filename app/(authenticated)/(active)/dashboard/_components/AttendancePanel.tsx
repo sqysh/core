@@ -1,7 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { AttendanceCorrectionModal } from '../../../../../components/member/attendance/AttendanceCorrectionModal'
 import { useMemo, useState } from 'react'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { buildYearOfThursdays } from '@/lib/utils/attendance.utils'
@@ -11,6 +10,7 @@ import { History } from 'lucide-react'
 import { fmtDate } from '@/lib/utils/date.utils'
 import { UserAttendanceRow } from '@/types/attendance.types'
 import { useAppStore } from '@/lib/store/appStore'
+import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
 
 export interface AttendancePanelProps {
   rows: UserAttendanceRow[]

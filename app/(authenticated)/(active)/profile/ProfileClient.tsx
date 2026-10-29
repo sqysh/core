@@ -25,6 +25,7 @@ import { MemberEmailModal } from '@/app/(authenticated)/(active)/dashboard/_comp
 import SignInEmailsManager from '@/components/member/profile/SignInEmailsManager'
 import { SectionHeader } from '@/app/(authenticated)/(active)/profile/_components/SectionHeader'
 import { FormField } from '@/components/_shared/FormField'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 const textareaCls =
   'w-full bg-white dark:bg-bg-dark border border-slate-300 dark:border-border-dark px-3.5 py-3 font-nunito text-[15px] text-text-light dark:text-text-dark placeholder:text-slate-400 dark:placeholder:text-muted-dark/50 focus:outline-none focus:border-primary-light dark:focus:border-primary-dark focus:ring-1 focus:ring-primary-light/20 dark:focus:ring-primary-dark/20 transition-colors rounded-none resize-none'
@@ -138,16 +139,19 @@ export default function ProfileClient({ profile }: { profile: ProfileData }) {
                 href="/dashboard"
                 className="flex items-center gap-1.5 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
               >
-                <ArrowLeft size={13} />
-                Dashboard
+                <LinkBody icon={<ArrowLeft size={13} />} label="Dashboard" spinnerClass="w-[13px] h-[13px]" />
               </Link>
 
               <Link
                 href={`/members/${form.id}`}
                 className="flex items-center gap-1.5 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
               >
-                View Profile
-                <ArrowRight size={13} />
+                <LinkBody
+                  icon={<ArrowRight size={13} />}
+                  label="View Profile"
+                  spinnerClass="w-[13px] h-[13px]"
+                  iconAfter
+                />
               </Link>
             </div>
 

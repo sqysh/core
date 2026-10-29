@@ -3,6 +3,7 @@ import { UserAttendanceRow } from './attendance.types'
 import { TEvent } from './event.types'
 import { ScheduledPresenter } from './presenter-queue.types'
 import { Visitor } from './visitor.types'
+import { LeadershipPosition } from '@prisma/client'
 
 export interface ActivityItem {
   id: string
@@ -75,6 +76,20 @@ export interface MemberDashboardProps {
       judgedBy: {
         name: string
         id: string
+      }
+    }[]
+  }
+  leadership: {
+    season: string | null
+    totalSeats: number
+    seats: {
+      id: string
+      position: LeadershipPosition
+      holder: {
+        id: string
+        name: string
+        company: string
+        profileImage: string | null
       }
     }[]
   }

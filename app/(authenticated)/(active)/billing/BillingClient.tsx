@@ -11,6 +11,7 @@ import { Section } from '@/app/(authenticated)/(active)/billing/_components/Sect
 import { OutstandingRow } from '@/app/(authenticated)/(active)/billing/_components/OutstandingRow'
 import { SubscriptionRow } from '@/app/(authenticated)/(active)/billing/_components/SubscriptionRow'
 import { CorrectionRow } from '@/app/(authenticated)/(active)/billing/_components/CorrectionRow'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 export default function BillingClient({ subscriptions, corrections, missedMeetings }: BillingClientProps) {
   const [correctionRow, setCorrectionRow] = useState<{ meetingId: string; date: string } | null>(null)
@@ -43,8 +44,7 @@ export default function BillingClient({ subscriptions, corrections, missedMeetin
             href="/dashboard"
             className="inline-flex items-center gap-2 text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            <ArrowLeft size={11} />
-            Dashboard
+            <LinkBody icon={<ArrowLeft size={11} />} label="Dashboard" spinnerClass="w-[11px] h-[11px]" />
           </Link>
           <div className="flex items-center gap-3 mb-1">
             <span className="block w-5 h-px bg-primary-light dark:bg-primary-dark shrink-0" aria-hidden="true" />

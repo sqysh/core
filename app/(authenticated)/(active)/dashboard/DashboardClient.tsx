@@ -18,6 +18,7 @@ import MembershipSetupPanel from '@/app/(authenticated)/(active)/dashboard/_comp
 import { GuidingLightPanel } from './_components/GuidingLightPanel'
 import { useState } from 'react'
 import FloatingQuickActions from './_components/FloatingQuickActions'
+import LeadershipPanel from './_components/LeadershipPanel'
 
 export default function DashboardClient({
   currentUser,
@@ -31,7 +32,8 @@ export default function DashboardClient({
   membership,
   attendances,
   exclusions,
-  guidingLight
+  guidingLight,
+  leadership
 }: MemberDashboardProps) {
   const [floatingModal, setFloatingModal] = useState<ModalKey>(null)
 
@@ -92,6 +94,11 @@ export default function DashboardClient({
         <FadeUp delay={0.15} className="pt-6">
           <SectionLabel>Guiding Light</SectionLabel>
           <GuidingLightPanel currentJudge={guidingLight.currentJudge} records={guidingLight.records} />
+        </FadeUp>
+
+        {/* ── Leadership ── */}
+        <FadeUp delay={0.15} className="pt-6">
+          <LeadershipPanel season={leadership.season} seats={leadership.seats} totalSeats={leadership.totalSeats} />
         </FadeUp>
 
         {/* ── Events ── */}

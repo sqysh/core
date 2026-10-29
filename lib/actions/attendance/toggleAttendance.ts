@@ -7,11 +7,11 @@ import { createLog } from '../../utils/api/createLog'
 export async function toggleAttendance({
   meetingId,
   userId,
-  attended
+  currentlyAttended
 }: {
   meetingId: string
   userId: string
-  attended: boolean
+  currentlyAttended: boolean
 }): Promise<{ success: boolean; error?: string }> {
   const session = await auth()
   if (session?.user?.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
@@ -22,7 +22,7 @@ export async function toggleAttendance({
       select: { name: true }
     })
 
-    if (attended) {
+    if (currentlyAttended) {
       // Remove attendance
       await prisma.attendance.deleteMany({
         where: { meetingId, userId }

@@ -10,6 +10,7 @@ import { AttendanceCorrectionModal } from '@/components/member/attendance/Attend
 import { useState } from 'react'
 import { HistoryRowEl } from '@/app/(authenticated)/(active)/attendance/history/_components/HistoryRowEl'
 import { StatCard } from '@/app/(authenticated)/(active)/attendance/history/_components/StatCard'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 export function AttendanceHistoryClient({ userName, rows, summary, squares }: AttendanceHistoryClientProps) {
   const grouped = groupByMonth(rows)
@@ -25,15 +26,13 @@ export function AttendanceHistoryClient({ userName, rows, summary, squares }: At
         date={correctionRow?.date ?? ''}
       />
 
-      <main className="min-h-screen bg-bg-light dark:bg-bg-dark">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          {/* Back link */}
+      <main className="max-w-170 mx-auto px-4 pb-12">
+        <div className="pt-7 pb-6 border-b border-border-light dark:border-border-dark">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-[10px] sm:text-f10 font-mono tracking-[0.2em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+            className="inline-flex items-center gap-2 text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            <ArrowLeft size={11} aria-hidden="true" />
-            Back to Dashboard
+            <LinkBody icon={<ArrowLeft size={11} />} label="Dashboard" spinnerClass="w-[11px] h-[11px]" />
           </Link>
 
           {/* Header */}

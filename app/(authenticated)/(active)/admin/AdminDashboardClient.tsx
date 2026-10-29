@@ -1,12 +1,13 @@
 'use client'
 
-import { Users, Activity, DollarSign, Clock, FileText, LayoutDashboard } from 'lucide-react'
+import { Users, Activity, DollarSign, Clock, FileText, LayoutDashboard, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { AdminDashboardData } from '@/lib/actions/admin/getAdminDashboardData'
 import { StatTile } from '@/app/(authenticated)/(active)/admin/_components/StatTile'
 import { RecentActivityItem } from '@/app/(authenticated)/(active)/admin/_components/RecentActivityItem'
 import { SectionLabel } from '@/components/_shared/SectionLabel'
 import FadeUp from '@/components/_shared/FadeUp'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 export default function AdminDashboardClient({ data }: { data: AdminDashboardData }) {
   const { stats, recentActivity } = data
@@ -14,25 +15,19 @@ export default function AdminDashboardClient({ data }: { data: AdminDashboardDat
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
       <main className="max-w-170 mx-auto px-4 pb-12">
-        {/* ── Header ── */}
         <FadeUp className="pt-7 pb-5 border-b border-border-light dark:border-border-dark mb-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-1">
-                Admin
-              </p>
-              <h1 className="font-sora font-black text-[22px] xs:text-[28px] text-text-light dark:text-text-dark tracking-tight leading-none">
-                Chapter Overview
-              </h1>
-            </div>
-            <Link
-              href="/dashboard"
-              className="shrink-0 flex items-center gap-1.5 h-8 px-3 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-f10 font-mono tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
-            >
-              <LayoutDashboard size={12} aria-hidden="true" />
-              <span className="hidden xs:inline">Dashboard</span>
-            </Link>
-          </div>
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 mb-3 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+          >
+            <LinkBody icon={<ArrowLeft size={13} />} label="Dashboard" spinnerClass="w-[13px] h-[13px]" />
+          </Link>
+          <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-1">
+            Admin
+          </p>
+          <h1 className="font-sora font-black text-[22px] xs:text-[28px] text-text-light dark:text-text-dark tracking-tight leading-none">
+            Chapter Overview
+          </h1>
         </FadeUp>
 
         {/* ── Stats ── */}

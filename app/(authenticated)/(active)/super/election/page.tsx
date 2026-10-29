@@ -24,11 +24,14 @@ export default async function SuperElectionPage() {
     }
   })
 
-  const serialized = terms.map((t) => ({
-    ...t,
-    startDate: t.startDate.toISOString(),
-    year: t.startDate.getUTCFullYear()
-  }))
+  const serialized = terms.map((t) => {
+    const y = t.startDate.getUTCFullYear()
+    return {
+      ...t,
+      startDate: t.startDate.toISOString(),
+      season: `${y}-${y + 1}`
+    }
+  })
 
   return <SuperElectionClient terms={serialized} />
 }

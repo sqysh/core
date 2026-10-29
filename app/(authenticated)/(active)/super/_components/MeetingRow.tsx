@@ -27,8 +27,9 @@ export function MeetingRow({
     })
   }
 
-  const attendedCount = row.attendedIds.length
-  const pct = Math.round((attendedCount / members.length) * 100)
+  const eligible = members.filter((m) => m.startedAt <= row.date)
+  const attendedCount = eligible.filter((m) => row.attendedIds.includes(m.id)).length
+  const pct = eligible.length > 0 ? Math.round((attendedCount / eligible.length) * 100) : 0
 
   return (
     <motion.div
@@ -43,7 +44,7 @@ export function MeetingRow({
           {fmtDate(row.date)}
         </p>
         <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark mt-1">
-          {attendedCount} / {members.length} attended
+          {attendedCount} / {eligible.length} attended
         </p>
         <div className="mt-2 h-1 w-full bg-border-light dark:bg-border-dark">
           <div className="h-full bg-green-500" style={{ width: `${pct}%` }} />
@@ -89,7 +90,8 @@ export function MeetingRow({
             attended={row.attendedIds.includes(member.id)}
             checkedInTime={row.checkedInTimes[member.id]}
             meetingId={row.id}
-            reinstated={row.reinstatedUserIds.has(member.id)}
+            reinstated={row.reinstatedUserIds.includes(member.id)}
+            notYetMember={member.startedAt > row.date}
           />
         ))}
       </div>

@@ -73,13 +73,6 @@ export function isExcludedThursday(d: Date, exclusionMap: Map<string, string>): 
     return { excluded: true, reason: 'July 4th Week' }
   }
 
-  // Labor Day week (1st Monday of September)
-  if (month === 8) {
-    const sep1 = new Date(Date.UTC(year, 8, 1))
-    const firstMonday = 1 + ((8 - sep1.getUTCDay()) % 7)
-    if (day === firstMonday + 3) return { excluded: true, reason: 'Labor Day Week' }
-  }
-
   // Thanksgiving (4th Thursday of November)
   if (month === 10) {
     const nov1 = new Date(Date.UTC(year, 10, 1))

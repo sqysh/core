@@ -3,6 +3,7 @@ import { capitalize } from '@/lib/utils/string.utils'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { CheckCircle, CreditCard, Pencil, Receipt } from 'lucide-react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 export function ActiveMembershipCard({ membership, onEdit }: { membership: any; onEdit: () => void }) {
   const { annualOrder, quarterlyOrder, paymentMethod } = membership
@@ -80,22 +81,31 @@ export function ActiveMembershipCard({ membership, onEdit }: { membership: any; 
           href="/billing"
           className="flex items-center gap-3 px-4 py-3 hover:bg-bg-light dark:hover:bg-bg-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark group"
         >
-          <Receipt size={13} className="text-muted-light dark:text-muted-dark shrink-0" aria-hidden="true" />
-          <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark flex-1 group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
-            View Billing History
-          </p>
-          <span className="text-f10 font-mono text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
-            →
-          </span>
+          <LinkBody
+            icon={<Receipt size={13} className="text-muted-light dark:text-muted-dark shrink-0" aria-hidden="true" />}
+            spinnerClass="w-[13px] h-[13px] text-muted-light dark:text-muted-dark"
+          >
+            <p className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark flex-1 group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
+              View Billing History
+            </p>
+            <span className="text-f10 font-mono text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors">
+              →
+            </span>
+          </LinkBody>
         </Link>
 
         {/* Cancel */}
         <div className="px-4 py-3 border-t border-border-light dark:border-border-dark">
           <Link
             href="/membership/cancel"
-            className="text-f10 font-mono tracking-widest uppercase text-red-500/50 hover:text-red-500 dark:text-red-500/40 dark:hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+            className="inline-flex items-center gap-1.5 text-f10 font-mono tracking-widest uppercase text-red-500/50 hover:text-red-500 dark:text-red-500/40 dark:hover:text-red-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
           >
-            Cancel Membership →
+            <LinkBody
+              label="Cancel Membership"
+              icon={<span aria-hidden="true">→</span>}
+              spinnerClass="w-3 h-3"
+              iconAfter
+            />
           </Link>
         </div>
       </div>

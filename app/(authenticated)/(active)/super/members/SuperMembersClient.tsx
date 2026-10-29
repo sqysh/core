@@ -152,10 +152,12 @@ function MemberRow({ m, onClick }: { m: Member; onClick: () => void }) {
 
 export default function SuperMembersClient({
   activeMembers,
-  approvedMembers
+  approvedMembers,
+  inactiveMembers
 }: {
   activeMembers: Member[]
   approvedMembers: Member[]
+  inactiveMembers: Member[]
 }) {
   const router = useRouter()
   const push = (id: string) => router.push(`/super/members/${id}`)
@@ -194,6 +196,23 @@ export default function SuperMembersClient({
           <div className="border border-amber-200 dark:border-amber-400/20 overflow-hidden">
             <TableHead />
             {approvedMembers.map((m) => (
+              <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {inactiveMembers.length > 0 && (
+        <div className="mt-8">
+          <div className="mb-3 flex items-baseline justify-between">
+            <p className="text-[9.5px] font-mono tracking-[0.2em] uppercase text-muted-light dark:text-muted-dark">
+              Inactive
+            </p>
+            <span className="text-[11px] font-mono text-on-dark">{inactiveMembers.length}</span>
+          </div>
+          <div className="border border-border-light dark:border-border-dark overflow-hidden opacity-70">
+            <TableHead />
+            {inactiveMembers.map((m) => (
               <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
             ))}
           </div>

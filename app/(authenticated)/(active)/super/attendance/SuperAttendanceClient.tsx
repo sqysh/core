@@ -13,6 +13,24 @@ interface AttendanceHistoryClientProps {
   rows: AttendanceRow[]
 }
 
+function topAttenders(members: AttendanceMember[], rows: AttendanceRow[], limit = 3) {
+  return members
+    .map((m) => {
+      const eligible = rows.filter((r) => m.startedAt <= r.date)
+      const attended = eligible.filter((r) => r.attendedIds.includes(m.id)).length
+      return {
+        id: m.id,
+        name: m.name,
+        attended,
+        total: eligible.length,
+        pct: eligible.length > 0 ? Math.round((attended / eligible.length) * 100) : 0
+      }
+    })
+    .filter((m) => m.total > 0)
+    .sort((a, b) => b.pct - a.pct || b.total - a.total)
+    .slice(0, limit)
+}
+
 // The nearest upcoming (or today's) Thursday, as a yyyy-mm-dd string for the
 // date input's default. CORE meets Thursdays, so this pre-fills the likely date.
 function nextThursdayISO(): string {
@@ -26,11 +44,13 @@ function nextThursdayISO(): string {
   return `${y}-${m}-${dd}`
 }
 
-export default function AttendanceClient({ members, rows }: AttendanceHistoryClientProps) {
+export default function SuperAttendanceClient({ members, rows }: AttendanceHistoryClientProps) {
   const router = useRouter()
   const [date, setDate] = useState(nextThursdayISO())
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  const leaders = topAttenders(members, rows)
 
   async function handleCreate() {
     if (!date || busy) return
@@ -105,6 +125,38 @@ export default function AttendanceClient({ members, rows }: AttendanceHistoryCli
             </div>
           </div>
         </div>
+
+        {/* ── Top attendance ── */}
+        {leaders.length > 0 && (
+          <div className="py-5 border-b border-border-light dark:border-border-dark">
+            <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-3">
+              Best Attendance
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {leaders.map((m, i) => (
+                <div
+                  key={m.id}
+                  className="flex items-center gap-3 border border-border-light dark:border-border-dark px-3 py-2.5"
+                >
+                  <span className="shrink-0 w-6 h-6 flex items-center justify-center border border-border-light dark:border-border-dark text-f10 font-mono font-bold text-muted-light dark:text-muted-dark">
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-sora font-bold text-[13px] text-text-light dark:text-text-dark truncate">
+                      {m.name}
+                    </p>
+                    <p className="text-f10 font-mono text-muted-light dark:text-muted-dark">
+                      {m.attended} of {m.total}
+                    </p>
+                  </div>
+                  <span className="shrink-0 font-sora font-black text-[15px] text-green-600 dark:text-green-400">
+                    {m.pct}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ── Member legend ── */}
         <div className="py-4 border-b border-border-light dark:border-border-dark">

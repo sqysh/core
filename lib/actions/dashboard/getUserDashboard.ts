@@ -17,6 +17,7 @@ import { getCancelledMeetings } from './queries/getCancelledMeetings'
 import { getUserPaymentMethods } from './queries/getUserPaymentMethods'
 import { getPresenterSchedule } from '../presenter-queue/getPresenterSchedule'
 import { getGuidingLightDashboardData } from './queries/getGuidingLightDashboardData'
+import { getLeadershipDashboardData } from './queries/getLeadershipDashboardData'
 
 /**
  * Fetches all data needed to render the member dashboard in a single call.
@@ -61,7 +62,8 @@ export async function getUserDashboard() {
       cancelledMeetings,
       paymentMethodCount,
       schedule,
-      guidingLight
+      guidingLight,
+      leadership
     ] = await Promise.all([
       getOtherActiveMembers(user),
       fetchWeeklyStats(user.id, startOfWeek),
@@ -75,7 +77,8 @@ export async function getUserDashboard() {
       getCancelledMeetings(),
       getUserPaymentMethods(user.id),
       getPresenterSchedule(),
-      getGuidingLightDashboardData()
+      getGuidingLightDashboardData(),
+      getLeadershipDashboardData()
     ])
 
     const closedAmountThisWeek = `$${weekly.anchorsThisWeek.reduce((sum, a) => sum + Number(a.businessValue), 0).toLocaleString()}`
@@ -142,7 +145,8 @@ export async function getUserDashboard() {
         exclusions,
         hasPaymentMethod,
         schedule,
-        guidingLight
+        guidingLight,
+        leadership
       }
     }
   } catch (error) {

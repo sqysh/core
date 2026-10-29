@@ -2,11 +2,11 @@
 
 import prisma from '@/prisma/client'
 import { chapterId } from '../../constants/api/chapterId'
-import { auth } from '../../auth/auth'
 
 export interface AttendanceMember {
   id: string
   name: string
+  startedAt: string // YYYY-MM-DD
 }
 
 export interface AttendanceRow {
@@ -14,7 +14,7 @@ export interface AttendanceRow {
   date: string // YYYY-MM-DD
   attendedIds: string[]
   checkedInTimes: Record<string, string>
-  reinstatedUserIds: Set<string>
+  reinstatedUserIds: string[]
 }
 
 export async function getAttendanceHistory(): Promise<{
@@ -25,13 +25,12 @@ export async function getAttendanceHistory(): Promise<{
   }
   error?: string
 }> {
-  const session = await auth()
   try {
-    const [members, meetings, corrections, subscriptionStarts] = await Promise.all([
+    const [members, meetings, corrections] = await Promise.all([
       prisma.user
         .findMany({
           where: { chapterId, membershipStatus: 'ACTIVE' },
-          select: { id: true, name: true },
+          select: { id: true, name: true, createdAt: true },
           orderBy: { name: 'asc' }
         })
         .catch(() => []),
@@ -49,36 +48,27 @@ export async function getAttendanceHistory(): Promise<{
           }
         })
         .catch(() => []),
-      prisma.order.findMany({
-        where: {
-          userId: session.user.id,
-          type: 'ATTENDANCE_CORRECTION'
-        },
-        select: { meetingId: true, userId: true }
-      }),
+
       prisma.order.findMany({
         where: {
           chapterId,
-          status: 'ACTIVE',
-          type: { in: ['ANNUAL', 'QUARTERLY'] }
+          type: 'ATTENDANCE_CORRECTION'
         },
-        select: { userId: true, createdAt: true },
-        orderBy: { createdAt: 'asc' }
+        select: { meetingId: true, userId: true }
       })
     ])
 
-    const firstSubDate = new Map<string, Date>()
-    for (const order of subscriptionStarts) {
-      if (!firstSubDate.has(order.userId)) {
-        firstSubDate.set(order.userId, order.createdAt)
-      }
-    }
+    const scopedMembers: AttendanceMember[] = members.map((m) => ({
+      id: m.id,
+      name: m.name ?? '',
+      startedAt: m.createdAt.toISOString().slice(0, 10)
+    }))
 
     const rows: AttendanceRow[] = meetings.map((m) => ({
       id: m.id,
       date: m.date.toISOString().slice(0, 10),
       attendedIds: m.attendances.map((a) => a.userId),
-      reinstatedUserIds: new Set(corrections.filter((c) => c.meetingId === m.id).map((c) => c.userId)),
+      reinstatedUserIds: corrections.filter((c) => c.meetingId === m.id).map((c) => c.userId),
       checkedInTimes: Object.fromEntries(
         m.attendances.map((a) => [
           a.userId,
@@ -94,7 +84,7 @@ export async function getAttendanceHistory(): Promise<{
 
     return {
       success: true,
-      data: { members, rows }
+      data: { members: scopedMembers, rows }
     }
   } catch {
     return { success: false, error: 'Failed to load attendance history' }

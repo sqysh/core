@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/auth'
 import { getAttendanceHistory } from '@/lib/actions/attendance/getAttendanceHistory'
-import AttendanceClient from './AttendanceClient'
+import SuperAttendanceClient from './SuperAttendanceClient'
 
-export default async function AttendancePage() {
+export default async function SuperAttendancePage() {
   const session = await auth()
   if (session?.user?.role !== 'SUPER_USER') redirect('/dashboard')
 
@@ -17,5 +17,5 @@ export default async function AttendancePage() {
     )
   }
 
-  return <AttendanceClient members={result.data.members} rows={result.data.rows} />
+  return <SuperAttendanceClient members={result.data.members} rows={result.data.rows} />
 }

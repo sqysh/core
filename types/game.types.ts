@@ -1,5 +1,3 @@
-// app/lib/games/game.types.ts
-//
 // Shared, game-agnostic types. Anything wheel-specific lives in
 // lib/games/wheel/wheel.types.ts instead.
 

@@ -17,6 +17,12 @@ export async function getAvailableMembers(): Promise<{
     })
     const inQueueIds = new Set(inQueue.map((q) => q.userId))
 
+    console.log('chapterId', chapterId)
+    console.log('inQueue count', inQueueIds.size)
+
+    const total = await prisma.user.count({ where: { chapterId, membershipStatus: 'ACTIVE' } })
+    console.log('active in chapter', total)
+
     const members = await prisma.user.findMany({
       where: {
         chapterId,

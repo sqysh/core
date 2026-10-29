@@ -186,9 +186,15 @@ export default function SuperPresenterQueueClient({
   }
 
   async function add(memberId: string) {
-    const res = await addToQueue(memberId)
-    if (res.success) router.refresh()
-    setShowAdd(false)
+    try {
+      const res = await addToQueue(memberId)
+      if (res.success) router.refresh()
+      else console.error('addToQueue failed', res.error)
+    } catch (err) {
+      console.error('addToQueue threw', err)
+    } finally {
+      setShowAdd(false)
+    }
   }
 
   const next = sorted[0]

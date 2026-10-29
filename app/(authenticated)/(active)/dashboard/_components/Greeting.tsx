@@ -3,9 +3,11 @@ import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle } from 'lucide-r
 import Link from 'next/link'
 import { getTodayLabel } from '@/lib/utils/date.utils'
 import { getGreeting } from '@/lib/utils/shared.utils'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 const sharedCls =
   'flex items-center gap-1.5 xs:gap-2 h-7 xs:h-8 px-2.5 xs:px-3 sm:px-4 border border-border-light dark:border-border-dark text-[9px] xs:text-[10px] font-mono tracking-[0.12em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark'
+const navIconCls = 'hidden sm:block sm:w-3 sm:h-3'
 
 export function Greeting({ currentUser }) {
   const session = useSession()
@@ -43,26 +45,34 @@ export function Greeting({ currentUser }) {
       {/* Nav row - NEVER wraps */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
         <Link href="/" className={sharedCls}>
-          <Home className="hidden sm:block sm:w-3 sm:h-3" />
-          Home
+          <LinkBody icon={<Home className={navIconCls} />} label="Home" spinnerClass="hidden sm:block sm:w-3 sm:h-3" />
         </Link>
 
         <Link href="/profile" className={sharedCls}>
-          <UserCircle className="hidden sm:block sm:w-3 sm:h-3" />
-          Profile
+          <LinkBody
+            icon={<UserCircle className={navIconCls} />}
+            label="Profile"
+            spinnerClass="hidden sm:block sm:w-3 sm:h-3"
+          />
         </Link>
 
         {(isAdmin || isSuperUser) && (
           <Link href="/admin" className={sharedCls}>
-            <LayoutDashboard className="hidden sm:block sm:w-3 sm:h-3" />
-            Admin
+            <LinkBody
+              icon={<LayoutDashboard className={navIconCls} />}
+              label="Admin"
+              spinnerClass="hidden sm:block sm:w-3 sm:h-3"
+            />
           </Link>
         )}
 
         {isSuperUser && (
           <Link href="/super/dashboard" className={sharedCls}>
-            <ShieldCheck className="hidden sm:block sm:w-3 sm:h-3" />
-            Super
+            <LinkBody
+              icon={<ShieldCheck className={navIconCls} />}
+              label="Super"
+              spinnerClass="hidden sm:block sm:w-3 sm:h-3"
+            />
           </Link>
         )}
       </div>

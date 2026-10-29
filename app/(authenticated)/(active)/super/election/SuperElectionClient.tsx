@@ -9,7 +9,7 @@ interface Term {
   id: string
   position: LeadershipPosition
   startDate: string
-  year: number
+  season: string
   isActive: boolean
   manualOverride: boolean
   holder: { id: string; name: string; company: string; profileImage: string | null }
@@ -45,7 +45,7 @@ function Avatar({ holder }: { holder: Term['holder'] }) {
 }
 
 export function SuperElectionClient({ terms }: { terms: Term[] }) {
-  const years = [...new Set(terms.map((t) => t.year))].sort((a, b) => b - a)
+  const seasons = [...new Set(terms.map((t) => t.season))].sort((a, b) => b.localeCompare(a))
 
   return (
     <div className="p-6">
@@ -59,11 +59,11 @@ export function SuperElectionClient({ terms }: { terms: Term[] }) {
           </h1>
         </div>
         <span className="text-[11px] font-mono text-on-dark">
-          {years.length} {years.length === 1 ? 'term' : 'terms'}
+          {seasons.length} {seasons.length === 1 ? 'season' : 'seasons'}
         </span>
       </div>
 
-      {years.length === 0 ? (
+      {seasons.length === 0 ? (
         <div className="border border-border-light dark:border-border-dark px-4 py-8">
           <p className="text-[12.5px] font-nunito text-muted-light dark:text-muted-dark text-center">
             No leadership terms recorded yet.
@@ -71,21 +71,21 @@ export function SuperElectionClient({ terms }: { terms: Term[] }) {
         </div>
       ) : (
         <div className="flex flex-col gap-8">
-          {years.map((year) => {
-            const yearTerms = terms.filter((t) => t.year === year)
-            const active = yearTerms.some((t) => t.isActive)
+          {seasons.map((season) => {
+            const seasonTerms = terms.filter((t) => t.season === season)
+            const active = seasonTerms.some((t) => t.isActive)
 
             const byPosition = POSITION_ORDER.map((position) => ({
               position,
-              holders: yearTerms.filter((t) => t.position === position)
+              holders: seasonTerms.filter((t) => t.position === position)
             })).filter((g) => g.holders.length > 0)
 
             return (
-              <div key={year}>
+              <div key={season}>
                 <div className="flex items-center gap-3 mb-3">
                   <span className="block w-5 h-px bg-primary-light dark:bg-primary-dark shrink-0" aria-hidden="true" />
                   <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark">
-                    {year} Season
+                    {season} Season
                   </p>
                   {active && (
                     <span className="text-[9px] font-mono tracking-widest uppercase px-1.5 py-0.5 border bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-400/20">
@@ -93,7 +93,7 @@ export function SuperElectionClient({ terms }: { terms: Term[] }) {
                     </span>
                   )}
                   <span className="ml-auto text-[11px] font-mono text-muted-light dark:text-muted-dark">
-                    {yearTerms.length} seats
+                    {seasonTerms.length} seats
                   </span>
                 </div>
 

@@ -6,51 +6,53 @@ import SuperMembersClient from './SuperMembersClient'
 
 export const dynamic = 'force-dynamic'
 
+const MEMBER_SELECT = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  lastLoginAt: true,
+  membershipStatus: true,
+  role: true,
+  hasAnnualSubscription: true,
+  hasQuarterlySubscription: true,
+  profileImage: true,
+  company: true,
+  title: true,
+  _count: { select: { alternateEmails: true } }
+} as const
+
 export default async function SuperMembersPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
   if (session.user.role !== 'SUPER_USER') redirect('/dashboard')
 
-  const [activeMembers, approvedMembers] = await Promise.all([
+  const [activeMembers, approvedMembers, inactiveMembers] = await Promise.all([
     prisma.user.findMany({
       where: { chapterId, membershipStatus: 'ACTIVE' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        lastLoginAt: true,
-        membershipStatus: true,
-        role: true,
-        hasAnnualSubscription: true,
-        hasQuarterlySubscription: true,
-        profileImage: true,
-        company: true,
-        title: true,
-        _count: { select: { alternateEmails: true } }
-      },
+      select: MEMBER_SELECT,
       orderBy: { name: 'asc' }
     }),
     prisma.user.findMany({
       where: { chapterId, membershipStatus: 'APPROVED' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        lastLoginAt: true,
-        membershipStatus: true,
-        role: true,
-        hasAnnualSubscription: true,
-        hasQuarterlySubscription: true,
-        profileImage: true,
-        company: true,
-        title: true,
-        _count: { select: { alternateEmails: true } }
+      select: MEMBER_SELECT,
+      orderBy: { name: 'asc' }
+    }),
+    prisma.user.findMany({
+      where: {
+        chapterId,
+        membershipStatus: { in: ['INACTIVE', 'CANCELLED', 'EXPIRED', 'SUSPENDED'] }
       },
+      select: MEMBER_SELECT,
       orderBy: { name: 'asc' }
     })
   ])
 
-  return <SuperMembersClient activeMembers={activeMembers} approvedMembers={approvedMembers} />
+  return (
+    <SuperMembersClient
+      activeMembers={activeMembers}
+      approvedMembers={approvedMembers}
+      inactiveMembers={inactiveMembers}
+    />
+  )
 }
