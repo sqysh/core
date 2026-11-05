@@ -6,13 +6,36 @@ import JudgeClient from './JudgeClient'
 
 export const dynamic = 'force-dynamic'
 
-export default async function JudgePage() {
+export default async function JudgePage({ searchParams }: { searchParams: Promise<{ preview?: string }> }) {
+  const { preview } = await searchParams
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
-  const today = new Date()
-  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+  const members = await prisma.user.findMany({
+    where: { chapterId, membershipStatus: 'ACTIVE', NOT: { id: session.user.id } },
+    select: {
+      id: true,
+      name: true,
+      company: true,
+      profileImage: true
+    },
+    orderBy: { name: 'asc' }
+  })
+
+  // Super-user dry run: real members, fake round, no writes
+  if (preview === '1' && session.user.role === 'SUPER_USER') {
+    return <JudgeClient roundId="preview" members={members} initialNominees={[]} preview />
+  }
+
+  // "Today" in Eastern time, matched against rounds stored at noon UTC on their meeting date
+  const todayISO = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date())
+  const startOfDay = new Date(`${todayISO}T00:00:00Z`)
+  const endOfDay = new Date(startOfDay.getTime() + 86_400_000)
 
   const round = await prisma.guidingLight.findFirst({
     where: {
@@ -28,17 +51,6 @@ export default async function JudgePage() {
   })
 
   if (!round || round.judgedById !== session.user.id) redirect('/dashboard')
-
-  const members = await prisma.user.findMany({
-    where: { chapterId, membershipStatus: 'ACTIVE', NOT: { id: session.user.id } },
-    select: {
-      id: true,
-      name: true,
-      company: true,
-      profileImage: true
-    },
-    orderBy: { name: 'asc' }
-  })
 
   const initialNominees = round.nominees.map((n) => n.userId)
 

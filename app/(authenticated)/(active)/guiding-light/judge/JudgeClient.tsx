@@ -8,14 +8,25 @@ import { selectGuidingLightWinner } from '@/lib/actions/guiding-light/selectGuid
 import { getInitials } from '@/lib/utils/shared.utils'
 import MemberRow from './_components/MemberRow'
 import { Member } from '../_types/guiding-light.types'
+import { SqyshGuide } from '@/components/_shared/SqyshVector'
+
+// Sqysh picks up where the check-in screen left him (top-right corner) and
+// walks the judge through the page once per round.
+const GUIDE_LINES = [
+  'Here\u2019s everyone. After someone does their 60 seconds, tap their name to add them to your shortlist.',
+  'Your shortlist stacks up top. Tap a name again to take them off.',
+  'When the last person\u2019s done, pick your winner from the shortlist and confirm. The TV does the rest.'
+]
 
 interface Props {
   roundId: string
   members: Member[]
   initialNominees: string[]
+  /** Super-user dry run: the page behaves normally but no server action is called */
+  preview?: boolean
 }
 
-export default function JudgeClient({ roundId, members, initialNominees }: Props) {
+export default function JudgeClient({ roundId, members, initialNominees, preview = false }: Props) {
   const [revealed, setRevealed] = useState(false)
   const [nominees, setNominees] = useState<Set<string>>(new Set(initialNominees))
   const [confirmId, setConfirmId] = useState<string | null>(null)
@@ -28,13 +39,13 @@ export default function JudgeClient({ roundId, members, initialNominees }: Props
     if (next.has(userId)) next.delete(userId)
     else next.add(userId)
     setNominees(next)
-    await toggleGuidingLightNominee(roundId, userId)
+    if (!preview) await toggleGuidingLightNominee(roundId, userId)
     setLoadingId(null)
   }
 
   async function handleSelectWinner(userId: string) {
     setSubmitting(true)
-    await selectGuidingLightWinner(roundId, userId)
+    if (!preview) await selectGuidingLightWinner(roundId, userId)
     setSubmitting(false)
     setRevealed(true)
   }
@@ -65,6 +76,9 @@ export default function JudgeClient({ roundId, members, initialNominees }: Props
 
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark pb-24">
+      {/* No storage key in preview so the intro replays every load */}
+      <SqyshGuide lines={GUIDE_LINES} storageKey={preview ? undefined : `gl-guide-${roundId}`} />
+
       {/* ── Header ── */}
       <div className="sticky top-0 z-20 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark px-4 py-3">
         <div className="flex items-center gap-3">

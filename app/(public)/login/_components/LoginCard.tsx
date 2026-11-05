@@ -2,6 +2,7 @@ import { FC, FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertCircle, ArrowRight, Loader2, Mail } from 'lucide-react'
 import { signIn } from 'next-auth/react'
+import { ActionBody } from '@/components/_shared/LinkBody'
 
 interface ILoginCard {
   isEmailSent: boolean
@@ -61,25 +62,31 @@ export const LoginCard: FC<ILoginCard> = ({
                 disabled={isLoading}
                 className="w-full h-11 xs:h-12 border border-slate-300 dark:border-border-dark bg-white dark:bg-bg-dark text-text-light dark:text-text-dark font-sora font-bold text-[13px] xs:text-sm flex items-center justify-center gap-3 hover:bg-surface-light dark:hover:bg-surface-dark active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
               >
-                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" className="shrink-0">
-                  <path
-                    fill="#4285F4"
-                    d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"
-                  />
-                </svg>
-                Continue with Google
+                <ActionBody
+                  pending={isLoading}
+                  spinnerClass="w-[18px] h-[18px]"
+                  label="Continue with Google"
+                  icon={
+                    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" className="shrink-0">
+                      <path
+                        fill="#4285F4"
+                        d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"
+                      />
+                    </svg>
+                  }
+                />
               </button>
 
               <div className="flex items-center gap-3">
@@ -135,17 +142,12 @@ export const LoginCard: FC<ILoginCard> = ({
                 disabled={isLoading || !email}
                 className="w-full h-11 xs:h-12 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[13px] xs:text-sm tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2 cursor-pointer"
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-                    Sending…
-                  </>
-                ) : (
-                  <>
-                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                    Send Magic Link
-                  </>
-                )}
+                <ActionBody
+                  pending={isLoading}
+                  spinnerClass="w-4 h-4"
+                  icon={<ArrowRight className="w-4 h-4" aria-hidden="true" />}
+                  label={isLoading ? 'Sending…' : 'Send Magic Link'}
+                />
               </button>
             </form>
 

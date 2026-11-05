@@ -44,42 +44,54 @@ const INITIAL_STATE: FormState = {
   visitDate: ''
 }
 
+const FOCUS =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark'
+
 // ─── Visitor Row ──────────────────────────────────────────────────────────────
 
 function VisitorRow({ visitor }: { visitor: Visitor }) {
   const date = new Date(`${new Date(visitor.visitDate).toISOString().slice(0, 10)}T12:00:00`)
-  const dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const [month, day] = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).split(' ')
+
+  // Secondary line: what they do, then who's bringing them. Email is a
+  // detail, not a headline, so it drops to the third line and only when there's room.
+  const context = [visitor.company, visitor.industry].filter(Boolean).join(' · ')
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border-light dark:border-border-dark last:border-b-0">
-      {/* Date chip */}
-      <div className="shrink-0 w-14 text-center">
-        <p className="text-f10 font-mono tracking-[0.12em] uppercase text-primary-light dark:text-primary-dark leading-none">
-          {dateLabel.split(' ')[0]}
+    <li className="flex items-stretch gap-3 border-b border-border-light px-3 py-3 last:border-b-0 dark:border-border-dark sm:gap-4 sm:px-4 sm:py-3.5">
+      {/* Date block: the one thing you scan the list by */}
+      <div className="flex w-11 shrink-0 flex-col items-center justify-center border border-border-light bg-black/3 py-1.5 dark:border-border-dark dark:bg-white/3 sm:w-13">
+        <p className="text-f9 font-mono uppercase leading-none tracking-[0.1em] text-primary-light dark:text-primary-dark">
+          {month}
         </p>
-        <p className="text-[20px] font-sora font-bold text-text-light dark:text-text-dark leading-tight mt-0.5">
-          {dateLabel.split(' ')[1]}
+        <p className="mt-1 font-sora text-[20px] font-black leading-none tabular-nums text-text-light dark:text-text-dark sm:text-[22px]">
+          {day}
         </p>
       </div>
 
-      {/* Divider */}
-      <div className="w-px self-stretch bg-border-light dark:bg-border-dark shrink-0" aria-hidden="true" />
-
-      {/* Info */}
-      <div className="min-w-0 flex-1">
-        <p className="text-[15px] font-sora font-semibold text-text-light dark:text-text-dark truncate leading-tight">
+      {/* Who */}
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
+        <p className="truncate font-sora text-[15px] font-bold leading-tight text-text-light dark:text-text-dark sm:text-[16px]">
           {visitor.firstName} {visitor.lastName}
         </p>
-        <p className="text-[14px] font-nunito text-muted-light dark:text-muted-dark truncate mt-0.5">{visitor.email}</p>
-      </div>
 
-      {/* Invited by (if shown) */}
-      {visitor.invitedBy && (
-        <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark shrink-0 hidden sm:block">
-          via {visitor.invitedBy.name}
+        {context && (
+          <p className="mt-0.5 truncate font-nunito text-[13px] leading-snug text-text-light/80 dark:text-text-dark/80 sm:text-[14px]">
+            {context}
+          </p>
+        )}
+
+        <p className="mt-0.5 truncate font-mono text-[12px] leading-snug text-muted-light dark:text-muted-dark sm:text-[13px]">
+          {visitor.invitedBy ? (
+            <>
+              via <span className="text-text-light dark:text-text-dark">{visitor.invitedBy.name}</span>
+            </>
+          ) : (
+            visitor.email
+          )}
         </p>
-      )}
-    </div>
+      </div>
+    </li>
   )
 }
 
@@ -148,6 +160,8 @@ export default function VisitorPanel({
     }
   }
 
+  const count = visitors.length
+
   return (
     <>
       {open && (
@@ -179,48 +193,68 @@ export default function VisitorPanel({
       )}
 
       <div className="border border-border-light dark:border-border-dark">
-        {/* Header */}
-        <div className="px-4 py-3 border-b border-border-light dark:border-border-dark flex items-center justify-between gap-3">
-          <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark">
-            {visitors.length > 0
-              ? `${visitors.length} upcoming ${visitors.length === 1 ? 'visitor' : 'visitors'}`
-              : 'No visitors logged yet'}
-          </p>
+        {/* Header: the number is the headline, the word is the caption */}
+        <div className="flex items-center justify-between gap-3 border-b border-border-light px-3 py-3 dark:border-border-dark sm:px-4">
+          <div className="flex min-w-0 items-baseline gap-2">
+            {count > 0 ? (
+              <>
+                <p className="font-sora text-[22px] font-black leading-none tabular-nums text-text-light dark:text-text-dark">
+                  {count}
+                </p>
+                <p className="truncate font-mono text-[13px] text-muted-light dark:text-muted-dark sm:text-[14px]">
+                  upcoming {count === 1 ? 'visitor' : 'visitors'}
+                </p>
+              </>
+            ) : (
+              <p className="font-mono text-[13px] text-muted-light dark:text-muted-dark sm:text-[14px]">
+                No visitors logged yet
+              </p>
+            )}
+          </div>
+
           <button
             onClick={onOpen}
             aria-label="Add a visitor"
-            className="shrink-0 h-11 px-4 border border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-[14px] font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark inline-flex items-center gap-1.5"
+            className={`inline-flex h-11 shrink-0 items-center gap-1.5 border border-border-light px-3 font-mono text-[13px] text-text-light transition-colors hover:border-primary-light hover:text-primary-light dark:border-border-dark dark:text-text-dark dark:hover:border-primary-dark dark:hover:text-primary-dark sm:px-4 sm:text-[14px] ${FOCUS}`}
           >
-            + Add
+            <span aria-hidden="true">+</span> Add
           </button>
         </div>
 
         {/* List or empty copy */}
-        {visitors.length > 0 ? (
-          <div>
+        {count > 0 ? (
+          <ul>
             {visitors.map((v) => (
               <VisitorRow key={v.id} visitor={v} />
             ))}
-          </div>
+          </ul>
         ) : (
-          <div className="px-4 py-4">
-            <p className="text-[15px] font-nunito text-muted-light dark:text-muted-dark leading-relaxed">
-              Bringing a guest to a meeting? Log them here so the group knows who to expect.
+          <div className="px-3 py-4 sm:px-4">
+            <p className="font-nunito text-[15px] leading-relaxed text-text-light dark:text-text-dark">
+              Bringing a guest to a meeting?
             </p>
-            <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark mt-2.5">
+            <p className="mt-1 font-nunito text-[14px] leading-relaxed text-muted-light dark:text-muted-dark">
+              Log them here so the group knows who to expect.
+            </p>
+            <p className="mt-3 font-mono text-[12px] text-muted-light dark:text-muted-dark sm:text-[13px]">
               No Visitor Day scheduled ·{' '}
-              <span className="text-primary-light dark:text-primary-dark">add a visitor for any Thursday</span>
+              <span className="text-primary-light dark:text-primary-dark">any Thursday works</span>
             </p>
           </div>
         )}
 
         {/* View past */}
-        <div className="px-4 border-t border-border-light dark:border-border-dark">
+        <div className="border-t border-border-light px-3 dark:border-border-dark sm:px-4">
           <Link
             href="/visitors"
-            className="inline-flex items-center gap-1.5 h-12 text-[14px] font-mono text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
+            className={`inline-flex h-12 items-center gap-1.5 font-mono text-[13px] text-muted-light transition-colors hover:text-primary-light dark:text-muted-dark dark:hover:text-primary-dark sm:text-[14px] ${FOCUS}`}
           >
-            <LinkBody label="View past" icon={<span aria-hidden="true">→</span>} spinnerClass="w-4 h-4" iconAfter />
+            <LinkBody
+              label="View past visitors"
+              icon={<span aria-hidden="true">→</span>}
+              spinnerClass="w-4 h-4"
+              iconAfter
+            />
           </Link>
         </div>
       </div>

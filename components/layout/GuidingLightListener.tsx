@@ -1,26 +1,31 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { useSession } from 'next-auth/react'
 
 export default function GuidingLightListener() {
   const router = useRouter()
+  const pathname = usePathname()
   const { data: session } = useSession()
 
-  // Read the session live inside the handlers so the subscription survives the
-  // loading to authenticated transition instead of tearing down and resubscribing
+  // Read the session and path live inside the handlers so the subscription survives
+  // the loading to authenticated transition instead of tearing down and resubscribing
   const userIdRef = useRef<string | undefined>(undefined)
   userIdRef.current = session?.user?.id
+  const pathRef = useRef(pathname)
+  pathRef.current = pathname
 
   useEffect(() => {
     const channel = getPusherClient().subscribe('guiding-light')
 
     channel.bind('round-opened', (data: { judgeId: string | null }) => {
       const userId = userIdRef.current
-      if (!userId) return
-      if (userId === data.judgeId) router.push('/guiding-light/judge')
+      if (!userId || userId !== data.judgeId) return
+      // The check-in screen handles this one itself so Sqysh can do the send-off
+      if (pathRef.current === '/check-in') return
+      router.push('/guiding-light/judge')
     })
 
     channel.bind('winner-selected', (data: { winner: { id: string; name: string }; judgeId: string | null }) => {

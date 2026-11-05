@@ -1,95 +1,65 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { SqyshMode, SqyshVector } from '@/components/_shared/SqyshVector'
+
+// Sqysh pops up from behind the Pay bar when the tip is ticked: squash-stretch
+// landing with an excited tentacle fling, then settles into his idle.
+
+const SOFT = [0.22, 1, 0.36, 1] as const
+
+function Sqysh({ reduce }: { reduce: boolean }) {
+  const [mode, setMode] = useState<SqyshMode>(reduce ? 'idle' : 'excited')
+
+  useEffect(() => {
+    if (reduce) return
+    const id = setTimeout(() => setMode('idle'), 1500)
+    return () => clearTimeout(id)
+  }, [reduce])
+
+  return <SqyshVector mode={mode} reduce={reduce} id="sq-skin-modal" />
+}
 
 export function SqyshSlime({ tipSqysh }: { tipSqysh: boolean }) {
+  const reduce = !!useReducedMotion()
+
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       {tipSqysh && (
-        <motion.div
-          key="slime"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.2 } }}
+        <div
           aria-hidden="true"
-          className="absolute left-0 right-0 top-0 z-20 pointer-events-none overflow-visible"
+          // Sits on the top edge of the Pay bar; the bar is opaque and above him, so he rises from behind it
+          className="pointer-events-none absolute right-4 z-5 flex items-end gap-2.5 bottom-[calc(65px+max(1.5rem,env(safe-area-inset-bottom)))] sm:right-5"
         >
-          <svg
-            viewBox="0 0 400 60"
-            preserveAspectRatio="none"
-            className="w-full h-15 block"
-            style={{ filter: 'drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3))' }}
+          <motion.p
+            key="bubble"
+            initial={reduce ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 8, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : 0.6, ease: SOFT }}
+            className="mb-7 origin-bottom-right border border-border-light bg-bg-light px-3 py-2 font-mono text-[12px] text-text-light shadow-sm dark:border-border-dark dark:bg-bg-dark dark:text-text-dark sm:mb-9"
           >
-            <defs>
-              <linearGradient id="slime-gradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#f59e0b" />
-                <stop offset="100%" stopColor="#d97706" />
-              </linearGradient>
-            </defs>
+            <span className="text-[#bf66ef]">&gt;</span> thank you.
+          </motion.p>
 
-            {/* Main slime mass that hangs from the top */}
-            <motion.path
-              initial={{ d: 'M0,0 L400,0 L400,0 Q200,0 0,0 Z' }}
-              animate={{
-                d: [
-                  'M0,0 L400,0 L400,0 Q200,0 0,0 Z',
-                  'M0,0 L400,0 L400,8 Q300,18 200,14 Q100,18 0,8 Z',
-                  'M0,0 L400,0 L400,6 Q300,14 200,10 Q100,14 0,6 Z'
-                ]
-              }}
-              transition={{ duration: 0.6, times: [0, 0.7, 1], ease: 'easeOut' }}
-              fill="url(#slime-gradient)"
-            />
-
-            {/* Drip 1 — left */}
-            <motion.path
-              initial={{ d: 'M85,8 Q88,8 91,8 Q88,8 85,8 Z' }}
-              animate={{
-                d: ['M85,8 Q88,8 91,8 Q88,8 85,8 Z', 'M83,8 Q88,22 93,8 Q88,8 83,8 Z', 'M84,8 Q88,18 92,8 Q88,8 84,8 Z']
-              }}
-              transition={{ duration: 0.7, delay: 0.15, times: [0, 0.7, 1], ease: [0.34, 1.56, 0.64, 1] }}
-              fill="url(#slime-gradient)"
-            />
-
-            {/* Drip 2 — center, longer */}
-            <motion.path
-              initial={{ d: 'M195,10 Q200,10 205,10 Q200,10 195,10 Z' }}
-              animate={{
-                d: [
-                  'M195,10 Q200,10 205,10 Q200,10 195,10 Z',
-                  'M192,10 Q200,40 208,10 Q200,10 192,10 Z',
-                  'M194,10 Q200,32 206,10 Q200,10 194,10 Z'
-                ]
-              }}
-              transition={{ duration: 0.85, delay: 0.2, times: [0, 0.7, 1], ease: [0.34, 1.56, 0.64, 1] }}
-              fill="url(#slime-gradient)"
-            />
-
-            {/* Drip 3 — right */}
-            <motion.path
-              initial={{ d: 'M305,8 Q310,8 315,8 Q310,8 305,8 Z' }}
-              animate={{
-                d: [
-                  'M305,8 Q310,8 315,8 Q310,8 305,8 Z',
-                  'M302,8 Q310,28 318,8 Q310,8 302,8 Z',
-                  'M303,8 Q310,22 317,8 Q310,8 303,8 Z'
-                ]
-              }}
-              transition={{ duration: 0.75, delay: 0.1, times: [0, 0.7, 1], ease: [0.34, 1.56, 0.64, 1] }}
-              fill="url(#slime-gradient)"
-            />
-
-            {/* Tiny drop falling from center drip */}
-            <motion.circle
-              initial={{ cx: 200, cy: 32, r: 0, opacity: 0 }}
-              animate={{
-                cy: [32, 55, 60],
-                r: [0, 3, 0],
-                opacity: [0, 1, 0]
-              }}
-              transition={{ duration: 0.8, delay: 0.6, times: [0, 0.4, 1] }}
-              fill="url(#slime-gradient)"
-            />
-          </svg>
-        </motion.div>
+          <motion.div
+            key="sqysh"
+            initial={
+              reduce ? { y: 0, scaleX: 1, scaleY: 1, opacity: 1 } : { y: 90, scaleX: 1.2, scaleY: 0.65, opacity: 0 }
+            }
+            // Up stretched, splat wide on landing, overshoot tall, settle. Origin is the floor.
+            animate={{
+              y: [90, -18, 0, 0, 0],
+              scaleX: [1.2, 0.9, 1.18, 0.96, 1],
+              scaleY: [0.65, 1.15, 0.68, 1.07, 1],
+              opacity: [0, 1, 1, 1, 1]
+            }}
+            exit={{ y: 90, opacity: 0, transition: { duration: 0.25, ease: 'easeIn' } }}
+            transition={{ duration: reduce ? 0 : 0.78, times: [0, 0.42, 0.58, 0.8, 1], ease: 'easeOut' }}
+            className="h-22 origin-bottom drop-shadow-[0_8px_18px_rgba(124,66,224,0.4)] sm:h-26"
+          >
+            <Sqysh reduce={reduce} />
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   )

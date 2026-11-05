@@ -9,11 +9,11 @@ export function HistoryRowEl({ row, index }: { row: HistoryRow; index: number })
   const isExcluded = row.status === 'excluded'
 
   const borderColor = isAttended
-    ? 'border-l-green-500 dark:border-l-green-400'
+    ? 'border-l-green-600 dark:border-l-green-400'
     : isReinstated
-      ? 'border-l-amber-500 dark:border-l-amber-400'
+      ? 'border-l-amber-600 dark:border-l-amber-400'
       : isMissed
-        ? 'border-l-red-500/40 dark:border-l-red-400/40'
+        ? 'border-l-red-600/70 dark:border-l-red-400/60'
         : 'border-l-border-light dark:border-l-border-dark'
 
   const statusLabel = isAttended
