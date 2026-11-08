@@ -5,7 +5,9 @@ import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '../../utils/api/createLog'
 
-const coreStripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-04-22.dahlia' })
+const coreStripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2026-04-22.dahlia' as Stripe.LatestApiVersion
+})
 
 export async function createAttendanceCorrectionPayment({
   meetingId,

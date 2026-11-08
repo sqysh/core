@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createEvent } from '@/lib/actions/event/createEvent'
-import { EventOrg } from '@prisma/client'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { EVENT_ORGS } from '@/lib/constants/member/event.constants'
 import { inputCls } from '@/lib/constants/member/dashboard.constants'
+import { EventOrg } from '@/src/generated/prisma/enums'
 
 export function EventButton() {
   const router = useRouter()

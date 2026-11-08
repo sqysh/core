@@ -1,6 +1,6 @@
 import { DefaultSession } from 'next-auth'
 import { AdapterUser as BaseAdapterUser } from '@auth/core/adapters'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '@/src/generated/prisma/enums'
 
 declare module 'next-auth' {
   interface User {

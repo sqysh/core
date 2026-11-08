@@ -1,4 +1,4 @@
-import { EventStatus } from '@prisma/client'
+import { EventStatus } from '@/src/generated/prisma/enums'
 
 export type TEvent = {
   id: string

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
 import { getInitials } from '@/lib/utils/shared.utils'
 

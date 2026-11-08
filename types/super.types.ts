@@ -1,5 +1,6 @@
-import { Chapter, EventOrg, EventStatus, UserRole } from '@prisma/client'
+import { EventOrg, EventStatus, UserRole } from '@/src/generated/prisma/enums'
 import { Visitor } from './visitor.types'
+import { Chapter } from '@/src/generated/prisma/client'
 
 export type SuperUserMember = {
   profileImage: any

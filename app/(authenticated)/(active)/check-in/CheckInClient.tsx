@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
-import { SqyshMode, SqyshVector, TypeText, TYPE_MS } from '@/components/_shared/SqyshVector'
+import { SqyshMode, SqyshVector, TYPE_MS, TypeText } from '@/components/_shared/SqyshVector'
 import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
 
 interface CheckInClientProps {
@@ -21,6 +21,8 @@ interface CheckInClientProps {
   missed: MissedMeeting[]
   /** What shipped this week. Empty and Sqysh skips the tour. */
   updates?: SqyshUpdate[]
+  /** This week's counts, with links to log more before the Activity Round */
+  week?: { f2f: number; referrals: number; tyfcb: number } | null
   /** True when this member is judging today's Guiding Light round */
   isGuidingLight?: boolean
   /** Preview only: run the round-opened send-off on a timer instead of waiting for Pusher */
@@ -157,6 +159,13 @@ const KEY_VARS: Record<StateKey, string> = {
 
 const LIFT = 'animate-[ciLift_0.6s_cubic-bezier(0.16,1,0.3,1)_forwards]'
 
+// Routes for logging each one; point at your existing forms
+const WEEK_ROWS = [
+  { key: 'f2f', label: '1-2-1s', href: '/face-to-face/new' },
+  { key: 'referrals', label: 'Referrals', href: '/referrals/new' },
+  { key: 'tyfcb', label: 'Closed', href: '/thank-you/new' }
+] as const
+
 const delay = (...s: number[]) => ({ animationDelay: s.map((v) => `${v.toFixed(2)}s`).join(', ') })
 
 // The jump from the ring to the corner: a quadratic curve from the parked spot
@@ -278,6 +287,7 @@ export default function CheckInClient({
   presenterName,
   missed,
   updates = [],
+  week = null,
   isGuidingLight = false,
   previewOpen = false
 }: CheckInClientProps) {
@@ -414,9 +424,7 @@ export default function CheckInClient({
       channel.unbind_all()
       releaseChannel('guiding-light')
     }
-    // measureCorner reads refs and `sq`; re-subscribing on every sq change would drop events
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gl, router, previewOpen, S])
+  }, [gl, router, previewOpen, S, measureCorner])
 
   // Only after a real check-in, only when there's something to show, never for the judge
   const hasTour = updates.length > 0 && checkedIn && !gl
@@ -440,7 +448,7 @@ export default function CheckInClient({
       )
     }
     return () => ids.forEach(clearTimeout)
-  }, [hasTour, S, sq, measureCorner])
+  }, [hasTour, S, measureCorner])
 
   const numRef = useRef<HTMLElement | null>(null)
   const [stamp, setStamp] = useState('')
@@ -721,6 +729,40 @@ export default function CheckInClient({
                 </dt>
                 <dd className="m-0 font-sora text-[15px] font-semibold tracking-[-0.01em]">{presenterName}</dd>
               </dl>
+            )}
+
+            {week && (
+              <div className={`mt-5 border-t border-white/10 pt-4 opacity-0 ${LIFT}`} style={delay(S + 1.9)}>
+                <p className="m-0 font-mono text-[10px] tracking-[0.18em] uppercase text-white/45">
+                  Your week · {week.f2f + week.referrals + week.tyfcb === 0 ? 'nothing logged yet' : 'logged so far'}
+                </p>
+                <div className="mt-2.5 grid grid-cols-3 gap-2">
+                  {WEEK_ROWS.map((r) => {
+                    const n = week[r.key]
+                    return (
+                      <Link
+                        key={r.key}
+                        href={r.href}
+                        className={`flex h-16 flex-col items-center justify-center no-underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+                          n > 0
+                            ? 'border border-white/15 bg-white/4 text-white'
+                            : 'border border-dashed border-(--key)/60 text-(--key) hover:bg-white/4'
+                        }`}
+                      >
+                        <span className="font-sora text-[20px] font-black leading-none tabular-nums">
+                          {n > 0 ? n : '+'}
+                        </span>
+                        <span className="mt-1 font-mono text-[9px] tracking-[0.14em] uppercase opacity-80">
+                          {r.label}
+                        </span>
+                      </Link>
+                    )
+                  })}
+                </div>
+                <p className="mt-2 m-0 font-nunito text-[12px] text-white/45">
+                  Tap a dashed one to log it before the Activity Round, or skip it.
+                </p>
+              </div>
             )}
 
             {missed.length > 0 && (

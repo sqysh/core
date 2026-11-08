@@ -3,7 +3,7 @@
 import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 export async function finalizeElection(roster: Partial<Record<LeadershipPosition, string[]>>) {
   const session = await auth()

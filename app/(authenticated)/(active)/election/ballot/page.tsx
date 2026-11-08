@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import ElectionBallotClient from './ElectionBallotClient'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 import { APPOINTED_EMAIL } from '@/lib/constants/leadership.constants'
 
 export const dynamic = 'force-dynamic'

@@ -5,7 +5,7 @@ import googleProvider from '../providers/google.provider'
 import { magicLinkConfig } from '../providers/magic-link.provider'
 import { handleEmailCallback } from '../callbacks/magic-link.callback'
 import { handleGoogleCallback } from '../callbacks/google.callback'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '@/src/generated/prisma/enums'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,

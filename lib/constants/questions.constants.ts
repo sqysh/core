@@ -1,4 +1,4 @@
-import { QuestionAnswer } from '@prisma/client'
+import { QuestionAnswer } from '@/src/generated/prisma/enums'
 
 export interface BallotQuestion {
   key: string

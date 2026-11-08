@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 import { getInitials } from '@/lib/utils/shared.utils'
 import { resolveTie } from '@/lib/actions/election/resolveTie'
 import type { PositionResult, QuestionResult } from '@/lib/actions/election/getElectionResults'

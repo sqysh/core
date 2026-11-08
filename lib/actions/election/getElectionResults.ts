@@ -4,7 +4,7 @@ import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { POSITION_ORDER, POSITIONS, APPOINTED_EMAIL } from '@/lib/constants/leadership.constants'
-import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@/src/generated/prisma/enums'
 import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 
 export interface PositionResult {

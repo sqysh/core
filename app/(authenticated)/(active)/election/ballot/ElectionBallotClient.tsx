@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, ChevronLeft } from 'lucide-react'
-import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
 import { POSITIONS, ELECTED_POSITIONS, APPOINTED_POSITIONS } from '@/lib/constants/leadership.constants'
 import { submitBallot } from '@/lib/actions/election/submitBallot'
 import { getInitials } from '@/lib/utils/shared.utils'
 import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
+import { LeadershipPosition, QuestionAnswer } from '@/src/generated/prisma/enums'
 
 interface Member {
   id: string

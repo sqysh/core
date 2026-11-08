@@ -6,7 +6,7 @@ import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { memberAcceptedTemplate } from '../../email/application-approved.template'
 import { memberRejectedTemplate } from '../../email/application-rejected.template'
-import { MembershipStatus, UserRole } from '@prisma/client'
+import { MembershipStatus, UserRole } from '@/src/generated/prisma/enums'
 import { resend } from '../../resend/resend'
 
 export async function updateUserStatus(userId: string, approve: boolean) {

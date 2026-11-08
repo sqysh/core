@@ -1,5 +1,5 @@
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 export function electionReminderTemplate(
   firstName: string,

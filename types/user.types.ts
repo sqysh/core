@@ -1,5 +1,6 @@
-import { Anchor, Parley, UserRole } from '@prisma/client'
-import { JsonValue } from '@prisma/client/runtime/library'
+import { Anchor, Parley } from '@/src/generated/prisma/client'
+import { UserRole } from '@/src/generated/prisma/enums'
+import { JsonValue } from '@prisma/client/runtime/client'
 
 // Base User interface matching your Prisma User model
 export interface User {

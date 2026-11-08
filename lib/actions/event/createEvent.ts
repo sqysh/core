@@ -3,7 +3,7 @@
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { auth } from '../../auth/auth'
-import { EventOrg } from '@prisma/client'
+import { EventOrg } from '@/src/generated/prisma/enums'
 import { createLog } from '../../utils/api/createLog'
 
 export async function createEvent(data: { org: EventOrg; name: string; description?: string; externalLink?: string }) {

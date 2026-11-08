@@ -2,7 +2,7 @@ import { chapterId } from '@/lib/constants/api/chapterId'
 import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 import { electionResultsTemplate, QuestionTally } from '@/lib/email/election-results.template'
 import prisma from '@/prisma/client'
-import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@/src/generated/prisma/enums'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)

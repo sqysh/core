@@ -1,4 +1,4 @@
-import { PaymentMethod } from '@prisma/client'
+import { PaymentMethod } from '@/src/generated/prisma/client'
 
 interface Order {
   type: 'ANNUAL' | 'QUARTERLY'

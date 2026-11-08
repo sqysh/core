@@ -1,4 +1,4 @@
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 interface PositionMeta {
   label: string

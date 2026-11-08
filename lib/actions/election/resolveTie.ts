@@ -4,7 +4,7 @@ import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { pusher } from '@/lib/pusher/pusher'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 export async function resolveTie(position: LeadershipPosition, winnerId: string) {
   const session = await auth()

@@ -3,7 +3,7 @@ import { UserAttendanceRow } from './attendance.types'
 import { TEvent } from './event.types'
 import { ScheduledPresenter } from './presenter-queue.types'
 import { Visitor } from './visitor.types'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 export interface ActivityItem {
   id: string

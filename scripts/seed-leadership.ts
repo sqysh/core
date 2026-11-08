@@ -1,6 +1,6 @@
 import { chapterId } from '@/lib/constants/api/chapterId'
 import prisma from '@/prisma/client'
-import { LeadershipPosition } from '@prisma/client'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 const CLEAN = process.argv.includes('--clean')
 

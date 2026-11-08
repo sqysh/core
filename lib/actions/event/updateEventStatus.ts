@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { EventStatus } from '@prisma/client'
+import { EventStatus } from '@/src/generated/prisma/enums'
 
 export async function updateEventStatus(
   id: string,

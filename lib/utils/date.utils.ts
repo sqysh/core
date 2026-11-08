@@ -114,3 +114,22 @@ export function calculateExpiresAt(): Date {
   expiresAt.setFullYear(expiresAt.getFullYear() + 1)
   return expiresAt
 }
+
+export async function etDateISO() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date())
+}
+
+/** The next meeting date as noon-UTC: today if it's Thursday, else the coming Thursday */
+export async function nextMeetingDate(): Promise<{ iso: string; date: Date }> {
+  const iso = await etDateISO()
+  const d = new Date(`${iso}T12:00:00Z`)
+  const dow = d.getUTCDay() // 4 = Thursday
+  const add = (4 - dow + 7) % 7
+  d.setUTCDate(d.getUTCDate() + add)
+  return { iso: d.toISOString().slice(0, 10), date: d }
+}

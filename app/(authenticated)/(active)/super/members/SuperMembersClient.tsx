@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { MembershipStatus, UserRole } from '@prisma/client'
+import { MembershipStatus, UserRole } from '@/src/generated/prisma/enums'
 import { lastSeenColor, lastSeenLabel } from '@/lib/utils/date.utils'
 import { formatPhone } from '@/lib/utils/phone.utils'
 

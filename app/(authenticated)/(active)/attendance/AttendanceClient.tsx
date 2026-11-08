@@ -6,10 +6,10 @@ import { QRCodeSVG } from 'qrcode.react'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { FloatingEmoji, Member } from '@/types/attendance.types'
-import { FloatingEmojiEl } from '../../../components/_shared/FloatingEmoji'
 import { NextMeetingCountdown } from './_components/NextMeetingCountdown'
 import { NameTile } from './_components/NameTile'
 import { CheckInAnnouncement } from './_components/CheckInAnnouncement'
+import { FloatingEmojiEl } from '@/components/_shared/FloatingEmoji'
 
 type Props = {
   date?: string

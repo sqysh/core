@@ -1,6 +1,6 @@
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
 import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
-import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@/src/generated/prisma/enums'
 
 export interface QuestionTally {
   key: string

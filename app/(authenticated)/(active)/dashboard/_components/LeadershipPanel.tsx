@@ -2,10 +2,10 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { LeadershipPosition } from '@prisma/client'
 import { POSITIONS } from '@/lib/constants/leadership.constants'
 import { getInitials } from '@/lib/utils/shared.utils'
 import { LinkBody } from '@/components/_shared/LinkBody'
+import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
 interface Seat {
   id: string

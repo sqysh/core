@@ -1,6 +1,6 @@
 import prisma from '@/prisma/client'
 import { auth } from '../../auth/auth'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '@/src/generated/prisma/enums'
 import { UserEmailItem } from '@/types/user.types'
 
 export type MemberParleyActivity = {

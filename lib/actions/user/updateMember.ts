@@ -4,7 +4,7 @@ import prisma from '@/prisma/client'
 import { auth } from '../../auth/auth'
 import { MembershipStatus } from '@/types/user.types'
 import { createLog } from '../../utils/api/createLog'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '@/src/generated/prisma/enums'
 
 export async function updateMember(
   userId: string,

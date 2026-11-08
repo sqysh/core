@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { pusher } from '@/lib/pusher/pusher'
 import { ELECTED_POSITIONS, POSITIONS } from '@/lib/constants/leadership.constants'
-import { LeadershipPosition, QuestionAnswer } from '@prisma/client'
+import { LeadershipPosition, QuestionAnswer } from '@/src/generated/prisma/enums'
 import { BALLOT_QUESTIONS } from '@/lib/constants/questions.constants'
 import { createLog } from '@/lib/utils/api/createLog'
 
