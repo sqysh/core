@@ -1,48 +1,84 @@
 'use client'
 
+import { closePoll } from '@/lib/actions/poll/closePoll'
+import { getLivePoll } from '@/lib/actions/poll/getLivePoll'
+import { getPoll } from '@/lib/actions/poll/getPoll'
 import { getPolls } from '@/lib/actions/poll/getPolls'
 import { launchPoll } from '@/lib/actions/poll/launchPoll'
+import { POLL_CLEAR_EVENT, POLL_LAUNCH_EVENT, POLL_LIVE_CHANNEL, PollLaunch } from '@/lib/constants/poll.constants'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { PollView } from '@/types/poll.types'
 import { BarChart3, Send } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
+import { LivePollControl } from './LivePollControl'
 
-/**
- * Drop into HostRemoteClient next to the matchups button. Lists open polls
- * (then the latest closed one so final results can go back up) and sends
- * poll.show for the tap. `send` is the remote's existing useSend().
- */
-export function PollPicker({ send }: { send: (cmd: { type: 'poll.show'; pollId: string }) => void }) {
+export function PollPicker({
+  send
+}: {
+  send: (cmd: { type: 'poll.show'; pollId: string } | { type: 'poll.end' }) => void
+}) {
   const [polls, setPolls] = useState<PollView[]>([])
+  const [live, setLive] = useState<PollView | null>(null)
   const [openList, setOpenList] = useState(false)
-  const [, start] = useTransition()
+  const [pending, start] = useTransition()
 
   function load() {
     start(async () => {
       const res = await getPolls()
-      if (res.success)
-        setPolls(
-          res.data.filter((p, i, arr) => p.status === 'OPEN' || arr.findIndex((q) => q.status === 'CLOSED') === i)
-        )
+      if (res.success) setPolls(res.data.filter((p) => p.status === 'OPEN'))
     })
   }
 
-  useEffect(load, [])
+  // Recover the live poll on mount and stay in sync, so a phone sleep or reload
+  // never drops the inline control.
+  useEffect(() => {
+    load()
+    getLivePoll().then((res) => {
+      if (res.success) setLive(res.data)
+    })
 
-  // send it to every phone AND the TV
-  function launch(pollId: string) {
-    launchPoll(pollId)
-    send({ type: 'poll.show', pollId })
+    const channel = getPusherClient().subscribe(POLL_LIVE_CHANNEL)
+    const onLaunch = async (d: PollLaunch) => {
+      const res = await getPoll(d.pollId)
+      if (res.success) setLive(res.data)
+    }
+    const onClear = () => setLive(null)
+    channel.bind(POLL_LAUNCH_EVENT, onLaunch)
+    channel.bind(POLL_CLEAR_EVENT, onClear)
+    return () => {
+      channel.unbind_all()
+      releaseChannel(POLL_LIVE_CHANNEL)
+    }
+  }, [])
+
+  function launch(poll: PollView) {
+    launchPoll(poll.id)
+    send({ type: 'poll.show', pollId: poll.id })
+    setLive(poll)
+    setOpenList(false)
   }
+
+  function end() {
+    if (!live) return
+    const id = live.id
+    setLive(null)
+    send({ type: 'poll.end' })
+    start(async () => {
+      await closePoll(id)
+      load()
+    })
+  }
+
+  if (live) return <LivePollControl poll={live} onEnd={end} pending={pending} />
 
   if (polls.length === 0) return null
 
-  // one poll: a single button, no list to pick from
   if (polls.length === 1) {
     const p = polls[0]
     return (
       <button
         type="button"
-        onClick={() => launch(p.id)}
+        onClick={() => launch(p)}
         className="flex h-16 w-full items-center gap-3 border border-border-light px-4 text-left dark:border-border-dark"
       >
         <Send size={20} className="shrink-0 text-primary-light dark:text-primary-dark" aria-hidden="true" />
@@ -77,16 +113,10 @@ export function PollPicker({ send }: { send: (cmd: { type: 'poll.show'; pollId: 
             <li key={p.id}>
               <button
                 type="button"
-                onClick={() => {
-                  launch(p.id)
-                  setOpenList(false)
-                }}
+                onClick={() => launch(p)}
                 className="flex w-full items-center gap-3 px-4 py-3 text-left text-text-light dark:text-text-dark"
               >
-                <span
-                  className={`h-2 w-2 shrink-0 ${p.status === 'OPEN' ? 'bg-primary-light dark:bg-primary-dark' : 'bg-muted-light/40 dark:bg-muted-dark/40'}`}
-                  aria-hidden="true"
-                />
+                <span className="h-2 w-2 shrink-0 bg-primary-light dark:bg-primary-dark" aria-hidden="true" />
                 <span className="min-w-0 flex-1 truncate font-nunito text-[14px]">{p.question}</span>
                 <span className="shrink-0 font-mono text-f11 tabular-nums text-muted-light dark:text-muted-dark">
                   {p.totalVotes}

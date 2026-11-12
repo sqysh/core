@@ -12,21 +12,21 @@ import { isActingHost } from '../leadership/isActingHost'
 
 export async function launchPoll(pollId: string): Promise<ActionResult> {
   const session = await auth()
-  const userId = session?.user?.id
-  if (!userId) return { success: false, error: 'Not signed in' }
+  if (!session?.user?.id) return { success: false, error: 'Not signed in' }
 
-  const isHost = await isActingHost(userId)
+  const isHost = await isActingHost(session.user.id)
   if (!isHost && session.user.role !== 'SUPER_USER') return { success: false, error: 'Hosts only' }
 
-  const poll = await prisma.poll.findFirst({ where: { id: pollId, chapterId }, select: { status: true } })
+  const poll = await prisma.poll.findFirst({ where: { id: pollId, chapterId }, select: { id: true } })
   if (!poll) return { success: false, error: 'Poll not found' }
 
   try {
-    if (poll.status !== 'OPEN') {
-      await prisma.poll.update({ where: { id: pollId }, data: { status: 'OPEN', closedAt: null } })
-      await broadcast(pollId)
-      revalidatePath('/polls')
-    }
+    await prisma.poll.update({
+      where: { id: pollId },
+      data: { status: 'OPEN', closedAt: null, launchedAt: new Date() }
+    })
+    await broadcast(pollId)
+    revalidatePath('/polls')
     await pusher.trigger(POLL_LIVE_CHANNEL, POLL_LAUNCH_EVENT, { pollId }).catch(() => {})
     return { success: true, data: undefined }
   } catch {

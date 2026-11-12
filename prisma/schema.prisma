@@ -593,6 +593,8 @@ model Poll {
   options PollOption[]
   votes   PollVote[]
 
+  launchedAt DateTime?
+
   @@index([chapterId, status, createdAt])
 }
 
