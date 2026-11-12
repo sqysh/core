@@ -643,6 +643,28 @@ model Presentation {
   @@index([presenterId])
 }
 
+model ChapterTreasury {
+  id          String   @id @default(cuid())
+  chapterId   String   @unique
+  bankBalance Decimal  @db.Decimal(10, 2)
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
+
+model TreasuryObligation {
+  id          String    @id @default(cuid())
+  chapterId   String
+  label       String
+  amount      Decimal   @db.Decimal(10, 2)
+  dueDate     DateTime?
+  createdById String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([chapterId])
+}
+
 enum QuestionAnswer {
   YES
   NO
@@ -740,6 +762,7 @@ enum LeadershipPosition {
   EDUCATION_COORDINATOR
   VISITOR_COORDINATOR
   MEMBERSHIP_COMMITTEE
+  EVENT_COORDINATOR
 }
 
 enum ElectionStatus {

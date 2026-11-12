@@ -44,7 +44,7 @@ export default async function CheckInPage({
   }).format(new Date())
   const todayStart = new Date(`${todayISO}T00:00:00Z`)
 
-  const [attendanceRes, scheduleRes, historyRes, todayRound, lastRound] = await Promise.all([
+  const [attendanceRes, scheduleRes, historyRes, todayRound, lastRound, hostTerm, treasurerTerm] = await Promise.all([
     getUserAttendance(),
     getPresenterSchedule(),
     getAttendanceHistory(),
@@ -56,6 +56,14 @@ export default async function CheckInPage({
       where: { chapterId, status: 'REVEALED', meetingDate: { lt: todayStart } },
       orderBy: { meetingDate: 'desc' },
       select: { winnerId: true }
+    }),
+    prisma.leadershipTerm.findFirst({
+      where: { chapterId, isActive: true, position: 'HOST' },
+      select: { holderId: true }
+    }),
+    prisma.leadershipTerm.findFirst({
+      where: { chapterId, isActive: true, position: 'TREASURER' },
+      select: { holderId: true }
     })
   ])
 
@@ -81,6 +89,8 @@ export default async function CheckInPage({
 
   // Today's judge: set on today's row once it exists, otherwise last round's winner
   const isGuidingLight = (todayRound?.judgedById ?? lastRound?.winnerId) === userId
+  const isHost = hostTerm?.holderId === session.user.id
+  const isTreasurer = treasurerTerm?.holderId === session.user.id
 
   return (
     <CheckInClient
@@ -92,6 +102,8 @@ export default async function CheckInPage({
       updates={SQYSH_UPDATES}
       isGuidingLight={(fake && gl === '1' && isSuper) || isGuidingLight}
       previewOpen={!!fake && open === '1' && isSuper}
+      isHost={isHost}
+      isTreasurer={isTreasurer}
     />
   )
 }

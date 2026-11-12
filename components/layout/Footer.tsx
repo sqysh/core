@@ -20,7 +20,10 @@ const hideLink = (path: string) =>
     '/events',
     '/guiding-light',
     '/election',
-    '/leadership'
+    '/leadership',
+    '/stage/remote',
+    '/treasurer',
+    '/polls'
   ].some((str) => path.includes(str))
 
 export const Footer = () => {

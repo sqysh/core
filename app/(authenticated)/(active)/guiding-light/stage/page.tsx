@@ -2,11 +2,11 @@ import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import StageClient from './StageClient'
+import SixtyStageClient from './SixtyStageClient'
 
 export const dynamic = 'force-dynamic'
 
-export default async function StagePage() {
+export default async function SixtyStagePage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
@@ -32,7 +32,7 @@ export default async function StagePage() {
   const isSuperUser = session.user.role === 'SUPER_USER'
 
   return (
-    <StageClient
+    <SixtyStageClient
       members={members}
       isSuperUser={isSuperUser}
       openRoundId={openRound?.id ?? null}

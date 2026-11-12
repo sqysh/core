@@ -5,21 +5,22 @@ import { LeadershipPosition } from '@/src/generated/prisma/enums'
 const CLEAN = process.argv.includes('--clean')
 
 // Terms run the calendar year; the Oct 29 election seats the next one
-const START = new Date('2026-01-01T00:00:00Z')
-const END = new Date('2026-12-31T23:59:59Z')
+const START = new Date('2026-01-11T00:00:00Z')
+const END = new Date('2027-01-11T23:59:59Z')
 
 const CURRENT: { name: string; position: LeadershipPosition }[] = [
-  { name: 'Brendan Ward', position: 'HOST' },
-  { name: 'Eileen Jonah', position: 'CO_DIRECTOR' },
+  { name: 'Eileen Jonah', position: 'HOST' },
+  { name: 'Brendan Ward', position: 'CO_DIRECTOR' },
   { name: 'Martin Connolly', position: 'CO_DIRECTOR' },
   { name: 'Page Driscoll', position: 'EDUCATION_COORDINATOR' },
   { name: 'Kerry Casey', position: 'SOCIAL_MEDIA_MANAGER' },
   { name: 'Alex Argeros', position: 'TREASURER' },
   { name: 'Gregory Row', position: 'DIGITAL_OPERATIONS_MANAGER' },
-  { name: 'Angela Turpin', position: 'MEMBERSHIP_COMMITTEE' },
+  { name: 'Angela Turpin', position: 'VISITOR_COORDINATOR' },
   { name: 'Jake VanMeter', position: 'MEMBERSHIP_COMMITTEE' },
-  { name: 'Brian Theirrien', position: 'MEMBERSHIP_COMMITTEE' },
-  { name: 'Dennis Ford Eagan, Esq.', position: 'MEMBERSHIP_COMMITTEE' }
+  { name: 'Anna Roy', position: 'MEMBERSHIP_COMMITTEE' },
+  { name: 'Dennis Ford Eagan, Esq.', position: 'MEMBERSHIP_COMMITTEE' },
+  { name: 'Brian Theirrien', position: 'EVENT_COORDINATOR' }
 ]
 
 async function main() {
@@ -29,14 +30,16 @@ async function main() {
     return
   }
 
-  const existing = await prisma.leadershipTerm.count({ where: { chapterId, isActive: true } })
-  if (existing > 0) {
-    console.log(`${existing} active terms already exist. Run with --clean first.`)
-    return
-  }
+  // Keep prior terms as history: retire whatever is active, then seat the new roster
+  const { count: archived } = await prisma.leadershipTerm.updateMany({
+    where: { chapterId, isActive: true },
+    data: { isActive: false }
+  })
+  if (archived > 0) console.log(`Archived ${archived} prior active terms (kept as history).\n`)
 
   console.log(`Seeding ${CURRENT.length} leadership terms\n`)
 
+  let seeded = 0
   for (const { name, position } of CURRENT) {
     const member = await prisma.user.findFirst({
       where: { chapterId, name },
@@ -52,10 +55,11 @@ async function main() {
       data: { chapterId, position, holderId: member.id, startDate: START, endDate: END, isActive: true }
     })
 
+    seeded++
     console.log(`  ✓ ${member.name} → ${position}`)
   }
 
-  console.log('\nVisitor Coordinator is new, left unfilled.')
+  console.log(`\nSeeded ${seeded} of ${CURRENT.length} active terms.`)
 }
 
 main()

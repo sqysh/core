@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
-import { SqyshMode, SqyshVector, TYPE_MS, TypeText } from '@/components/_shared/SqyshVector'
+import { SqyshMode, TYPE_MS, SqyshVector, TypeText } from '@/components/_shared/SqyshVector'
 import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
 
 interface CheckInClientProps {
@@ -25,11 +25,17 @@ interface CheckInClientProps {
   week?: { f2f: number; referrals: number; tyfcb: number } | null
   /** True when this member is judging today's Guiding Light round */
   isGuidingLight?: boolean
+  /** True when this member is hosting today's meeting (drives the stage from the remote) */
+  isHost?: boolean
+  /** True when this member is the treasurer (gives the report from the treasurer screen) */
+  isTreasurer?: boolean
   /** Preview only: run the round-opened send-off on a timer instead of waiting for Pusher */
   previewOpen?: boolean
 }
 
 const JUDGE_HREF = '/guiding-light/judge'
+const REMOTE_HREF = '/stage/remote'
+const TREASURER_HREF = '/treasurer'
 
 export interface SqyshUpdate {
   title: string
@@ -84,6 +90,23 @@ const EXPLAIN_GL: Bubble = {
   until: 7.6,
   parked: true,
   text: () => 'And you’re the Guiding Light today. Keep this screen open, I’ll bring the shortlist up myself.'
+}
+
+// Swapped in for EXPLAIN when they're hosting today
+const EXPLAIN_HOST: Bubble = {
+  at: 1.0,
+  until: 7.6,
+  parked: true,
+  text: () => 'And you’re hosting today. Open the remote when you’re ready and I’ll walk you through it.'
+}
+
+// Swapped in for EXPLAIN when they're the treasurer today
+const EXPLAIN_TREASURER: Bubble = {
+  at: 1.0,
+  until: 7.6,
+  parked: true,
+  text: () =>
+    'And you’ve got the Treasurer’s report. Open your screen now and keep it up, I’ll cue you when it’s your turn.'
 }
 
 // Seconds after settle that Sqysh leaves the ring for the top of the screen
@@ -150,6 +173,8 @@ const SCRIPT: Record<StateKey, Script> = {
 
 // Full literal strings so Tailwind can see them at build time.
 const GL_KEY = '[--key:#f5c542] [--key-soft:rgba(245,197,66,0.3)]'
+const HOST_KEY = '[--key:#60a5fa] [--key-soft:rgba(96,165,250,0.3)]'
+const TREASURER_KEY = '[--key:#818cf8] [--key-soft:rgba(129,140,248,0.3)]'
 const KEY_VARS: Record<StateKey, string> = {
   ok: '[--key:#a855f7] [--key-soft:rgba(168,85,247,0.32)]',
   again: '[--key:#38bdf8] [--key-soft:rgba(56,189,248,0.32)]',
@@ -289,6 +314,8 @@ export default function CheckInClient({
   updates = [],
   week = null,
   isGuidingLight = false,
+  isHost = false,
+  isTreasurer = false,
   previewOpen = false
 }: CheckInClientProps) {
   const router = useRouter()
@@ -357,8 +384,10 @@ export default function CheckInClient({
   }, [script])
 
   const checkedIn = stateKey === 'ok' || stateKey === 'again'
-  // The judge has a job to do; the screen stays on it
-  const gl = isGuidingLight && checkedIn
+  // The host and the judge each have a job; hosting wins if somehow both are true
+  const host = isHost && checkedIn
+  const treasurer = isTreasurer && checkedIn && !host
+  const gl = isGuidingLight && checkedIn && !host && !treasurer
 
   // The judge needs the phone awake until the round opens and the redirect fires
   useEffect(() => {
@@ -426,8 +455,8 @@ export default function CheckInClient({
     }
   }, [gl, router, previewOpen, S, measureCorner])
 
-  // Only after a real check-in, only when there's something to show, never for the judge
-  const hasTour = updates.length > 0 && checkedIn && !gl
+  // Only after a real check-in, only when there's something to show, never for the judge or host
+  const hasTour = updates.length > 0 && checkedIn && !gl && !host && !treasurer
 
   useEffect(() => {
     const ids = [setTimeout(() => setSpot('centre'), 150), setTimeout(() => setSpot('park'), (S + 0.1) * 1000)]
@@ -485,12 +514,14 @@ export default function CheckInClient({
   }, [pct, S])
 
   const subText = script.clock ? `${script.sub}${stamp}` : script.sub || (result.error ?? 'Please try again.')
-  const bubbles = !checkedIn ? script.bubbles : [...script.bubbles, gl ? EXPLAIN_GL : EXPLAIN]
+  const bubbles = !checkedIn
+    ? script.bubbles
+    : [...script.bubbles, host ? EXPLAIN_HOST : treasurer ? EXPLAIN_TREASURER : gl ? EXPLAIN_GL : EXPLAIN]
 
   return (
     <div
       className={`ci-scene fixed inset-0 flex flex-col overflow-hidden bg-[#09090f] text-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${
-        gl ? GL_KEY : KEY_VARS[stateKey]
+        host ? HOST_KEY : treasurer ? TREASURER_KEY : gl ? GL_KEY : KEY_VARS[stateKey]
       }`}
     >
       <div className="ci-grain pointer-events-none absolute inset-0 opacity-5 mix-blend-overlay" aria-hidden="true" />
@@ -684,7 +715,13 @@ export default function CheckInClient({
               className="block translate-y-[112%] not-italic animate-[ciReveal_0.8s_cubic-bezier(0.16,1,0.3,1)_forwards]"
               style={delay(S + 1.25)}
             >
-              {gl ? 'You\u2019re the Guiding Light.' : script.headline}
+              {host
+                ? 'You\u2019re hosting today.'
+                : treasurer
+                  ? 'You\u2019ve got the report.'
+                  : gl
+                    ? 'You\u2019re the Guiding Light.'
+                    : script.headline}
             </em>
           </span>
         </h1>
@@ -696,7 +733,55 @@ export default function CheckInClient({
           {subText}
         </p>
 
-        {gl ? (
+        {host ? (
+          <div className={`mt-6 border-t border-white/10 pt-4 opacity-0 ${LIFT}`} style={delay(S + 1.85)}>
+            <p className="m-0 font-mono text-[10px] tracking-[0.18em] uppercase text-(--key)">Host · today</p>
+            <p className="mt-2 font-sora text-[17px] font-bold leading-snug tracking-[-0.02em] text-balance xs:text-[18px]">
+              You’re running the meeting.
+            </p>
+            <p className="mx-auto mt-2 max-w-[36ch] font-nunito text-[14px] leading-relaxed text-white/70">
+              The remote walks you through every step, from the opening script to the closing quotes. Open it when
+              you’re ready.
+            </p>
+            <Link
+              href={REMOTE_HREF}
+              className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden bg-(--key) font-sora text-[15px] font-black text-[#09090f] no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            >
+              <span
+                className="absolute inset-y-0 -left-[45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
+                aria-hidden="true"
+              />
+              <span className="relative">Open the host remote</span>
+              <span className="relative animate-[ciNudge_1.9s_ease-in-out_infinite]" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
+        ) : treasurer ? (
+          <div className={`mt-6 border-t border-white/10 pt-4 opacity-0 ${LIFT}`} style={delay(S + 1.85)}>
+            <p className="m-0 font-mono text-[10px] tracking-[0.18em] uppercase text-(--key)">Treasurer · today</p>
+            <p className="mt-2 font-sora text-[17px] font-bold leading-snug tracking-[-0.02em] text-balance xs:text-[18px]">
+              You’re giving the Treasurer’s report.
+            </p>
+            <p className="mx-auto mt-2 max-w-[36ch] font-nunito text-[14px] leading-relaxed text-white/70">
+              Open your treasurer screen now and keep it up. Type in the bank balance and anything the chapter owes.
+              When it’s your turn, your numbers go on the TV.
+            </p>
+            <Link
+              href={TREASURER_HREF}
+              className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden bg-(--key) font-sora text-[15px] font-black text-[#09090f] no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            >
+              <span
+                className="absolute inset-y-0 -left-[45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
+                aria-hidden="true"
+              />
+              <span className="relative">Open the treasurer screen</span>
+              <span className="relative animate-[ciNudge_1.9s_ease-in-out_infinite]" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
+        ) : gl ? (
           <div className={`mt-6 border-t border-white/10 pt-4 opacity-0 ${LIFT}`} style={delay(S + 1.85)}>
             <p className="m-0 font-mono text-[10px] tracking-[0.18em] uppercase text-(--key)">Guiding Light · today</p>
             <p className="mt-2 font-sora text-[17px] font-bold leading-snug tracking-[-0.02em] text-balance xs:text-[18px]">

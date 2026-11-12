@@ -15,7 +15,11 @@ import { useReducedMotion } from 'framer-motion'
 
 export type SqyshMode = 'idle' | 'excited' | 'wave' | 'think'
 
+// The skin is theme-aware: the bright set for dark pages, a deeper cut of the
+// same hues for light pages so he doesn't wash out. The actual switch happens
+// via the --sq-* variables on the svg below; these exports just document both.
 export const SQYSH_SKIN = ['#f055f9', '#bf66ef', '#7c42e0'] as const
+export const SQYSH_SKIN_LIGHT = ['#c026d3', '#9333ea', '#6d28d9'] as const
 
 // Geometry in the asset's own 252x278 space. Lobe centres sit on the body's
 // bottom edge; the inner pair are bigger and hang lower, as drawn.
@@ -60,12 +64,16 @@ export function SqyshVector({
   const happy = excited || waving
 
   return (
-    <svg viewBox="0 0 252 278" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 252 278"
+      className={`${className} [--sq-a:#c026d3] [--sq-b:#9333ea] [--sq-c:#6d28d9] dark:[--sq-a:#f055f9] dark:[--sq-b:#bf66ef] dark:[--sq-c:#7c42e0]`}
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="252" y2="278">
-          <stop offset="0" stopColor={SQYSH_SKIN[0]} />
-          <stop offset="0.5" stopColor={SQYSH_SKIN[1]} />
-          <stop offset="1" stopColor={SQYSH_SKIN[2]} />
+          <stop offset="0" style={{ stopColor: 'var(--sq-a)' }} />
+          <stop offset="0.5" style={{ stopColor: 'var(--sq-b)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--sq-c)' }} />
         </linearGradient>
       </defs>
 
@@ -222,7 +230,7 @@ export function TypeText({
       </span>
       <span className="absolute inset-0 text-left" aria-hidden="true">
         {text.slice(0, shown)}
-        {typing && <span className="ml-px inline-block h-[0.95em] w-[2px] translate-y-[0.12em] bg-(--key)" />}
+        {typing && <span className="ml-px inline-block h-[0.95em] w-0.5 translate-y-[0.12em] bg-(--key)" />}
       </span>
       <span className="sr-only">{text}</span>
     </span>

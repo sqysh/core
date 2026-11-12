@@ -1,3 +1,5 @@
+'use server'
+
 import { POLL_EVENT, pollChannel } from '@/lib/constants/poll.constants'
 import { pusher } from '@/lib/pusher/pusher'
 import prisma from '@/prisma/client'

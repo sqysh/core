@@ -1,8 +1,9 @@
 'use client'
 
 import { getPolls } from '@/lib/actions/poll/getPolls'
+import { launchPoll } from '@/lib/actions/poll/launchPoll'
 import { PollView } from '@/types/poll.types'
-import { BarChart3 } from 'lucide-react'
+import { BarChart3, Send } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 
 /**
@@ -27,6 +28,12 @@ export function PollPicker({ send }: { send: (cmd: { type: 'poll.show'; pollId: 
 
   useEffect(load, [])
 
+  // send it to every phone AND the TV
+  function launch(pollId: string) {
+    launchPoll(pollId)
+    send({ type: 'poll.show', pollId })
+  }
+
   if (polls.length === 0) return null
 
   // one poll: a single button, no list to pick from
@@ -35,13 +42,15 @@ export function PollPicker({ send }: { send: (cmd: { type: 'poll.show'; pollId: 
     return (
       <button
         type="button"
-        onClick={() => send({ type: 'poll.show', pollId: p.id })}
-        className="flex h-16 w-full items-center gap-3 border border-white/20 px-4 text-left"
+        onClick={() => launch(p.id)}
+        className="flex h-16 w-full items-center gap-3 border border-border-light px-4 text-left dark:border-border-dark"
       >
-        <BarChart3 size={20} className="shrink-0 text-primary-dark" aria-hidden="true" />
+        <Send size={20} className="shrink-0 text-primary-light dark:text-primary-dark" aria-hidden="true" />
         <span className="min-w-0 flex-1">
-          <span className="block font-sora text-[15px] font-black">Show poll on the TV</span>
-          <span className="block truncate font-nunito text-f12 text-white/60">
+          <span className="block font-sora text-[15px] font-black text-text-light dark:text-text-dark">
+            Launch poll to everyone
+          </span>
+          <span className="block truncate font-nunito text-f12 text-muted-light dark:text-muted-dark">
             {p.question} · {p.totalVotes} {p.totalVotes === 1 ? 'vote' : 'votes'}
           </span>
         </span>
@@ -50,34 +59,38 @@ export function PollPicker({ send }: { send: (cmd: { type: 'poll.show'; pollId: 
   }
 
   return (
-    <div className="border border-white/20">
+    <div className="border border-border-light dark:border-border-dark">
       <button
         type="button"
         onClick={() => setOpenList((v) => !v)}
-        className="flex h-16 w-full items-center gap-3 px-4 text-left"
+        className="flex h-16 w-full items-center gap-3 px-4 text-left text-text-light dark:text-text-dark"
       >
-        <BarChart3 size={20} className="shrink-0 text-primary-dark" aria-hidden="true" />
-        <span className="font-sora text-[15px] font-black">Show a poll on the TV</span>
-        <span className="ml-auto font-mono text-f11 text-white/50">{polls.length}</span>
+        <Send size={20} className="shrink-0 text-primary-light dark:text-primary-dark" aria-hidden="true" />
+        <span className="font-sora text-[15px] font-black">Launch a poll to everyone</span>
+        <span className="ml-auto font-mono text-f11 text-muted-light dark:text-muted-dark">
+          {polls.length} {polls.length === 1 ? 'poll' : 'polls'}
+        </span>
       </button>
       {openList && (
-        <ul className="divide-y divide-white/10 border-t border-white/10">
+        <ul className="divide-y divide-border-light border-t border-border-light dark:divide-border-dark dark:border-border-dark">
           {polls.map((p) => (
             <li key={p.id}>
               <button
                 type="button"
                 onClick={() => {
-                  send({ type: 'poll.show', pollId: p.id })
+                  launch(p.id)
                   setOpenList(false)
                 }}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left text-text-light dark:text-text-dark"
               >
                 <span
-                  className={`h-2 w-2 shrink-0 ${p.status === 'OPEN' ? 'bg-primary-dark' : 'bg-white/30'}`}
+                  className={`h-2 w-2 shrink-0 ${p.status === 'OPEN' ? 'bg-primary-light dark:bg-primary-dark' : 'bg-muted-light/40 dark:bg-muted-dark/40'}`}
                   aria-hidden="true"
                 />
                 <span className="min-w-0 flex-1 truncate font-nunito text-[14px]">{p.question}</span>
-                <span className="shrink-0 font-mono text-f11 tabular-nums text-white/50">{p.totalVotes}</span>
+                <span className="shrink-0 font-mono text-f11 tabular-nums text-muted-light dark:text-muted-dark">
+                  {p.totalVotes}
+                </span>
               </button>
             </li>
           ))}

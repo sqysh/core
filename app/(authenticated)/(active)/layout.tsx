@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import GameAnnounceListener from '@/components/game/shared/GameAnnounceListener'
+import { LivePoll } from './polls/LivePoll'
 
 export default async function ActiveLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -23,6 +24,7 @@ export default async function ActiveLayout({ children }: { children: React.React
   return (
     <>
       <GameAnnounceListener />
+      <LivePoll />
       {children}
     </>
   )

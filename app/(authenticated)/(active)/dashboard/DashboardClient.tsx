@@ -19,6 +19,7 @@ import { GuidingLightPanel } from './_components/GuidingLightPanel'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import FloatingQuickActions from './_components/FloatingQuickActions'
 import LeadershipPanel from './_components/LeadershipPanel'
+import { PollsDashboardCard } from './_components/PollDashboardCard'
 
 const JUMP_LINKS = [
   { id: 'membership', label: 'Membership' },
@@ -201,6 +202,12 @@ export default function DashboardClient({
         <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="leadership">
           <SectionLabel>Leadership Team</SectionLabel>
           <LeadershipPanel season={leadership.season} seats={leadership.seats} totalSeats={leadership.totalSeats} />
+        </FadeUp>
+
+        {/* ── Polls ── */}
+        <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="polls">
+          <SectionLabel>Polls</SectionLabel>
+          <PollsDashboardCard />
         </FadeUp>
 
         {/* ── Events ── */}

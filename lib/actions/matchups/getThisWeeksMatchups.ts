@@ -4,35 +4,29 @@ import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { Matchup } from '@/lib/constants/stage.constants'
 
-// The 1-2-1s to put on the TV: parleys scheduled from this morning through the
-// next seven days that haven't happened yet. "Find your partner, get it on the
-// calendar before you leave."
+// The 1-2-1s to put on the TV: the pairs auto-matched for today's meeting. This
+// mirrors the /matchups page query exactly (the same rows generateWeeklyMatches
+// writes), so the TV shows what the host just generated.
 export async function getThisWeeksMatchups(): Promise<Matchup[]> {
-  const todayISO = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(new Date())
-  const from = new Date(`${todayISO}T00:00:00Z`)
-  const to = new Date(from.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
 
   const parleys = await prisma.parley.findMany({
-    where: {
-      chapterId,
-      completed: false,
-      status: { not: 'CANCELLED' },
-      scheduledAt: { gte: from, lt: to }
-    },
-    orderBy: { scheduledAt: 'asc' },
+    where: { chapterId, createdAt: { gte: start }, notes: 'Auto-matched weekly 1-2-1' },
+    orderBy: { createdAt: 'asc' },
     select: {
-      requester: { select: { id: true, name: true, company: true } },
-      recipient: { select: { id: true, name: true, company: true } }
+      id: true,
+      requester: { select: { id: true, name: true, company: true, profileImage: true } },
+      recipient: { select: { id: true, name: true, company: true, profileImage: true } }
     }
   })
 
-  return parleys.map((p) => ({
-    a: { id: p.requester.id, name: p.requester.name ?? '', company: p.requester.company ?? null },
-    b: { id: p.recipient.id, name: p.recipient.name ?? '', company: p.recipient.company ?? null }
-  }))
+  const shape = (u: { id: string; name: string | null; company: string | null; profileImage: string | null }) => ({
+    id: u.id,
+    name: u.name ?? '',
+    company: u.company ?? '',
+    profileImage: u.profileImage
+  })
+
+  return parleys.map((p) => ({ id: p.id, requester: shape(p.requester), recipient: shape(p.recipient) }))
 }

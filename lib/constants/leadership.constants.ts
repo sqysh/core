@@ -24,6 +24,7 @@ export const POSITIONS: Record<LeadershipPosition, PositionMeta> = {
   },
   MEMBERSHIP_COMMITTEE: { label: 'Membership Committee', seats: 3, isElected: true },
   TREASURER: { label: 'Treasurer', seats: 1, isElected: true },
+  EVENT_COORDINATOR: { label: 'Event Coordinator', seats: 1, isElected: true },
   DIGITAL_OPERATIONS_MANAGER: { label: 'Digital Operations Manager', seats: 1, isElected: false }
 }
 

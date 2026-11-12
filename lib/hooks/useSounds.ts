@@ -19,11 +19,24 @@ const SOUND_PATHS = {
   se13: '/sound-effects/se-13.mp3',
   se14: '/sound-effects/se-14.mp3',
   se15: '/sound-effects/se-15.mp3',
+  se17: '/sound-effects/se-17.mp3',
   spin: '/sound-effects/wof/spin.mp3',
   punch: '/sound-effects/punch.mp3',
   flawless: '/sound-effects/flawless-victory.wav',
   hit: '/sound-effects/hit-drum.mp3',
-  finish: '/sound-effects/finish.wav'
+  finish: '/sound-effects/finish.wav',
+  glDrumroll: '/sound-effects/gl-drumroll.mp3',
+  glReveal: '/sound-effects/gl-reveal.mp3',
+  checkIn: '/sound-effects/check-in.mp3',
+  'stage-change': '/sound-effects/stage-change.mp3',
+  'host-cue': '/sound-effects/host-cue.mp3',
+  'ui-primary': '/sound-effects/ui-primary.mp3',
+  'ui-tap': '/sound-effects/ui-tap.mp3',
+  'ui-tick': '/sound-effects/ui-tick.mp3',
+  'ui-play': '/sound-effects/ui-play.mp3',
+  'ui-pause': '/sound-effects/ui-pause.mp3',
+  'flap-clatter': '/sound-effects/flap-clatter.mp3',
+  'flap-done': '/sound-effects/flap-done.mp3'
 } as const
 
 type SoundKey = keyof typeof SOUND_PATHS

@@ -3,9 +3,10 @@ import { auth } from '@/lib/auth/auth'
 import { getStageData } from '@/lib/actions/stage/getStageData'
 import { HostRemoteClient } from './HostRemoteClient'
 import { initiateGuidingLight } from '@/lib/actions/guiding-light/initiateGuidingLight'
+import { generateWeeklyMatches } from '@/lib/actions/1-2-1/generateWeeklyMatches'
+import { HOST_ROLES } from '@/lib/constants/roles.constants'
 
 export const dynamic = 'force-dynamic'
-const HOST_ROLES = new Set(['SUPER_USER', 'HOST'])
 
 export default async function StageRemotePage() {
   const session = await auth()
@@ -20,12 +21,19 @@ export default async function StageRemotePage() {
     return initiateGuidingLight()
   }
 
+  async function onGenerateMatchups() {
+    'use server'
+    return generateWeeklyMatches()
+  }
+
   return (
     <HostRemoteClient
       segments={res.data.segments}
       presentation={res.data.presentation}
       names={res.data.names}
       onOpenRound={onOpenRound}
+      onGenerateMatchups={onGenerateMatchups}
+      glRevealed={!!res.data.todayWinner}
     />
   )
 }
