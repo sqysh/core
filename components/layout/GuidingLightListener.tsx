@@ -23,9 +23,10 @@ export default function GuidingLightListener() {
     channel.bind('round-opened', (data: { judgeId: string | null }) => {
       const userId = userIdRef.current
       if (!userId || userId !== data.judgeId) return
-      // The check-in screen handles this one itself so Sqysh can do the send-off
-      if (pathRef.current === '/check-in') return
-      router.push('/guiding-light/judge')
+      const path = pathRef.current ?? ''
+      // check-in runs its own send-off; /attendance and /stage/* are driving the meeting
+      if (path === '/check-in' || path === '/attendance' || path.startsWith('/stage')) return
+      router.push('/stage/guiding-light/judge')
     })
 
     channel.bind('winner-selected', (data: { winner: { id: string; name: string }; judgeId: string | null }) => {
@@ -35,7 +36,7 @@ export default function GuidingLightListener() {
       // Only route on mobile. The laptop is driving the TV and shouldn't jump pages mid-reveal
       if (!/iPhone|iPad|Android/i.test(navigator.userAgent)) return
 
-      router.push(`/guiding-light/handoff?winner=${encodeURIComponent(data.winner.name)}`)
+      router.push(`/stage/guiding-light/handoff?winner=${encodeURIComponent(data.winner.name)}`)
     })
 
     return () => {

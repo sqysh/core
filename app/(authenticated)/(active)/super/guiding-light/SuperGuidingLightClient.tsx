@@ -2,11 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
-import { Member } from '../../guiding-light/_types/guiding-light.types'
+import { Member } from '@/types/guiding-light.types'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { updatePreviousWinner } from '@/lib/actions/guiding-light/updatePreviousWinner'
-import ManualPickerOverlay from '../../guiding-light/stage/_components/ManualPickerOverlay'
+import ManualPickerOverlay from '@/components/_shared/ManualPickerOverlay'
 import { RowContent } from './_components/RowContent'
 import { RecordRoundForm } from './_components/RecordRoundForm'
 

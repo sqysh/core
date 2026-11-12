@@ -27,14 +27,23 @@ function Portrait({ person, i, solo }: { person: StagePerson; i: number; solo: b
       className="flex flex-col items-center gap-[1.4vh]"
     >
       <div className="relative">
-        <span className="absolute -inset-3 rounded-full blur-2xl" style={{ background: STEEL, opacity: 0.25 }} aria-hidden="true" />
+        <span
+          className="absolute -inset-3 rounded-full blur-2xl"
+          style={{ background: STEEL, opacity: 0.25 }}
+          aria-hidden="true"
+        />
         <div
-          className={`relative aspect-square overflow-hidden rounded-full border-[3px] shadow-[0_16px_50px_rgba(0,0,0,0.55)] ${solo ? 'w-[18vw] max-w-[320px]' : 'w-[13vw] max-w-[230px] min-w-[150px]'}`}
+          className={`relative aspect-square overflow-hidden rounded-full border-[3px] shadow-[0_16px_50px_rgba(0,0,0,0.55)] ${solo ? 'w-[18vw] max-w-[320px]' : 'w-[13vw] max-w-57.5 min-w-37.5'}`}
           style={{ borderColor: STEEL }}
         >
           {person.image && imgOk ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={person.image} alt={person.name} onError={() => setImgOk(false)} className="h-full w-full object-cover" />
+            <img
+              src={person.image}
+              alt={person.name}
+              onError={() => setImgOk(false)}
+              className="h-full w-full object-cover"
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-white/5 font-sora text-[4.5vw] font-black text-white/80">
               {initials(person.name)}
@@ -43,7 +52,9 @@ function Portrait({ person, i, solo }: { person: StagePerson; i: number; solo: b
         </div>
       </div>
       <div className="text-center">
-        <h2 className="font-sora text-[2.6vw] font-black leading-none text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.65)]">{person.name}</h2>
+        <h2 className="font-sora text-[2.6vw] font-black leading-none text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.65)]">
+          {person.name}
+        </h2>
         {person.company && <p className="mt-[0.8vh] font-nunito text-[1.3vw] text-white/65">{person.company}</p>}
       </div>
     </motion.div>
@@ -77,7 +88,7 @@ export function CoDirectorsIntro({ people }: { people: StagePerson[] }) {
           ))}
         </div>
 
-        <span className="h-[3px] w-[8vw] rounded-full" style={{ background: STEEL, opacity: 0.8 }} aria-hidden="true" />
+        <span className="h-0.75 w-[8vw] rounded-full" style={{ background: STEEL, opacity: 0.8 }} aria-hidden="true" />
       </div>
     </div>
   )

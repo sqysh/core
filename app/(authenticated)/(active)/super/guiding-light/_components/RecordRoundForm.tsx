@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Member } from '../../../guiding-light/_types/guiding-light.types'
 import { recordPastRound } from '@/lib/actions/guiding-light/recordPastRound'
 import { motion } from 'framer-motion'
+import { Member } from '@/types/guiding-light.types'
 
 function lastThursday() {
   const d = new Date()

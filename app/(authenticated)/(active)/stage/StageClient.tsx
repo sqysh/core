@@ -7,7 +7,7 @@ import { PollStage } from './_components/PollStage'
 import { TreasurerStage } from './_components/TreasurerStage'
 import { ActivityStage } from './_components/ActivityStage'
 import { Teleprompter, type TeleprompterHandle } from './_components/Teleprompter'
-import MatchupsClient from './_components/MatchupsClient'
+import MatchupsStage from './_components/MatchupsStage'
 import {
   Matchup,
   Segment,
@@ -18,12 +18,12 @@ import {
   StagePerson,
   StagePresentation
 } from '@/lib/constants/stage.constants'
-import GuidingLightStageClient from '../guiding-light/stage/SixtyStageClient'
-import { GuidingLightIntro } from './_components/GuidingLightIntro'
-import { GuidingLightResult } from './_components/GuidingLightResult'
-import { EducationIntro } from './_components/EducationIntro'
-import { CoDirectorsIntro } from './_components/CoDirectorsIntro'
-import { RoleIntro } from './_components/RoleIntro'
+import SixtyStageClient from './_components/SixtyStageClient'
+import { GuidingLightIntro } from './_components/screens/guiding-light/GuidingLightIntro'
+import { GuidingLightResult } from './_components/screens/guiding-light/GuidingLightResult'
+import { EducationIntro } from './_components/screens/education/EducationIntro'
+import { CoDirectorsIntro } from './_components/screens/co-directors/CoDirectorsIntro'
+import { RoleIntroStage } from './_components/RoleIntroStage'
 import { ClosingStage } from './_components/ClosingStage'
 import { PresenterSpotlight } from './_components/PresenterSpotlight'
 
@@ -57,7 +57,7 @@ type Mode =
 export default function StageClient({
   segments,
   presentation,
-  matchups,
+  matchups: initialMatchups,
   guidingLight,
   education,
   members,
@@ -95,10 +95,11 @@ export default function StageClient({
   modeRef.current = mode
   const prePollModeRef = useRef<Mode>('holding')
   const [pollId, setPollId] = useState<string | null>(null)
-  const [matchupsRun, setMatchupsRun] = useState(0)
-  const [liveMatchups, setLiveMatchups] = useState<Matchup[]>(matchups)
+
   const [presenterName, setPresenterName] = useState<string | null>(null)
   const [spotlightRun, setSpotlightRun] = useState(0)
+  const [matchups, setMatchups] = useState(initialMatchups) // from getStageData
+
   // the teleprompter owns the script scroll, countdown and speaking engine; the
   // stage drives it through this handle
   const tpRef = useRef<TeleprompterHandle | null>(null)
@@ -160,7 +161,7 @@ export default function StageClient({
   useEffect(() => {
     const channel = getPusherClient().subscribe(STAGE_CHANNEL)
 
-    channel.bind(STAGE_EVENT, (cmd: StageCommand) => {
+    channel.bind(STAGE_EVENT, async (cmd: StageCommand) => {
       switch (cmd.type) {
         case 'holding':
           tpRef.current?.reset()
@@ -218,19 +219,11 @@ export default function StageClient({
           setMode('spotlight')
           break
         case 'matchups.show':
-          tpRef.current?.pause()
-          // the pairs are generated mid-meeting, so pull them fresh, then mount
-          if (loadMatchups) {
-            loadMatchups()
-              .then((m) => setLiveMatchups(m))
-              .catch(() => {})
-              .finally(() => {
-                setMatchupsRun((n) => n + 1)
-                setMode('matchups')
-              })
-          } else {
-            setMatchupsRun((n) => n + 1)
+          {
+            const fresh = await loadMatchups() // the 'use server' wrapper from attendance-page
+            setMatchups(fresh) // or fresh.data, depending on its return
             setMode('matchups')
+            break
           }
           break
         case 'poll.show':
@@ -323,9 +316,7 @@ export default function StageClient({
       {mode === 'activity' && <ActivityStage />}
 
       {/* ── Matchups ── */}
-      {mode === 'matchups' && (
-        <MatchupsClient key={matchupsRun} pairs={liveMatchups} isSuperUser={isSuperUser} autoStart />
-      )}
+      {mode === 'matchups' && <MatchupsStage pairs={matchups} isSuperUser={isSuperUser} autoStart />}
 
       {/* ── Poll ── */}
       {mode === 'poll' && pollId && <PollStage pollId={pollId} />}
@@ -348,12 +339,12 @@ export default function StageClient({
 
       {/* ── Event Coordinator ── */}
       {mode === 'event-coordinator' && eventCoordinator && (
-        <RoleIntro label="Event Coordinator" people={[eventCoordinator]} accent="#fb923c" />
+        <RoleIntroStage label="Event Coordinator" people={[eventCoordinator]} accent="#fb923c" />
       )}
 
       {/* ── Membership Committee ── */}
       {mode === 'membership' && membership.length > 0 && (
-        <RoleIntro label="Membership Committee" people={membership} accent="#2dd4bf" />
+        <RoleIntroStage label="Membership Committee" people={membership} accent="#2dd4bf" />
       )}
 
       {/* ── Closing quotes on rotation ── */}
@@ -361,11 +352,10 @@ export default function StageClient({
 
       {/* ── Guiding Light carousel + reveal ── */}
       {mode === 'sixty' && (
-        <GuidingLightStageClient
+        <SixtyStageClient
           members={members.map((m) => ({ id: m.id, name: m.name, company: m.company, profileImage: m.profileImage }))}
           judgeName={guidingLight?.name ?? null}
           openRoundId={openRoundId}
-          isSuperUser={isSuperUser}
           initialWinner={
             glWinner
               ? (members.find((m) => m.name === glWinner.name) ?? {

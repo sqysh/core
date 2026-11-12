@@ -56,7 +56,7 @@ export async function savePresentation(input: {
     })
 
     revalidatePath('/dashboard')
-    revalidatePath('/present')
+    revalidatePath('/stage/present')
     return { success: true }
   } catch {
     return { success: false, error: 'Could not save the presentation' }

@@ -2,7 +2,7 @@ import { getInitials } from '@/lib/utils/shared.utils'
 import { Check, Trophy } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
-import { Member } from '../../_types/guiding-light.types'
+import { Member } from '@/types/guiding-light.types'
 
 type Props = {
   member: Member

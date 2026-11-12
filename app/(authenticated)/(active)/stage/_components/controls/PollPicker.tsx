@@ -8,7 +8,7 @@ import { launchPoll } from '@/lib/actions/poll/launchPoll'
 import { POLL_CLEAR_EVENT, POLL_LAUNCH_EVENT, POLL_LIVE_CHANNEL, PollLaunch } from '@/lib/constants/poll.constants'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { PollView } from '@/types/poll.types'
-import { BarChart3, Send } from 'lucide-react'
+import { Send } from 'lucide-react'
 import { useEffect, useState, useTransition } from 'react'
 import { LivePollControl } from './LivePollControl'
 

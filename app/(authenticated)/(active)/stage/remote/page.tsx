@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth/auth'
 import { getStageData } from '@/lib/actions/stage/getStageData'
 import { HostRemoteClient } from './HostRemoteClient'
 import { initiateGuidingLight } from '@/lib/actions/guiding-light/initiateGuidingLight'
-import { generateWeeklyMatches } from '@/lib/actions/1-2-1/generateWeeklyMatches'
+import { generateWeeklyMatches } from '@/lib/actions/matchups/generateWeeklyMatches'
 import { isActingHost } from '@/lib/actions/leadership/isActingHost'
 
 export const dynamic = 'force-dynamic'

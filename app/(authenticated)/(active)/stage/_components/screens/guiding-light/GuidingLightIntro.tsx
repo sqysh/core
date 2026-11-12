@@ -53,7 +53,7 @@ export function GuidingLightIntro({ person }: { person: StagePerson }) {
             aria-hidden="true"
           />
           <div
-            className="relative aspect-square w-[20vw] max-w-[340px] min-w-[180px] overflow-hidden rounded-full border-[3px] shadow-[0_18px_60px_rgba(0,0,0,0.55)]"
+            className="relative aspect-square w-[20vw] max-w-85 min-w-45 overflow-hidden rounded-full border-[3px] shadow-[0_18px_60px_rgba(0,0,0,0.55)]"
             style={{ borderColor: GOLD }}
           >
             {person.image && imgOk ? (
@@ -79,7 +79,7 @@ export function GuidingLightIntro({ person }: { person: StagePerson }) {
         </div>
 
         <span
-          className="mt-[1vh] h-[3px] w-[8vw] rounded-full"
+          className="mt-[1vh] h-0.75 w-[8vw] rounded-full"
           style={{ background: GOLD, opacity: 0.8 }}
           aria-hidden="true"
         />

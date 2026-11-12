@@ -1,7 +1,7 @@
 import { GuidingLightRecord } from '../SuperGuidingLightClient'
 import { fmtDate } from '@/lib/utils/date.utils'
 import { getInitials } from '@/lib/utils/shared.utils'
-import { Member } from '../../../guiding-light/_types/guiding-light.types'
+import { Member } from '@/types/guiding-light.types'
 
 function Avatar({ member }: { member: Member }) {
   return (

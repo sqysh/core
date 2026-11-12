@@ -2,12 +2,12 @@
 
 import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
+import { pusher } from '@/lib/pusher/pusher'
 
 export async function resetGuidingLight(guidingLightId: string) {
   const session = await auth()
   if (!session?.user?.id || session.user.role !== 'SUPER_USER') return { success: false, error: 'Unauthorized' }
 
-  // Only reset OPEN rounds — never touch REVEALED records
   const round = await prisma.guidingLight.findUnique({
     where: { id: guidingLightId },
     select: { status: true }
@@ -19,6 +19,8 @@ export async function resetGuidingLight(guidingLightId: string) {
     await tx.guidingLightNominee.deleteMany({ where: { guidingLightId } })
     await tx.guidingLight.delete({ where: { id: guidingLightId } })
   })
+
+  await pusher.trigger('guiding-light', 'round-reset', { guidingLightId })
 
   return { success: true }
 }

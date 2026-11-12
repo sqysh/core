@@ -31,9 +31,11 @@ interface CheckInClientProps {
   isTreasurer?: boolean
   /** Preview only: run the round-opened send-off on a timer instead of waiting for Pusher */
   previewOpen?: boolean
+  /** True when this member is a super user (gets the command deck) */
+  isSuper?: boolean
 }
 
-const JUDGE_HREF = '/guiding-light/judge'
+const JUDGE_HREF = '/stage/guiding-light/judge'
 const REMOTE_HREF = '/stage/remote'
 const TREASURER_HREF = '/treasurer'
 
@@ -98,6 +100,13 @@ const EXPLAIN_HOST: Bubble = {
   until: 7.6,
   parked: true,
   text: () => 'And you’re hosting today. Open the remote when you’re ready and I’ll walk you through it.'
+}
+
+const EXPLAIN_SUPER: Bubble = {
+  at: 1.0,
+  until: 7.6,
+  parked: true,
+  text: () => 'Command deck is ready. Open it when you want to run the room.'
 }
 
 // Swapped in for EXPLAIN when they're the treasurer today
@@ -174,6 +183,7 @@ const SCRIPT: Record<StateKey, Script> = {
 // Full literal strings so Tailwind can see them at build time.
 const GL_KEY = '[--key:#f5c542] [--key-soft:rgba(245,197,66,0.3)]'
 const HOST_KEY = '[--key:#60a5fa] [--key-soft:rgba(96,165,250,0.3)]'
+const SUPER_KEY = '[--key:#22d3ee] [--key-soft:rgba(34,211,238,0.3)]'
 const TREASURER_KEY = '[--key:#818cf8] [--key-soft:rgba(129,140,248,0.3)]'
 const KEY_VARS: Record<StateKey, string> = {
   ok: '[--key:#a855f7] [--key-soft:rgba(168,85,247,0.32)]',
@@ -316,7 +326,8 @@ export default function CheckInClient({
   isGuidingLight = false,
   isHost = false,
   isTreasurer = false,
-  previewOpen = false
+  previewOpen = false,
+  isSuper
 }: CheckInClientProps) {
   const router = useRouter()
   const firstName = userName.split(' ')[0]
@@ -332,6 +343,7 @@ export default function CheckInClient({
   const [spot, setSpot] = useState<'below' | 'centre' | 'park' | 'corner' | 'hover'>('below')
   const [sendOff, setSendOff] = useState(false)
   const [corner, setCorner] = useState<{ x: number; y: number; scale: number } | null>(null)
+  const SUPER_HREF = '/stage/super'
 
   // Where the top-right corner is, relative to the riser. Measured when needed
   // (riser settled) rather than at mount.
@@ -385,9 +397,10 @@ export default function CheckInClient({
 
   const checkedIn = stateKey === 'ok' || stateKey === 'again'
   // The host and the judge each have a job; hosting wins if somehow both are true
-  const host = isHost && checkedIn
-  const treasurer = isTreasurer && checkedIn && !host
-  const gl = isGuidingLight && checkedIn && !host && !treasurer
+  const sup = isSuper && checkedIn
+  const host = isHost && checkedIn && !sup
+  const treasurer = isTreasurer && checkedIn && !host && !sup
+  const gl = isGuidingLight && checkedIn && !host && !treasurer && !sup
 
   // The judge needs the phone awake until the round opens and the redirect fires
   useEffect(() => {
@@ -460,7 +473,7 @@ export default function CheckInClient({
 
   useEffect(() => {
     const ids = [setTimeout(() => setSpot('centre'), 150), setTimeout(() => setSpot('park'), (S + 0.1) * 1000)]
-    if (hasTour) {
+    if (hasTour && !sup) {
       ids.push(
         setTimeout(
           () => {
@@ -516,12 +529,15 @@ export default function CheckInClient({
   const subText = script.clock ? `${script.sub}${stamp}` : script.sub || (result.error ?? 'Please try again.')
   const bubbles = !checkedIn
     ? script.bubbles
-    : [...script.bubbles, host ? EXPLAIN_HOST : treasurer ? EXPLAIN_TREASURER : gl ? EXPLAIN_GL : EXPLAIN]
+    : [
+        ...script.bubbles,
+        sup ? EXPLAIN_SUPER : host ? EXPLAIN_HOST : treasurer ? EXPLAIN_TREASURER : gl ? EXPLAIN_GL : EXPLAIN
+      ]
 
   return (
     <div
       className={`ci-scene fixed inset-0 flex flex-col overflow-hidden bg-[#09090f] text-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] ${
-        host ? HOST_KEY : treasurer ? TREASURER_KEY : gl ? GL_KEY : KEY_VARS[stateKey]
+        sup ? SUPER_KEY : host ? HOST_KEY : treasurer ? TREASURER_KEY : gl ? GL_KEY : KEY_VARS[stateKey]
       }`}
     >
       <div className="ci-grain pointer-events-none absolute inset-0 opacity-5 mix-blend-overlay" aria-hidden="true" />
@@ -715,13 +731,15 @@ export default function CheckInClient({
               className="block translate-y-[112%] not-italic animate-[ciReveal_0.8s_cubic-bezier(0.16,1,0.3,1)_forwards]"
               style={delay(S + 1.25)}
             >
-              {host
-                ? 'You\u2019re hosting today.'
-                : treasurer
-                  ? 'You\u2019ve got the report.'
-                  : gl
-                    ? 'You\u2019re the Guiding Light.'
-                    : script.headline}
+              {sup
+                ? 'Command deck.'
+                : host
+                  ? 'You\u2019re hosting today.'
+                  : treasurer
+                    ? 'You\u2019ve got the report.'
+                    : gl
+                      ? 'You\u2019re the Guiding Light.'
+                      : script.headline}
             </em>
           </span>
         </h1>
@@ -733,7 +751,31 @@ export default function CheckInClient({
           {subText}
         </p>
 
-        {host ? (
+        {sup ? (
+          <div className={`mt-6 border-t border-white/10 pt-4 opacity-0 ${LIFT}`} style={delay(S + 1.85)}>
+            <p className="m-0 font-mono text-[10px] tracking-[0.18em] uppercase text-(--key)">Command deck · online</p>
+            <p className="mt-2 font-sora text-[17px] font-bold leading-snug tracking-[-0.02em] text-balance xs:text-[18px]">
+              You have full control.
+            </p>
+            <p className="mx-auto mt-2 max-w-[36ch] font-nunito text-[14px] leading-relaxed text-white/70">
+              Every screen, the teleprompter, the poll and the guiding light, all from your phone. Jump the TV anywhere,
+              anytime.
+            </p>
+            <Link
+              href={SUPER_HREF}
+              className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden bg-(--key) font-sora text-[15px] font-black text-[#09090f] no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            >
+              <span
+                className="absolute inset-y-0 left-[-45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
+                aria-hidden="true"
+              />
+              <span className="relative">Open the command deck</span>
+              <span className="relative animate-[ciNudge_1.9s_ease-in-out_infinite]" aria-hidden="true">
+                →
+              </span>
+            </Link>
+          </div>
+        ) : host ? (
           <div className={`mt-6 border-t border-white/10 pt-4 opacity-0 ${LIFT}`} style={delay(S + 1.85)}>
             <p className="m-0 font-mono text-[10px] tracking-[0.18em] uppercase text-(--key)">Host · today</p>
             <p className="mt-2 font-sora text-[17px] font-bold leading-snug tracking-[-0.02em] text-balance xs:text-[18px]">
@@ -748,7 +790,7 @@ export default function CheckInClient({
               className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden bg-(--key) font-sora text-[15px] font-black text-[#09090f] no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <span
-                className="absolute inset-y-0 -left-[45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
+                className="absolute inset-y-0 left-[-45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
                 aria-hidden="true"
               />
               <span className="relative">Open the host remote</span>
@@ -772,7 +814,7 @@ export default function CheckInClient({
               className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden bg-(--key) font-sora text-[15px] font-black text-[#09090f] no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
             >
               <span
-                className="absolute inset-y-0 -left-[45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
+                className="absolute inset-y-0 left-[-45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
                 aria-hidden="true"
               />
               <span className="relative">Open the treasurer screen</span>
@@ -876,7 +918,7 @@ export default function CheckInClient({
               style={delay(S + 2.05)}
             >
               <span
-                className="absolute inset-y-0 -left-[45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/15 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
+                className="absolute inset-y-0 left-[-45%] w-[36%] -skew-x-12 bg-linear-to-r from-transparent via-white/15 to-transparent animate-[ciSweep_5.5s_ease-in-out_infinite]"
                 style={delay(S + 3.1)}
                 aria-hidden="true"
               />

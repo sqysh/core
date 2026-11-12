@@ -60,7 +60,7 @@ function Person({
   )
 }
 
-export function RoleIntro({ label, people, accent }: { label: string; people: StagePerson[]; accent: string }) {
+export function RoleIntroStage({ label, people, accent }: { label: string; people: StagePerson[]; accent: string }) {
   const reduce = !!useReducedMotion()
   const solo = people.length === 1
 
@@ -69,14 +69,14 @@ export function RoleIntro({ label, people, accent }: { label: string; people: St
       {/* drifting accent glow */}
       <motion.span
         aria-hidden="true"
-        className="pointer-events-none absolute -left-[12vw] top-[8vh] h-[54vh] w-[54vh] rounded-full blur-3xl"
+        className="pointer-events-none absolute left-[-12vw] top-[8vh] h-[54vh] w-[54vh] rounded-full blur-3xl"
         style={{ backgroundColor: accent, opacity: 0.12 }}
         animate={reduce ? undefined : { x: [0, 80, 0], y: [0, 50, 0] }}
         transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.span
         aria-hidden="true"
-        className="pointer-events-none absolute -right-[12vw] bottom-[8vh] h-[46vh] w-[46vh] rounded-full blur-3xl"
+        className="pointer-events-none absolute right-[-12vw] bottom-[8vh] h-[46vh] w-[46vh] rounded-full blur-3xl"
         style={{ backgroundColor: accent, opacity: 0.08 }}
         animate={reduce ? undefined : { x: [0, -70, 0], y: [0, -40, 0] }}
         transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}

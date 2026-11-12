@@ -1,7 +1,7 @@
 import { getInitials } from '@/lib/utils/shared.utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X } from 'lucide-react'
-import { Member } from '../../_types/guiding-light.types'
+import { Member } from '@/types/guiding-light.types'
 
 interface Props {
   title: string

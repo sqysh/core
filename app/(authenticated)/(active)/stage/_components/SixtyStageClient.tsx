@@ -3,25 +3,16 @@
 // The 60-seconds TV screen: a 3D carousel of members that drifts while everyone
 // gives their 60, then spins and lands on the winner (the week's Guiding Light)
 // when the judge picks on their phone (your existing `winner-selected` Pusher
-// event). Admin overrides and server actions carry over unchanged.
+// event). Display-only; the super operator drives it from the remote.
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { getPusherClient } from '@/lib/pusher/pusherClient'
 import { getInitials } from '@/lib/utils/shared.utils'
-import { Member, Winner } from '../_types/guiding-light.types'
-import { resetGuidingLight } from '@/lib/actions/guiding-light/resetGuidingLight'
-import { selectGuidingLightWinner } from '@/lib/actions/guiding-light/selectGuidingLightWinner'
-import { notifyJudge } from '@/lib/actions/guiding-light/notifyJudge'
-import { changeJudge } from '@/lib/actions/guiding-light/changeJudge'
-import { refireReveal } from '@/lib/actions/guiding-light/refireReveal'
-import ManualPickerOverlay from './_components/ManualPickerOverlay'
-import NewJudgeModal from './_components/NewJudgeModal'
+import { Member, Winner } from '@/types/guiding-light.types'
 
 interface Props {
   members: Member[]
-  isSuperUser: boolean
   openRoundId: string | null
   judgeName: string | null
   /** already-chosen winner, so re-opening the screen after the pick shows the result */
@@ -33,27 +24,10 @@ interface Props {
 type Phase = 'idle' | 'spinning' | 'revealed'
 const SPIN_MS = 5600
 
-export default function SixtyStageClient({
-  members,
-  isSuperUser,
-  openRoundId,
-  judgeName,
-  initialWinner = null,
-  showChrome = true
-}: Props) {
-  const router = useRouter()
+export default function SixtyStageClient({ members, judgeName, initialWinner = null, showChrome = true }: Props) {
   const [phase, setPhase] = useState<Phase>(initialWinner ? 'revealed' : 'idle')
   const [winner, setWinner] = useState<Member | null>(initialWinner)
   const [judgedByName, setJudgedByName] = useState<string | null>(judgeName)
-
-  const [showManualPicker, setShowManualPicker] = useState(false)
-  const [manualSubmitting, setManualSubmitting] = useState(false)
-  const [resetting, setResetting] = useState(false)
-  const [notifying, setNotifying] = useState(false)
-  const [showJudgePicker, setShowJudgePicker] = useState(false)
-  const [changingJudge, setChangingJudge] = useState(false)
-  const [newJudge, setNewJudge] = useState<{ name: string; company: string; profileImage: string | null } | null>(null)
-  const [refiring, setRefiring] = useState(false)
 
   const rootRef = useRef<HTMLDivElement | null>(null)
   const ringRef = useRef<HTMLDivElement | null>(null)
@@ -179,9 +153,22 @@ export default function SixtyStageClient({
       setJudgedByName(data.judgedBy?.name ?? null)
       startSpin(data.winner)
     }
+    // the operator reset the round from the remote: drop back to the drifting carousel
+    const onReset = () => {
+      phaseRef.current = 'idle'
+      setPhase('idle')
+      setWinner(null)
+      setJudgedByName(null)
+      try {
+        rollRef.current?.pause()
+        winRef.current?.pause()
+      } catch {}
+    }
     channel.bind('winner-selected', onWinner)
+    channel.bind('round-reset', onReset)
     return () => {
       channel.unbind('winner-selected', onWinner)
+      channel.unbind('round-reset', onReset)
     }
   }, [startSpin])
 
@@ -258,52 +245,6 @@ export default function SixtyStageClient({
     }
   }
 
-  async function handleReset() {
-    if (!openRoundId) return
-    setResetting(true)
-    await resetGuidingLight(openRoundId)
-    setResetting(false)
-    phaseRef.current = 'idle'
-    setPhase('idle')
-    setWinner(null)
-    setJudgedByName(null)
-    try {
-      rollRef.current?.pause()
-      winRef.current?.pause()
-    } catch {}
-  }
-  async function handleManualSelect(memberId: string) {
-    if (!openRoundId) return
-    setManualSubmitting(true)
-    await selectGuidingLightWinner(openRoundId, memberId)
-    setManualSubmitting(false)
-    setShowManualPicker(false)
-  }
-  async function handleNotifyJudge() {
-    setNotifying(true)
-    await notifyJudge()
-    setNotifying(false)
-  }
-  async function handleChangeJudge(memberId: string) {
-    if (!openRoundId) return
-    setChangingJudge(true)
-    const res = await changeJudge(openRoundId, memberId)
-    setChangingJudge(false)
-    setShowJudgePicker(false)
-    if (res.success && res.data) {
-      setNewJudge(res.data)
-      setTimeout(() => setNewJudge(null), 3000)
-    }
-    router.refresh()
-  }
-  async function handleRefireReveal() {
-    setRefiring(true)
-    await refireReveal()
-    setRefiring(false)
-  }
-
-  const adminBtn =
-    'h-8 px-4 border border-border-dark text-muted-dark font-mono text-[9px] tracking-[0.15em] uppercase transition-colors disabled:opacity-30'
   const hairline = "before:content-[''] before:h-px after:content-[''] after:h-px"
 
   return (
@@ -321,64 +262,6 @@ export default function SixtyStageClient({
           </Link>
         </div>
       )}
-
-      {isSuperUser && (
-        <div className="absolute bottom-6 right-6 z-20 flex flex-col items-end gap-2">
-          <button
-            onClick={() => setShowJudgePicker(true)}
-            disabled={!openRoundId}
-            className={`${adminBtn} hover:border-cyan-500/50 hover:text-cyan-400`}
-          >
-            Change Judge
-          </button>
-          <button
-            onClick={handleNotifyJudge}
-            disabled={notifying || !openRoundId}
-            className={`${adminBtn} hover:border-amber-500/50 hover:text-amber-400`}
-          >
-            {notifying ? 'Sending…' : 'Notify Judge'}
-          </button>
-          <button
-            onClick={() => setShowManualPicker(true)}
-            disabled={!openRoundId}
-            className={`${adminBtn} hover:border-primary-dark/50 hover:text-primary-dark`}
-          >
-            Manual Select
-          </button>
-          <button
-            onClick={handleRefireReveal}
-            disabled={refiring}
-            className={`${adminBtn} hover:border-emerald-500/50 hover:text-emerald-400`}
-          >
-            {refiring ? 'Firing…' : 'Re-fire Reveal'}
-          </button>
-          <button
-            onClick={handleReset}
-            disabled={resetting}
-            className={`${adminBtn} hover:border-red-500/50 hover:text-red-400`}
-          >
-            {resetting ? 'Resetting…' : 'Reset'}
-          </button>
-        </div>
-      )}
-
-      <NewJudgeModal newJudge={newJudge} />
-      <ManualPickerOverlay
-        title="Manual Select"
-        onSelect={handleManualSelect}
-        submitting={manualSubmitting}
-        members={members}
-        onClose={() => setShowManualPicker(false)}
-        show={showManualPicker}
-      />
-      <ManualPickerOverlay
-        title="Change Judge"
-        onSelect={handleChangeJudge}
-        submitting={changingJudge}
-        members={members}
-        onClose={() => setShowJudgePicker(false)}
-        show={showJudgePicker}
-      />
 
       <div className="absolute inset-0 grid grid-rows-[auto_1fr_auto]">
         <header className="relative z-4 pt-[clamp(16px,4vh,48px)] text-center">

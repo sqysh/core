@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function PresentPage() {
   const session = await auth()
-  if (!session?.user) redirect('/login?callbackUrl=%2Fpresent')
+  if (!session?.user) redirect('/login?callbackUrl=%2Fstage%2Fpresent')
   const res = await getStageData()
   const p = res.data?.presentation
   if (!p || (p.presenter.id !== session.user.id && session.user.role !== 'SUPER_USER')) redirect('/dashboard')

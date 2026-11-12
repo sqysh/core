@@ -23,8 +23,8 @@ import {
   StagePresentation,
   StepId
 } from '@/lib/constants/stage.constants'
-import { DeckControls } from '../../present/_components/DeckControls'
-import { PollPicker } from '../_components/PollPicker'
+import { DeckControls } from '../_components/controls/DeckControls'
+import { PollPicker } from '../_components/controls/PollPicker'
 
 // Each run-of-show step maps to the ONE screen command that should land on the TV
 // for that step. This is what the Jump menu uses, so "jump to Treasurer" actually

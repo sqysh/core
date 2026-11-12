@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
+import GuidingLightListener from '@/components/layout/GuidingLightListener'
+import TreasurerListener from '@/components/layout/TreasurerListener'
 import GameAnnounceListener from '@/components/game/shared/GameAnnounceListener'
+import ElectionListener from '@/components/layout/ElectionListener'
 import { LivePoll } from './polls/LivePoll'
 
 export default async function ActiveLayout({ children }: { children: React.ReactNode }) {
@@ -23,8 +26,13 @@ export default async function ActiveLayout({ children }: { children: React.React
 
   return (
     <>
+      <GuidingLightListener />
+      <TreasurerListener />
       <GameAnnounceListener />
+      <ElectionListener />
+
       <LivePoll />
+
       {children}
     </>
   )

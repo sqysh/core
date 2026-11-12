@@ -1,102 +1,15 @@
 'use client'
 
-import SuperFloatingMenu from '@/components/layout/SuperFloatingMenu'
 import { AboutSection } from './_components/AboutSection'
 import { CTASection } from './_components/CTASection'
 import HeroSection from './_components/HeroSection'
 import { MemberExpectations } from './_components/MemberExpectations'
 import { PurposeOverview } from './_components/PurposeOverview'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { initiateGuidingLight } from '@/lib/actions/guiding-light/initiateGuidingLight'
-import { createGame } from '@/lib/actions/games/createGame'
-import { announceGame } from '@/lib/actions/games/wheel/announceGame'
-import { seedGuidingLight } from '@/lib/actions/guiding-light/seedGuidingLight'
-import { generateWeeklyMatches } from '@/lib/actions/1-2-1/generateWeeklyMatches'
-import { openElection } from '@/lib/actions/election/openElection'
-import { announceElection } from '@/lib/actions/election/announceElection'
 
-export default function HomeClient({ currentJudge }: { currentJudge: { id: string; name: string } }) {
-  const { data: session } = useSession()
-  const router = useRouter()
-  const [launching, setLaunching] = useState(false)
-  const isSuperUser = session?.user?.role === 'SUPER_USER'
-  const [initiating, setInitiating] = useState(false)
-  const [generating, setGenerating] = useState(false)
-  const [openingElection, setOpeningElection] = useState(false)
-
-  async function handleInitiateGuidingLight() {
-    setInitiating(true)
-    const res = await initiateGuidingLight()
-    setInitiating(false)
-    if (!res.success) {
-      console.error('[guiding light]', res.error)
-      return
-    }
-    router.push('/guiding-light/stage')
-  }
-
-  async function handleLaunchGame() {
-    if (launching) return
-    setLaunching(true)
-    const created = await createGame('WHEEL')
-    if (!created.success) {
-      setLaunching(false)
-      console.error('[game]', created.error)
-      return
-    }
-    await announceGame()
-    router.push('/games?view=tv')
-  }
-
-  async function handleSeed() {
-    const res = await seedGuidingLight()
-    if (!res.success) console.error('[seed gl]', res.error)
-    router.refresh()
-  }
-
-  async function handleGenerateMatchups() {
-    setGenerating(true)
-    const res = await generateWeeklyMatches()
-    setGenerating(false)
-    if (!res.success) {
-      console.error('[matchups]', res.error)
-      return
-    }
-    router.push('/matchups')
-  }
-
-  async function handleOpenElection() {
-    setOpeningElection(true)
-    const opened = await openElection()
-    if (!opened.success) {
-      setOpeningElection(false)
-      console.error('[election]', opened.error)
-      return
-    }
-    await announceElection()
-    setOpeningElection(false)
-    router.push('/election/stage')
-  }
-
+export default function HomeClient({ isAuthed }: { isAuthed: boolean }) {
   return (
     <>
-      {isSuperUser && (
-        <SuperFloatingMenu
-          currentJudge={currentJudge}
-          initiating={initiating}
-          launching={launching}
-          onInitiateGuidingLight={handleInitiateGuidingLight}
-          onLaunchGame={handleLaunchGame}
-          onSeedGL={handleSeed}
-          onGenerateMatchups={handleGenerateMatchups}
-          generating={generating}
-          onOpenElection={handleOpenElection}
-          openingElection={openingElection}
-        />
-      )}
-      <HeroSection isLoggedIn={!!session?.user?.id} />
+      <HeroSection isLoggedIn={isAuthed} />
       <AboutSection />
       <PurposeOverview />
       <MemberExpectations />

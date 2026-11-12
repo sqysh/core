@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { sendMatchupEmails } from '@/lib/actions/1-2-1/sendMatchupEmails'
+import { sendMatchupEmails } from '@/lib/actions/matchups/sendMatchupEmails'
 
 interface Member {
   id: string
@@ -172,7 +172,7 @@ function FlapRow({
   )
 }
 
-export default function MatchupsClient({
+export default function MatchupsStage({
   pairs,
   isSuperUser,
   autoStart = false
@@ -237,7 +237,7 @@ export default function MatchupsClient({
   useEffect(() => {
     if (phase !== 'reveal' || firedRef.current) return
     firedRef.current = true
-    sendMatchupEmails()
+    // sendMatchupEmails()
     playSfx('flap-clatter', 0.55)
     const settleMs = pairs.length * ROW_STAGGER * 1000 + 1400
     const t = setTimeout(() => playSfx('flap-done', 0.6), settleMs)

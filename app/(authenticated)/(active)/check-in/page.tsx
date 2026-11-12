@@ -104,6 +104,7 @@ export default async function CheckInPage({
       previewOpen={!!fake && open === '1' && isSuper}
       isHost={isHost}
       isTreasurer={isTreasurer}
+      isSuper={isSuper}
     />
   )
 }

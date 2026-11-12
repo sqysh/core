@@ -25,7 +25,7 @@ export function TreasuryBalanceCard({ initial }: { initial: number | null }) {
   }
 
   return (
-    <div className="border border-indigo-500/40">
+    <div className="border border-indigo-500/40 bg-bg-light dark:bg-bg-dark">
       <div className="px-4 pt-4 pb-3">
         <p className="text-f10 font-mono tracking-[0.12em] uppercase text-indigo-500">Treasurer</p>
         <p className="mt-1 font-sora text-[18px] font-black tracking-tight text-text-light dark:text-text-dark">

@@ -1,15 +1,41 @@
 'use client'
 
-import { FC } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import { IForm } from '@/types/forms.types'
 import { formatPhone } from '@/lib/utils/phone.utils'
-import { SectionDivider } from '../../../../components/_shared/SectionDivider'
 import { cityStates } from '@/lib/constants/public/application.constants'
-import { FormField } from '../../../../components/_shared/FormField'
+import { FormField } from '@/components/_shared/FormField'
+import { User } from '@/types/user.types'
 
-export const ApplicationForm: FC<IForm> = ({ inputs, errors, handleInput, handleSubmit, isLoading }) => {
+export function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-6">
+      <span className="block w-5 h-px bg-primary-light dark:bg-primary-dark shrink-0" aria-hidden="true" />
+      <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark">{label}</p>
+    </div>
+  )
+}
+
+export function ApplicationForm({
+  inputs,
+  errors,
+  handleInput,
+  handleSubmit,
+  isLoading
+}: {
+  inputs: any
+  handleInput: any
+  handleSubmit: any
+  isLoading: boolean
+  errors?: any
+  onClose?: () => void
+  handleToggle?: any
+  uploadingVideo?: boolean
+  isUpdating?: boolean
+  user?: any | null
+  users?: User[] | null | undefined
+  ref?: any
+}) {
   return (
     <motion.form
       onSubmit={handleSubmit}

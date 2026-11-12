@@ -46,14 +46,23 @@ export function EducationIntro({ person }: { person: StagePerson }) {
         </motion.span>
 
         <div className="relative">
-          <span className="absolute -inset-4 rounded-full blur-2xl" style={{ background: GREEN, opacity: 0.28 }} aria-hidden="true" />
+          <span
+            className="absolute -inset-4 rounded-full blur-2xl"
+            style={{ background: GREEN, opacity: 0.28 }}
+            aria-hidden="true"
+          />
           <div
-            className="relative aspect-square w-[20vw] max-w-[340px] min-w-[180px] overflow-hidden rounded-full border-[3px] shadow-[0_18px_60px_rgba(0,0,0,0.55)]"
+            className="relative aspect-square w-[20vw] max-w-85 min-w-45 overflow-hidden rounded-full border-[3px] shadow-[0_18px_60px_rgba(0,0,0,0.55)]"
             style={{ borderColor: GREEN }}
           >
             {person.image && imgOk ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={person.image} alt={person.name} onError={() => setImgOk(false)} className="h-full w-full object-cover" />
+              <img
+                src={person.image}
+                alt={person.name}
+                onError={() => setImgOk(false)}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-white/5 font-sora text-[6vw] font-black text-white/80">
                 {initials(person.name)}
@@ -69,7 +78,11 @@ export function EducationIntro({ person }: { person: StagePerson }) {
           {person.company && <p className="mt-[1.6vh] font-nunito text-[1.9vw] text-white/70">{person.company}</p>}
         </div>
 
-        <span className="mt-[1vh] h-[3px] w-[8vw] rounded-full" style={{ background: GREEN, opacity: 0.8 }} aria-hidden="true" />
+        <span
+          className="mt-[1vh] h-0.75 w-[8vw] rounded-full"
+          style={{ background: GREEN, opacity: 0.8 }}
+          aria-hidden="true"
+        />
       </motion.div>
     </div>
   )

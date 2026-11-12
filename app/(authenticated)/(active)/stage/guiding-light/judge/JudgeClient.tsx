@@ -7,7 +7,7 @@ import { toggleGuidingLightNominee } from '@/lib/actions/guiding-light/toggleGui
 import { selectGuidingLightWinner } from '@/lib/actions/guiding-light/selectGuidingLightWinner'
 import { getInitials } from '@/lib/utils/shared.utils'
 import MemberRow from './_components/MemberRow'
-import { Member } from '../_types/guiding-light.types'
+import { Member } from '@/types/guiding-light.types'
 import { SqyshGuide } from '@/components/_shared/SqyshVector'
 
 // Sqysh picks up where the check-in screen left him (top-right corner) and

@@ -4,13 +4,7 @@
 // ─── Script ───────────────────────────────────────────────────────────────────
 
 export type Speaker =
-  | 'HOST'
-  | 'GUIDING_LIGHT'
-  | 'EDUCATION'
-  | 'CO_DIRECTOR'
-  | 'TREASURER'
-  | 'EVENT_COORDINATOR'
-  | 'MEMBERSHIP'
+  'HOST' | 'GUIDING_LIGHT' | 'EDUCATION' | 'CO_DIRECTOR' | 'TREASURER' | 'EVENT_COORDINATOR' | 'MEMBERSHIP'
 
 export interface Segment {
   id: string

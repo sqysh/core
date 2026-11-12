@@ -3,23 +3,13 @@
 // roster (TreasurerRoster), and the live obligations manager (ObligationsCard).
 'use client'
 
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, X } from 'lucide-react'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
-import { addObligation } from '@/lib/actions/treasury/addObligation'
 import { getTreasurerBoard } from '@/lib/actions/treasury/getTreasurerBoard'
-import { removeObligation } from '@/lib/actions/treasury/removeObligation'
-import { setBankBalance } from '@/lib/actions/treasury/setBankBalance'
-import {
-  TREASURY_CHANNEL,
-  TREASURY_EVENT,
-  TreasurerBoard,
-  TreasuryObligationItem
-} from '@/lib/constants/stage.constants'
-
-const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 })
-const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+import { TreasurerBoard, TREASURY_CHANNEL, TREASURY_EVENT } from '@/lib/constants/stage.constants'
+import { formatCurrency } from '@/lib/utils/currency.utils'
+import { fmtDate } from '@/lib/utils/date.utils'
 
 // kept-alive audio per sound, rewound before each play (plays once the TV is armed
 // by the start gate). public/sound-effects/<name>.mp3
@@ -94,7 +84,7 @@ function Tile({ label, value, sub, accent }: { label: string; value: string; sub
       >
         {value}
       </p>
-      {sub && <p className="mt-[0.3vh] font-mono text-[0.95vw] uppercase tracking-[0.1em] text-white/35">{sub}</p>}
+      {sub && <p className="mt-[0.3vh] font-mono text-[0.95vw] uppercase tracking-widest text-white/35">{sub}</p>}
     </motion.div>
   )
 }
@@ -147,7 +137,7 @@ export function TreasurerStage() {
         <p className="font-mono text-[1.6vw] tracking-[0.4em] uppercase text-indigo-300/80">Treasurer</p>
         <p className="mt-[1.2vh] font-mono text-[1.3vw] tracking-[0.2em] uppercase text-white/40">In the account</p>
         <p className="mt-[0.4vh] font-sora text-[8vw] font-black leading-none tracking-[-0.04em] text-indigo-200 tabular-nums">
-          {board.balance == null ? '—' : money(balance)}
+          {board.balance == null ? '—' : formatCurrency(balance)}
         </p>
       </motion.div>
 
@@ -161,14 +151,14 @@ export function TreasurerStage() {
         <Tile
           label="Next room dues"
           value={fmtDate(board.roomDue.dueDate)}
-          sub={`${money(board.roomDue.amount)} / member`}
+          sub={`${formatCurrency(board.roomDue.amount)} / member`}
         />
         <Tile
           label="Owed out"
-          value={money(oblTotal)}
+          value={formatCurrency(oblTotal)}
           sub={`${board.obligations.length} obligation${board.obligations.length === 1 ? '' : 's'}`}
         />
-        <Tile label="Free to spend" value={free == null ? '—' : money(free)} accent />
+        <Tile label="Free to spend" value={free == null ? '—' : formatCurrency(free)} accent />
       </motion.div>
 
       {/* obligation lines, if any */}
@@ -184,7 +174,7 @@ export function TreasurerStage() {
               key={o.id}
               className="rounded-full border border-white/10 bg-white/5 px-[1.4vw] py-[0.7vh] font-nunito text-[1.2vw] text-white/70"
             >
-              {o.label} <span className="font-bold text-white/90">{money(o.amount)}</span>
+              {o.label} <span className="font-bold text-white/90">{formatCurrency(o.amount)}</span>
               {o.dueDate && <span className="text-white/35"> · {fmtDate(o.dueDate)}</span>}
             </span>
           ))}
@@ -204,7 +194,7 @@ export function TreasurerStage() {
             key={i}
             variants={{ hidden: { scale: 0, opacity: 0 }, show: { scale: 1, opacity: 1 } }}
             transition={{ type: 'spring', stiffness: 320, damping: 17 }}
-            className={`mx-auto aspect-square w-[2.6vw] max-w-[48px] rounded-full ${has ? 'bg-emerald-400 shadow-[0_0_16px] shadow-emerald-400/50' : 'bg-white/12'}`}
+            className={`mx-auto aspect-square w-[2.6vw] max-w-12 rounded-full ${has ? 'bg-emerald-400 shadow-[0_0_16px] shadow-emerald-400/50' : 'bg-white/12'}`}
             aria-hidden="true"
           />
         ))}
@@ -232,220 +222,6 @@ export function TreasurerStage() {
           />
         </div>
       </motion.div>
-    </div>
-  )
-}
-
-// ── Treasurer's dashboard card: type in the current balance ──────────────────
-
-export function TreasuryBalanceCard({ initial }: { initial: number | null }) {
-  const [value, setValue] = useState(initial != null ? String(initial) : '')
-  const [saved, setSaved] = useState<number | null>(initial)
-  const [error, setError] = useState<string | null>(null)
-  const [pending, start] = useTransition()
-
-  function save() {
-    const amount = Number(value.replace(/[^0-9.]/g, ''))
-    if (!Number.isFinite(amount) || amount < 0) {
-      setError('Enter a valid amount')
-      return
-    }
-    setError(null)
-    start(async () => {
-      const res = await setBankBalance(amount)
-      if (!res.success) setError(res.error)
-      else setSaved(amount)
-    })
-  }
-
-  return (
-    <div className="border border-indigo-500/40 bg-bg-light dark:bg-bg-dark">
-      <div className="px-4 pt-4 pb-3">
-        <p className="text-f10 font-mono tracking-[0.12em] uppercase text-indigo-500">Treasurer</p>
-        <p className="mt-1 font-sora text-[18px] font-black tracking-tight text-text-light dark:text-text-dark">
-          Bank balance for the TV
-        </p>
-        <p className="mt-1 font-nunito text-f12 text-muted-light dark:text-muted-dark">
-          {saved != null
-            ? `Showing ${money(saved)}. Update it before your report.`
-            : 'Type the current balance so it shows on the board.'}
-        </p>
-        <div className="mt-3 flex gap-2">
-          <div className="flex flex-1 items-center border border-border-light focus-within:border-indigo-500 dark:border-border-dark">
-            <span className="pl-3 font-sora text-[17px] font-bold text-muted-light dark:text-muted-dark">$</span>
-            <input
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              inputMode="decimal"
-              placeholder="0.00"
-              className="w-full bg-transparent px-2 py-2.5 font-sora text-[17px] font-bold text-text-light outline-none dark:text-text-dark"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={save}
-            disabled={pending}
-            className="shrink-0 bg-indigo-500 px-5 font-sora text-[14px] font-black text-white disabled:opacity-60"
-          >
-            {pending ? 'Saving' : 'Save'}
-          </button>
-        </div>
-        {error && <p className="mt-2 font-nunito text-f12 text-red-500">{error}</p>}
-      </div>
-    </div>
-  )
-}
-
-// ── Treasurer's dashboard: add/remove obligations live (pushes to the TV) ─────
-
-export function ObligationsCard() {
-  const [items, setItems] = useState<TreasuryObligationItem[]>([])
-  const [label, setLabel] = useState('')
-  const [amount, setAmount] = useState('')
-  const [due, setDue] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [pending, start] = useTransition()
-
-  useEffect(() => {
-    getTreasurerBoard().then((res) => res.success && setItems(res.data.obligations))
-  }, [])
-
-  function add() {
-    const amt = Number(amount.replace(/[^0-9.]/g, ''))
-    if (!label.trim()) return setError('Add a label')
-    if (!Number.isFinite(amt) || amt < 0) return setError('Enter a valid amount')
-    setError(null)
-    start(async () => {
-      const res = await addObligation(label.trim(), amt, due ? new Date(due).toISOString() : null)
-      if (!res.success) return setError(res.error)
-      setItems((prev) => [...prev, res.data])
-      setLabel('')
-      setAmount('')
-      setDue('')
-    })
-  }
-
-  function remove(id: string) {
-    setItems((prev) => prev.filter((o) => o.id !== id)) // optimistic
-    start(async () => {
-      const res = await removeObligation(id)
-      if (!res.success) setError(res.error)
-    })
-  }
-
-  const total = items.reduce((s, o) => s + o.amount, 0)
-
-  return (
-    <div className="border border-indigo-500/40 bg-bg-light dark:bg-bg-dark">
-      <div className="px-4 pt-4 pb-3">
-        <p className="text-f10 font-mono tracking-[0.12em] uppercase text-indigo-500">Treasurer</p>
-        <p className="mt-1 font-sora text-[18px] font-black tracking-tight text-text-light dark:text-text-dark">
-          Obligations{' '}
-          {items.length > 0 && <span className="text-muted-light dark:text-muted-dark">· {money(total)}</span>}
-        </p>
-        <p className="mt-1 font-nunito text-f12 text-muted-light dark:text-muted-dark">
-          Money the chapter owes. Shows on the board live.
-        </p>
-
-        {items.length > 0 && (
-          <ul className="mt-3 flex flex-col divide-y divide-border-light dark:divide-border-dark">
-            {items.map((o) => (
-              <li key={o.id} className="flex items-center gap-2 py-2">
-                <span className="min-w-0 flex-1 truncate font-nunito text-f13 text-text-light dark:text-text-dark">
-                  {o.label}
-                </span>
-                {o.dueDate && (
-                  <span className="font-mono text-f11 text-muted-light dark:text-muted-dark">{fmtDate(o.dueDate)}</span>
-                )}
-                <span className="font-sora text-f13 font-bold tabular-nums text-text-light dark:text-text-dark">
-                  {money(o.amount)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => remove(o.id)}
-                  aria-label={`Remove ${o.label}`}
-                  className="shrink-0 text-muted-light hover:text-red-500 dark:text-muted-dark"
-                >
-                  <X size={16} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-3 flex flex-col gap-2">
-          <input
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            placeholder="What for (e.g. holiday party deposit)"
-            className="border border-border-light bg-transparent px-3 py-2.5 font-nunito text-f13 text-text-light outline-none focus:border-indigo-500 dark:border-border-dark dark:text-text-dark"
-          />
-          <div className="flex gap-2">
-            <div className="flex flex-1 items-center border border-border-light focus-within:border-indigo-500 dark:border-border-dark">
-              <span className="pl-3 font-sora text-f13 font-bold text-muted-light dark:text-muted-dark">$</span>
-              <input
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                inputMode="decimal"
-                placeholder="0.00"
-                className="w-full bg-transparent px-2 py-2.5 font-sora text-f13 font-bold text-text-light outline-none dark:text-text-dark"
-              />
-            </div>
-            <input
-              type="date"
-              value={due}
-              onChange={(e) => setDue(e.target.value)}
-              className="border border-border-light bg-transparent px-3 py-2.5 font-nunito text-f12 text-text-light outline-none [color-scheme:light] focus:border-indigo-500 dark:border-border-dark dark:text-text-dark dark:[color-scheme:dark]"
-            />
-            <button
-              type="button"
-              onClick={add}
-              disabled={pending}
-              className="flex shrink-0 items-center gap-1 bg-indigo-500 px-4 font-sora text-f13 font-black text-white disabled:opacity-60"
-            >
-              <Plus size={15} /> Add
-            </button>
-          </div>
-        </div>
-        {error && <p className="mt-2 font-nunito text-f12 text-red-500">{error}</p>}
-      </div>
-    </div>
-  )
-}
-
-// ── Treasurer's PRIVATE roster: who still needs a card (names visible) ────────
-
-export function TreasurerRoster() {
-  const [board, setBoard] = useState<TreasurerBoard | null>(null)
-
-  useEffect(() => {
-    getTreasurerBoard().then((res) => res.success && setBoard(res.data))
-  }, [])
-
-  if (!board) return null
-  const missing = board.members.filter((m) => !m.hasCard)
-
-  return (
-    <div className="border border-indigo-500/40 bg-bg-light dark:bg-bg-dark">
-      <div className="px-4 pt-4 pb-3">
-        <p className="text-f10 font-mono tracking-[0.12em] uppercase text-indigo-500">Treasurer · private</p>
-        <p className="mt-1 font-sora text-[18px] font-black tracking-tight text-text-light dark:text-text-dark">
-          Needs a card ({missing.length} of {board.total})
-        </p>
-        {missing.length === 0 ? (
-          <p className="mt-2 font-nunito text-f12 text-emerald-600 dark:text-emerald-400">
-            Everyone has a card on file.
-          </p>
-        ) : (
-          <ul className="mt-2 flex flex-col gap-1">
-            {missing.map((m) => (
-              <li key={m.id} className="font-nunito text-f13 text-text-light dark:text-text-dark">
-                {m.name}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   )
 }
