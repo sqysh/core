@@ -237,7 +237,7 @@ export default function MatchupsStage({
   useEffect(() => {
     if (phase !== 'reveal' || firedRef.current) return
     firedRef.current = true
-    // sendMatchupEmails()
+    sendMatchupEmails()
     playSfx('flap-clatter', 0.55)
     const settleMs = pairs.length * ROW_STAGGER * 1000 + 1400
     const t = setTimeout(() => playSfx('flap-done', 0.6), settleMs)
