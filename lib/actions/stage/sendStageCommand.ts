@@ -2,11 +2,11 @@
 
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { HOST_ROLES } from '@/lib/constants/roles.constants'
 import { STAGE_CHANNEL, STAGE_EVENT, StageCommand } from '@/lib/constants/stage.constants'
 import { pusher } from '@/lib/pusher/pusher'
 import { nextMeetingDate } from '@/lib/utils/date.utils'
 import prisma from '@/prisma/client'
+import { isActingHost } from '@/lib/actions/leadership/isActingHost'
 
 /**
  * Hosts can send anything. The presenter of today's deck can send the
@@ -14,9 +14,10 @@ import prisma from '@/prisma/client'
  */
 export async function sendStageCommand(command: StageCommand): Promise<{ success: boolean; error?: string }> {
   const session = await auth()
-  if (!session?.user) return { success: false, error: 'Not signed in' }
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'Not signed in' }
 
-  const isHost = HOST_ROLES.has(session.user.role)
+  const isHost = (await isActingHost(userId)) || session.user.role === 'SUPER_USER'
   if (!isHost) {
     if (!command.type.startsWith('present.')) return { success: false, error: 'Not allowed' }
     const { date } = await nextMeetingDate()
@@ -24,7 +25,7 @@ export async function sendStageCommand(command: StageCommand): Promise<{ success
       where: { chapterId_meetingDate: { chapterId, meetingDate: date } },
       select: { presenterId: true }
     })
-    if (mine?.presenterId !== session.user.id) return { success: false, error: 'Not your presentation' }
+    if (mine?.presenterId !== userId) return { success: false, error: 'Not your presentation' }
   }
 
   try {

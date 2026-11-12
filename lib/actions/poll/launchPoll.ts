@@ -2,18 +2,21 @@
 
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { HOST_ROLES } from '@/lib/constants/roles.constants'
 import prisma from '@/prisma/client'
 import { ActionResult } from '@/types/action.types'
 import { broadcast } from './broadcast'
 import { revalidatePath } from 'next/cache'
 import { pusher } from '@/lib/pusher/pusher'
 import { POLL_LAUNCH_EVENT, POLL_LIVE_CHANNEL } from '@/lib/constants/poll.constants'
+import { isActingHost } from '../leadership/isActingHost'
 
 export async function launchPoll(pollId: string): Promise<ActionResult> {
   const session = await auth()
-  if (!session?.user?.id) return { success: false, error: 'Not signed in' }
-  if (!HOST_ROLES.has(session.user.role)) return { success: false, error: 'Hosts only' }
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'Not signed in' }
+
+  const isHost = await isActingHost(userId)
+  if (!isHost && session.user.role !== 'SUPER_USER') return { success: false, error: 'Hosts only' }
 
   const poll = await prisma.poll.findFirst({ where: { id: pollId, chapterId }, select: { status: true } })
   if (!poll) return { success: false, error: 'Poll not found' }

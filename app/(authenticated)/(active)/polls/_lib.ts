@@ -1,7 +1,6 @@
-import { HOST_ROLES } from '@/lib/constants/roles.constants'
 import { PollRow, PollView } from '@/types/poll.types'
 
-export function toView(p: PollRow, viewer: { id: string; role: string }): PollView {
+export function toView(p: PollRow, viewer: { id: string; role: string }, isHost: boolean): PollView {
   const options = p.options.map((o) => ({ id: o.id, label: o.label, votes: o._count.votes }))
   return {
     id: p.id,
@@ -13,7 +12,7 @@ export function toView(p: PollRow, viewer: { id: string; role: string }): PollVi
     options,
     totalVotes: p.votes.length,
     myOptionId: p.votes.find((v) => v.userId === viewer.id)?.optionId ?? null,
-    canClose: p.createdBy.id === viewer.id || HOST_ROLES.has(viewer.role)
+    canClose: p.createdBy.id === viewer.id || isHost || viewer.role === 'SUPER_USER'
   }
 }
 

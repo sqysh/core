@@ -6,6 +6,7 @@ import { chapterId } from '@/lib/constants/api/chapterId'
 import prisma from '@/prisma/client'
 import { ActionResult } from '@/types/action.types'
 import { PollRow, PollView } from '@/types/poll.types'
+import { isActingHost } from '@/lib/actions/leadership/isActingHost'
 
 export async function getPolls(): Promise<ActionResult<PollView[]>> {
   const session = await auth()
@@ -25,7 +26,8 @@ export async function getPolls(): Promise<ActionResult<PollView[]>> {
       })
     ])
     const viewer = { id: session.user.id, role: session.user.role }
-    return { success: true, data: [...open, ...closed].map((p) => toView(p as PollRow, viewer)) }
+    const isHost = await isActingHost(session.user.id)
+    return { success: true, data: [...open, ...closed].map((p) => toView(p as PollRow, viewer, isHost)) }
   } catch {
     return { success: false, error: 'Could not load polls' }
   }

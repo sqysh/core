@@ -2,22 +2,25 @@
 
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { HOST_ROLES } from '@/lib/constants/roles.constants'
 import prisma from '@/prisma/client'
 import { ActionResult } from '@/types/action.types'
 import { revalidatePath } from 'next/cache'
 import { broadcast } from './broadcast'
+import { isActingHost } from '../leadership/isActingHost'
 
 export async function closePoll(pollId: string): Promise<ActionResult> {
   const session = await auth()
-  if (!session?.user?.id) return { success: false, error: 'Not signed in' }
+  const userId = session?.user?.id
+  if (!userId) return { success: false, error: 'Not signed in' }
 
   const poll = await prisma.poll.findFirst({
     where: { id: pollId, chapterId },
     select: { createdById: true, status: true }
   })
   if (!poll) return { success: false, error: 'Poll not found' }
-  if (poll.createdById !== session.user.id && !HOST_ROLES.has(session.user.role))
+
+  const isHost = await isActingHost(userId)
+  if (poll.createdById !== userId && !isHost && session.user.role !== 'SUPER_USER')
     return { success: false, error: 'Not your poll' }
   if (poll.status === 'CLOSED') return { success: true, data: undefined }
 
