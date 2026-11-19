@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 const LoginHeader = () => {
   return (
@@ -14,10 +15,12 @@ const LoginHeader = () => {
         className="inline-flex items-center justify-center mb-3 xs:mb-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
         aria-label="Coastal Referral Exchange — Home"
       >
-        <span className="font-sora font-black text-[20px] xs:text-[22px] tracking-tight">
-          <span className="text-text-light dark:text-text-dark">CORE</span>
-          <span className="text-primary-light dark:text-primary-dark">.</span>
-        </span>
+        <LinkBody>
+          <span className="font-sora font-black text-[20px] xs:text-[22px] tracking-tight">
+            <span className="text-text-light dark:text-text-dark">CORE</span>
+            <span className="text-primary-light dark:text-primary-dark">.</span>
+          </span>
+        </LinkBody>
       </Link>
 
       <h1 className="font-sora font-black text-[24px] xs:text-[28px] text-text-light dark:text-text-dark tracking-tight leading-none mb-1.5 xs:mb-2">

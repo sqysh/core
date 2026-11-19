@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { motion } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { getInitials } from '@/lib/utils/shared.utils'
@@ -161,7 +162,7 @@ export default function OpenSeatsClient({ seats }: { seats: Seat[] }) {
                       hit ? 'ring-2 ring-primary-light dark:ring-primary-dark' : ''
                     }`}
                   >
-                    {inner}
+                    <LinkBody>{inner}</LinkBody>
                   </Link>
                 ) : (
                   <div
@@ -182,13 +183,13 @@ export default function OpenSeatsClient({ seats }: { seats: Seat[] }) {
             href="/application"
             className="h-12 px-8 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-sm tracking-wide hover:opacity-90 transition-opacity inline-flex items-center justify-center whitespace-nowrap"
           >
-            Apply for a seat
+            <LinkBody>Apply for a seat</LinkBody>
           </Link>
           <Link
             href="/members"
             className="h-12 px-8 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark font-sora font-bold text-sm tracking-wide hover:border-primary-light dark:hover:border-primary-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors inline-flex items-center justify-center whitespace-nowrap"
           >
-            Meet the members
+            <LinkBody>Meet the members</LinkBody>
           </Link>
         </div>
       </div>

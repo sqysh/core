@@ -11,6 +11,7 @@ import { ArrowRightLeft, Check, Plus, X } from 'lucide-react'
 import { Member } from '@/app/(authenticated)/(active)/election/stage/ElectionStageClient'
 import { finalizeElection } from '@/lib/actions/election/finalizeElection'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 type Roster = Partial<
   Record<LeadershipPosition, { id: string; name: string; company: string; profileImage: string | null }[]>
@@ -297,14 +298,14 @@ export default function ResultsReveal({
                     className="border border-white/25 text-white/70 font-mono uppercase hover:border-white/60 hover:text-white transition-colors"
                     style={{ fontSize: '1.1vmin', letterSpacing: '0.15em', padding: '0.8vmin 2vmin' }}
                   >
-                    Home
+                    <LinkBody>Home</LinkBody>
                   </Link>
                   <Link
                     href="/super/election"
                     className="border border-violet-400/50 text-violet-200 font-mono uppercase hover:border-violet-300 hover:text-white transition-colors"
                     style={{ fontSize: '1.1vmin', letterSpacing: '0.15em', padding: '0.8vmin 2vmin' }}
                   >
-                    Super
+                    <LinkBody>Super</LinkBody>
                   </Link>
                 </>
               ) : (

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { motion } from 'framer-motion'
 import { fadeInUp } from '@/lib/constants/motion'
 
@@ -69,7 +70,7 @@ export function AboutSection() {
                 href="/members"
                 className="self-start inline-flex items-center gap-2 h-10 px-4 bg-white/20 border border-white/30 text-white font-sora font-bold text-sm hover:bg-white/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                Explore Members →
+                <LinkBody>Explore Members →</LinkBody>
               </Link>
             </motion.div>
 

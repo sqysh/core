@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 import { useAppStore } from '@/lib/store/appStore'
@@ -82,7 +83,7 @@ export default function NavigationDrawer() {
                             : 'border-transparent text-text-light dark:text-text-dark hover:bg-surface-light dark:hover:bg-surface-dark'
                         }`}
                       >
-                        {link.name}
+                        <LinkBody>{link.name}</LinkBody>
                       </Link>
                     </motion.li>
                   )

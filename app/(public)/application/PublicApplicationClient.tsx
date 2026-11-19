@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { ApplicationForm } from '@/app/(public)/application/_components/ApplicationForm'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { CreateUserInput } from '@/types/user.types'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { ApplicationFormInputs } from '@/app/(public)/application/_types/application.types'
@@ -77,14 +78,16 @@ export default function PublicApplicationClient() {
             className="font-sora font-black text-[18px] tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
             aria-label="Coastal Referral Exchange — Home"
           >
-            <span className="text-text-light dark:text-text-dark">CORE</span>
-            <span className="text-primary-light dark:text-primary-dark">.</span>
+            <LinkBody>
+              <span className="text-text-light dark:text-text-dark">CORE</span>
+              <span className="text-primary-light dark:text-primary-dark">.</span>
+            </LinkBody>
           </Link>
           <Link
             href="/login"
             className="h-8 px-4 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[11px] tracking-wide hover:opacity-90 transition-opacity inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
           >
-            Sign In
+            <LinkBody>Sign In</LinkBody>
           </Link>
         </div>
       </header>
@@ -100,8 +103,10 @@ export default function PublicApplicationClient() {
             href="/members"
             className="inline-flex items-center gap-1.5 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            <ArrowLeft size={13} aria-hidden="true" />
-            Back
+            <LinkBody>
+              <ArrowLeft size={13} aria-hidden="true" />
+              Back
+            </LinkBody>
           </Link>
           <p className="text-f10 font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark mb-2">
             Coastal Referral Exchange

@@ -5,6 +5,7 @@ import type { FloatingEmoji } from '@/types/attendance.types'
 import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils/currency.utils'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
@@ -136,7 +137,7 @@ export default function VisitorClient({
             href="/application"
             className="h-7 px-3 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-f10 font-mono tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark inline-flex items-center"
           >
-            Apply
+            <LinkBody>Apply</LinkBody>
           </Link>
         </div>
       </header>
@@ -258,7 +259,7 @@ export default function VisitorClient({
               href="/members"
               className="shrink-0 h-8 px-3 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors text-f10 font-mono tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark inline-flex items-center"
             >
-              Members →
+              <LinkBody>Members →</LinkBody>
             </Link>
           </div>
         </section>
@@ -275,7 +276,7 @@ export default function VisitorClient({
             href="/application"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-light dark:bg-primary-dark text-white font-sora font-bold text-sm hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            Apply to Join →
+            <LinkBody>Apply to Join →</LinkBody>
           </Link>
         </section>
       </main>

@@ -2,6 +2,7 @@
 
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { usePathname } from 'next/navigation'
 import { useAppStore } from '@/lib/store/appStore'
 import { LaunchAppButton } from './LaunchAppButton'
@@ -34,7 +35,9 @@ export default function Header() {
         className="font-sora font-black text-xl text-text-dark tracking-tight hover:text-primary-dark transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark"
         aria-label="Coastal Referral Exchange — Home"
       >
-        CORE<span className="text-primary-dark">.</span>
+        <LinkBody>
+          CORE<span className="text-primary-dark">.</span>
+        </LinkBody>
       </Link>
 
       {/* ── Center nav ── */}
@@ -44,7 +47,7 @@ export default function Header() {
       >
         {NAV_LINKS.map((link) => (
           <Link key={link.href} href={link.href} className={navLinkCls(path === link.href)}>
-            {link.name}
+            <LinkBody>{link.name}</LinkBody>
           </Link>
         ))}
       </nav>

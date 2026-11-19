@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CalendarPlus } from 'lucide-react'
 import { AttendanceMember, AttendanceRow } from '@/lib/actions/attendance/getAttendanceHistory'
@@ -75,8 +76,10 @@ export default function SuperAttendanceClient({ members, rows }: AttendanceHisto
             href="/super"
             className="inline-flex items-center gap-2 text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            <ArrowLeft size={11} />
-            Back
+            <LinkBody>
+              <ArrowLeft size={11} />
+              Back
+            </LinkBody>
           </Link>
           <div className="flex items-center gap-3">
             <span className="block w-5 h-px bg-primary-light dark:bg-primary-dark shrink-0" aria-hidden="true" />

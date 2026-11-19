@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { usePathname } from 'next/navigation'
 
 const hideLink = (path: string) =>
@@ -45,22 +46,24 @@ export const Footer = () => {
           className="font-sora font-black text-base text-text-dark hover:text-primary-dark transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-dark"
           aria-label="Coastal Referral Exchange — Home"
         >
-          CORE<span className="text-primary-dark">.</span>
+          <LinkBody>
+            CORE<span className="text-primary-dark">.</span>
+          </LinkBody>
         </Link>
 
         {/* Nav links */}
         <nav className="flex items-center gap-6" aria-label="Footer navigation">
           <Link href="/" className={linkCls(path === '/')}>
-            Home
+            <LinkBody>Home</LinkBody>
           </Link>
           <Link href="/members" className={linkCls(path === '/members')}>
-            Members
+            <LinkBody>Members</LinkBody>
           </Link>
           <Link href="/application" className={linkCls(path === '/application')}>
-            Apply
+            <LinkBody>Apply</LinkBody>
           </Link>
           <Link href="/login" className={linkCls(false)}>
-            Launch App
+            <LinkBody>Launch App</LinkBody>
           </Link>
         </nav>
 

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { CheckCircle, User, Briefcase, MapPin, Phone, Mail, Building2, Hash } from 'lucide-react'
 import { ApplicationConfirmationProps } from '@/app/(public)/application/_types/application.types'
 import { ConfirmRow } from '@/app/(public)/application/_components/ConfirmRow'
@@ -80,7 +81,7 @@ export default function ApplicationConfirmation({ application }: ApplicationConf
             href="/"
             className="text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            ← Back to Home
+            <LinkBody>← Back to Home</LinkBody>
           </Link>
         </motion.div>
       </div>

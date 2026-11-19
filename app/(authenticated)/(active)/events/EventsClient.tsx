@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { motion } from 'framer-motion'
 import { ExternalLink, ArrowLeft } from 'lucide-react'
 
@@ -37,8 +38,10 @@ export default function EventsClient({ events }: { events: TEvent[] }) {
             href="/dashboard"
             className="inline-flex items-center gap-2 text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            <ArrowLeft size={11} />
-            Dashboard
+            <LinkBody>
+              <ArrowLeft size={11} />
+              Dashboard
+            </LinkBody>
           </Link>
           <div className="flex items-center gap-3">
             <span className="block w-5 h-px bg-primary-light dark:bg-primary-dark shrink-0" aria-hidden="true" />

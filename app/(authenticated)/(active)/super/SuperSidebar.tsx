@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { usePathname } from 'next/navigation'
 import {
   Users,
@@ -58,12 +59,14 @@ export function SuperSidebar() {
         href="/"
         className="h-12 flex items-center px-4 border-b border-border-light dark:border-border-dark shrink-0"
       >
-        <span className="font-sora font-black text-[17px] tracking-tight text-[#0c1e2e] dark:text-[#f0f9ff]">
-          CORE<span className="text-primary-light">.</span>
-        </span>
-        <span className="ml-2 text-[9px] font-mono tracking-[0.18em] uppercase text-muted-light dark:text-[#38bdf8]/60 mt-0.5">
-          super
-        </span>
+        <LinkBody>
+          <span className="font-sora font-black text-[17px] tracking-tight text-[#0c1e2e] dark:text-[#f0f9ff]">
+            CORE<span className="text-primary-light">.</span>
+          </span>
+          <span className="ml-2 text-[9px] font-mono tracking-[0.18em] uppercase text-muted-light dark:text-[#38bdf8]/60 mt-0.5">
+            super
+          </span>
+        </LinkBody>
       </Link>
 
       {/* Nav */}
@@ -85,16 +88,18 @@ export function SuperSidebar() {
                 }
               `}
             >
-              <Icon
-                size={13}
-                strokeWidth={active ? 2.2 : 1.8}
-                className={`shrink-0 transition-colors ${
-                  active
-                    ? 'text-primary-light dark:text-[#38bdf8]'
-                    : 'text-on-dark dark:text-stat-label-light group-hover:text-primary-light dark:group-hover:text-[#38bdf8]'
-                }`}
-              />
-              {label}
+              <LinkBody>
+                <Icon
+                  size={13}
+                  strokeWidth={active ? 2.2 : 1.8}
+                  className={`shrink-0 transition-colors ${
+                    active
+                      ? 'text-primary-light dark:text-[#38bdf8]'
+                      : 'text-on-dark dark:text-stat-label-light group-hover:text-primary-light dark:group-hover:text-[#38bdf8]'
+                  }`}
+                />
+                {label}
+              </LinkBody>
             </Link>
           )
         })}
@@ -106,12 +111,14 @@ export function SuperSidebar() {
           href="/dashboard"
           className="flex items-center gap-2.5 px-4 py-2.5 font-mono text-[11.5px] tracking-[0.06em] text-stat-label-light dark:text-muted-light hover:bg-[#f0f9ff] dark:hover:bg-[#0c1e2e] hover:text-[#0c1e2e] dark:hover:text-[#f0f9ff] transition-colors group"
         >
-          <ArrowLeft
-            size={13}
-            strokeWidth={1.8}
-            className="shrink-0 text-on-dark dark:text-stat-label-light group-hover:text-primary-light dark:group-hover:text-[#38bdf8] transition-colors"
-          />
-          Member Dashboard
+          <LinkBody>
+            <ArrowLeft
+              size={13}
+              strokeWidth={1.8}
+              className="shrink-0 text-on-dark dark:text-stat-label-light group-hover:text-primary-light dark:group-hover:text-[#38bdf8] transition-colors"
+            />
+            Member Dashboard
+          </LinkBody>
         </Link>
         <div className="px-4 pb-3 pt-1 border-t border-border-light dark:border-border-dark">
           <p className="text-[9px] font-mono tracking-[0.12em] uppercase text-[#cbd5e1] dark:text-[#1e3a52]">

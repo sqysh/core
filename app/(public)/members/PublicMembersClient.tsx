@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { Search, ArrowRight, ChevronRight } from 'lucide-react'
 import FadeUp from '@/components/_shared/FadeUp'
 import Picture from '@/components/_shared/Picture'
@@ -134,14 +135,16 @@ export const PublicMembersClient = ({ data }: { data: PublicMemberCard[] }) => {
             className="font-sora font-black text-[18px] tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
             aria-label="Coastal Referral Exchange — Home"
           >
-            <span className="text-text-light dark:text-text-dark">CORE</span>
-            <span className="text-primary-light dark:text-primary-dark">.</span>
+            <LinkBody>
+              <span className="text-text-light dark:text-text-dark">CORE</span>
+              <span className="text-primary-light dark:text-primary-dark">.</span>
+            </LinkBody>
           </Link>
           <Link
             href="/application"
             className="h-8 px-4 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[11px] tracking-wide hover:opacity-90 transition-opacity inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
           >
-            Apply
+            <LinkBody>Apply</LinkBody>
           </Link>
         </div>
       </header>
@@ -184,8 +187,14 @@ export const PublicMembersClient = ({ data }: { data: PublicMemberCard[] }) => {
                 href="/application"
                 className="group inline-flex items-center gap-2 h-12 px-7 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[13px] tracking-wide hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
               >
-                Apply for Membership
-                <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                <LinkBody>
+                  Apply for Membership
+                  <ArrowRight
+                    size={15}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                    aria-hidden="true"
+                  />
+                </LinkBody>
               </Link>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true" />
@@ -296,8 +305,10 @@ export const PublicMembersClient = ({ data }: { data: PublicMemberCard[] }) => {
               href="/application"
               className="group inline-flex items-center gap-2 h-12 px-7 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[13px] tracking-wide hover:opacity-90 active:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2 shrink-0"
             >
-              Apply Now
-              <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+              <LinkBody>
+                Apply Now
+                <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+              </LinkBody>
             </Link>
           </div>
         </section>

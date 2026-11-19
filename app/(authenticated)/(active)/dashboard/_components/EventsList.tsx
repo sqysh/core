@@ -3,6 +3,7 @@
 import { TEvent } from '@/types/event.types'
 import { ExternalLink } from 'lucide-react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 const ORG_LABELS: Record<string, string> = {
   LYNN_CHAMBER: 'Lynn Chamber',
@@ -63,7 +64,7 @@ export function EventsList({ events }: { events: TEvent[] }) {
           href="/events"
           className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
         >
-          View Past →
+          <LinkBody>View Past →</LinkBody>
         </Link>
       </div>
     </div>

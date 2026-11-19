@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { ArrowLeft, Globe, MapPin, Phone, Mail, Target } from 'lucide-react'
 import FadeUp from '@/components/_shared/FadeUp'
 import { formatPhone } from '@/lib/utils/phone.utils'
@@ -59,8 +60,10 @@ export default function PublicMemberClient({ user, users, eileenListings }: Prop
             className="font-sora font-black text-[18px] tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
             aria-label="Coastal Referral Exchange — Home"
           >
-            <span className="text-text-light dark:text-text-dark">CORE</span>
-            <span className="text-primary-light dark:text-primary-dark">.</span>
+            <LinkBody>
+              <span className="text-text-light dark:text-text-dark">CORE</span>
+              <span className="text-primary-light dark:text-primary-dark">.</span>
+            </LinkBody>
           </Link>
 
           <div className="flex items-center gap-2">
@@ -70,13 +73,13 @@ export default function PublicMemberClient({ user, users, eileenListings }: Prop
                   href="/dashboard"
                   className="h-8 px-4 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark font-sora font-bold text-[11px] tracking-wide transition-colors inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
                 >
-                  Dashboard
+                  <LinkBody>Dashboard</LinkBody>
                 </Link>
                 <Link
                   href="/profile"
                   className="h-8 px-4 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[11px] tracking-wide hover:opacity-90 transition-opacity inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
                 >
-                  Profile
+                  <LinkBody>Profile</LinkBody>
                 </Link>
               </>
             ) : (
@@ -84,7 +87,7 @@ export default function PublicMemberClient({ user, users, eileenListings }: Prop
                 href="/application"
                 className="h-8 px-4 bg-primary-light dark:bg-button-dark text-white font-sora font-bold text-[11px] tracking-wide hover:opacity-90 transition-opacity inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark focus-visible:ring-offset-2"
               >
-                Apply
+                <LinkBody>Apply</LinkBody>
               </Link>
             )}
           </div>
@@ -97,8 +100,10 @@ export default function PublicMemberClient({ user, users, eileenListings }: Prop
             href="/members"
             className="inline-flex items-center gap-1.5 text-f10 font-mono tracking-[0.15em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            <ArrowLeft size={13} aria-hidden="true" />
-            All Members
+            <LinkBody>
+              <ArrowLeft size={13} aria-hidden="true" />
+              All Members
+            </LinkBody>
           </Link>
         </FadeUp>
 

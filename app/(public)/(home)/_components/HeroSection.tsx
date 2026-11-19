@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { motion } from 'framer-motion'
 import { AnimatedHeadline } from './hero/AnimatedHeadline'
 import EmbeddedHeader from './hero/EmbeddedHeader'
@@ -70,13 +71,13 @@ export default function HeroSection({ isLoggedIn }) {
             href={isLoggedIn ? '/dashboard' : '/login'}
             className="h-11 sm:h-12 px-6 sm:px-8 bg-white text-bg-dark font-bold text-xs sm:text-sm tracking-wide hover:bg-white/90 active:bg-white/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 inline-flex items-center justify-center"
           >
-            {isLoggedIn ? 'Dashboard' : 'Launch App'}
+            <LinkBody>{isLoggedIn ? 'Dashboard' : 'Launch App'}</LinkBody>
           </Link>
           <Link
             href="/application"
             className="h-11 sm:h-12 px-6 sm:px-8 border border-white/40 text-white/80 font-bold text-xs sm:text-sm tracking-wide hover:bg-white/10 hover:border-white/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white inline-flex items-center justify-center"
           >
-            Apply to Join →
+            <LinkBody>Apply to Join →</LinkBody>
           </Link>
         </motion.div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { motion } from 'framer-motion'
 import { MapPin, Clock, Calendar } from 'lucide-react'
 
@@ -215,13 +216,13 @@ export default function VisitorsWelcomeClient() {
                 href="/members"
                 className="inline-flex items-center h-12 px-8 bg-primary-light dark:bg-primary-dark text-white font-sora font-bold text-sm tracking-wide hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
               >
-                Meet the Members →
+                <LinkBody>Meet the Members →</LinkBody>
               </Link>
               <Link
                 href="/application"
                 className="inline-flex items-center h-12 px-8 border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark font-sora font-bold text-sm tracking-wide hover:text-primary-light dark:hover:text-primary-dark hover:border-primary-light dark:hover:border-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
               >
-                Apply to Join
+                <LinkBody>Apply to Join</LinkBody>
               </Link>
             </motion.div>
           </motion.div>

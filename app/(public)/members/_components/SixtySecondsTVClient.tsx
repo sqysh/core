@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 export default function SixtySecondsTV({ profileImage }: { profileImage: string | null }) {
   return (
@@ -22,8 +23,10 @@ export default function SixtySecondsTV({ profileImage }: { profileImage: string 
           href="/members"
           className="flex items-center gap-2 px-6 border-l border-white/10 text-blue-300 hover:bg-[#2d6fad] hover:text-white transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
         >
-          <ArrowLeft size={14} aria-hidden="true" />
-          <span className="font-mono text-xs tracking-[0.15em] uppercase font-bold">All Members</span>
+          <LinkBody>
+            <ArrowLeft size={14} aria-hidden="true" />
+            <span className="font-mono text-xs tracking-[0.15em] uppercase font-bold">All Members</span>
+          </LinkBody>
         </Link>
       </div>
 

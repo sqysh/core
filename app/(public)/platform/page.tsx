@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { motion } from 'framer-motion'
 import { fadeInUp } from '@/lib/constants/motion'
 import { PLATFORM_FEATURES, WHY_IT_MATTERS_OPTS } from '@/lib/constants/public/platform.constants'
@@ -39,13 +40,13 @@ export default function PlatformPage() {
                 href="/visitors-welcome"
                 className="inline-flex items-center gap-2 px-6 py-3 border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-bg-light dark:text-bg-dark font-mono text-f10 tracking-[0.2em] uppercase font-bold hover:opacity-90 transition-opacity"
               >
-                Visit a Meeting →
+                <LinkBody>Visit a Meeting →</LinkBody>
               </Link>
               <Link
                 href="#features"
                 className="inline-flex items-center gap-2 px-6 py-3 border border-border-light dark:border-border-dark text-text-light dark:text-text-dark font-mono text-f10 tracking-[0.2em] uppercase font-bold hover:border-primary-light dark:hover:border-primary-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors"
               >
-                See How It Works
+                <LinkBody>See How It Works</LinkBody>
               </Link>
             </div>
           </motion.div>
@@ -251,7 +252,7 @@ export default function PlatformPage() {
               href="/visitors-welcome"
               className="inline-flex items-center gap-2 px-8 py-4 border border-primary-light dark:border-primary-dark bg-primary-light dark:bg-primary-dark text-bg-light dark:text-bg-dark font-mono text-f10 tracking-[0.2em] uppercase font-bold hover:opacity-90 transition-opacity"
             >
-              Visit a Meeting →
+              <LinkBody>Visit a Meeting →</LinkBody>
             </Link>
           </motion.div>
         </div>

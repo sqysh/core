@@ -2,6 +2,7 @@ import { LaunchAppButton } from '@/components/layout/LaunchAppButton'
 import { useAppStore } from '@/lib/store/appStore'
 import { Menu } from 'lucide-react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 
 const navLinkCls = (active: boolean) =>
   `text-f10 font-mono tracking-[0.2em] uppercase transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
@@ -17,7 +18,9 @@ export default function EmbeddedHeader() {
         className="font-sora font-black text-lg sm:text-xl text-white tracking-tight hover:text-white/80 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         aria-label="Coastal Referral Exchange — Home"
       >
-        CORE<span className="text-primary-dark">.</span>
+        <LinkBody>
+          CORE<span className="text-primary-dark">.</span>
+        </LinkBody>
       </Link>
 
       <nav
@@ -25,19 +28,19 @@ export default function EmbeddedHeader() {
         aria-label="Main navigation"
       >
         <Link href="/" className={navLinkCls(true)}>
-          Home
+          <LinkBody>Home</LinkBody>
         </Link>
         <Link href="/platform" className={navLinkCls(true)}>
-          Platform
+          <LinkBody>Platform</LinkBody>
         </Link>
         <Link href="/members" className={navLinkCls(false)}>
-          Members
+          <LinkBody>Members</LinkBody>
         </Link>
         <Link href="/visitors-welcome" className={navLinkCls(false)}>
-          Visitors
+          <LinkBody>Visitors</LinkBody>
         </Link>
         <Link href="/application" className={navLinkCls(false)}>
-          Apply
+          <LinkBody>Apply</LinkBody>
         </Link>
       </nav>
 

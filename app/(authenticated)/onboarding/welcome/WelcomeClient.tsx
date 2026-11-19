@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { CheckCircle, Map, Users, Calendar, ArrowRight } from 'lucide-react'
 import FadeUp from '@/components/_shared/FadeUp'
 import { getNextQuarterlyDueDate } from '@/lib/utils/billing.utils'
@@ -117,8 +118,10 @@ export default function WelcomeClient({ firstName }: WelcomeClientProps) {
             href="/dashboard"
             className="w-full h-14 bg-primary-light dark:bg-button-dark text-white dark:text-primary-dark font-sora font-black text-[15px] tracking-wide flex items-center justify-center gap-2.5 hover:bg-primary-light/90 dark:hover:bg-button-dark/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
           >
-            Go to Dashboard
-            <ArrowRight size={16} aria-hidden="true" />
+            <LinkBody>
+              Go to Dashboard
+              <ArrowRight size={16} aria-hidden="true" />
+            </LinkBody>
           </Link>
 
           <p className="text-f10 font-mono text-muted-light dark:text-muted-dark text-center mt-4">
@@ -146,18 +149,22 @@ function NextStep({
       href={href}
       className="group flex items-start gap-4 px-4 py-4 bg-bg-light dark:bg-bg-dark hover:bg-surface-light dark:hover:bg-surface-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
     >
-      <div className="shrink-0 w-9 h-9 border border-border-light dark:border-border-dark flex items-center justify-center text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark group-hover:border-primary-light dark:group-hover:border-primary-dark transition-colors">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-sora font-bold text-[14px] text-text-light dark:text-text-dark mb-0.5">{title}</p>
-        <p className="text-[12.5px] font-nunito text-muted-light dark:text-muted-dark leading-relaxed">{description}</p>
-      </div>
-      <ArrowRight
-        size={14}
-        className="shrink-0 mt-2 text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all"
-        aria-hidden="true"
-      />
+      <LinkBody>
+        <div className="shrink-0 w-9 h-9 border border-border-light dark:border-border-dark flex items-center justify-center text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark group-hover:border-primary-light dark:group-hover:border-primary-dark transition-colors">
+          {icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-sora font-bold text-[14px] text-text-light dark:text-text-dark mb-0.5">{title}</p>
+          <p className="text-[12.5px] font-nunito text-muted-light dark:text-muted-dark leading-relaxed">
+            {description}
+          </p>
+        </div>
+        <ArrowRight
+          size={14}
+          className="shrink-0 mt-2 text-muted-light dark:text-muted-dark group-hover:text-primary-light dark:group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all"
+          aria-hidden="true"
+        />
+      </LinkBody>
     </Link>
   )
 }

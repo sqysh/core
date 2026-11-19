@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
@@ -45,8 +46,10 @@ export function CancelMembershipClient() {
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-[10px] sm:text-f10 font-mono tracking-[0.2em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
         >
-          <ArrowLeft size={11} aria-hidden="true" />
-          Back to Dashboard
+          <LinkBody>
+            <ArrowLeft size={11} aria-hidden="true" />
+            Back to Dashboard
+          </LinkBody>
         </Link>
 
         <motion.div

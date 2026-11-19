@@ -34,7 +34,9 @@ export function ActivityStats({ stats }) {
         <p className="text-f9 font-mono text-muted-light dark:text-muted-dark">{stats.closedAmountThisWeek}</p>
         <div className="flex items-center justify-between mt-auto pt-2 border-t border-border-light dark:border-border-dark">
           <p className="text-f9 font-mono text-muted-light dark:text-muted-dark">{stats.totalClosedAmount}</p>
-          <p className="text-f9 font-mono text-text-light dark:text-text-dark font-bold">{stats.totalClosedBusinesses}</p>
+          <p className="text-f9 font-mono text-text-light dark:text-text-dark font-bold">
+            {stats.totalClosedBusinesses}
+          </p>
         </div>
       </div>
     </div>
