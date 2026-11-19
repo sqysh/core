@@ -292,7 +292,7 @@ export function SuperRemoteClient({
               <button
                 key={s.key}
                 type="button"
-                onClick={() => fire(s.key, s.cmd)}
+                onClick={() => (s.key === 'matchups' && onGenerateMatchups ? genMatchups() : fire(s.key, s.cmd))}
                 disabled={busy}
                 className={`${TILE} ${
                   active

@@ -52,6 +52,16 @@ export async function generateWeeklyMatches({ dryRun = false }: { dryRun?: boole
 
   if (members.length < 2) return { success: false, error: 'Not enough active members' }
 
+  // Already generated today: reuse them so show/generate can both be hit freely
+  if (!dryRun) {
+    const todayStart = new Date()
+    todayStart.setHours(0, 0, 0, 0)
+    const existing = await prisma.parley.count({
+      where: { chapterId, createdAt: { gte: todayStart }, notes: 'Auto-matched weekly 1-2-1' }
+    })
+    if (existing > 0) return { success: true, pairCount: existing, existing: true }
+  }
+
   const since = new Date()
   since.setDate(since.getDate() - HISTORY_WEEKS * 7)
 
