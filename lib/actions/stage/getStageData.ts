@@ -146,7 +146,7 @@ export async function getStageData(): Promise<{
         eventCoordinator: toPerson(eventCoordinatorTerm?.holder),
         membership,
         members: members.map((m) => ({ id: m.id, name: m.name ?? '', company: m.company, profileImage: m.image })),
-        openRoundId: todayRound && todayRound.status !== 'REVEALED' ? todayRound.id : null,
+        openRoundId: todayRound?.status === 'OPEN' ? todayRound.id : null,
         isSuperUser: session?.user?.role === 'SUPER_USER'
       }
     }

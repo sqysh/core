@@ -329,9 +329,9 @@ export const RUN_OF_SHOW: Step[] = [
   {
     id: 'open',
     title: 'Open the meeting',
-    help: () => 'The TV switches to the opening script. Read it down.',
-    guide: () => 'Read the welcome down from the TV, line by line.',
-    button: 'Start the script'
+    help: () => 'The TV counts down 3-2-1, then the opening script. Read it down. Next up is the Guiding Light.',
+    guide: () => 'Read the welcome down from the TV, line by line. The Guiding Light comes right after.',
+    button: 'Open the meeting, then the Guiding Light'
   },
   {
     id: 'guiding-light',

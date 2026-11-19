@@ -2,11 +2,29 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ChevronRight, List, Minus, Pause, Play, Plus, RotateCcw, SkipBack, Square, Tv, X } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  List,
+  Minus,
+  Pause,
+  Play,
+  Plus,
+  RotateCcw,
+  SkipBack,
+  SkipForward,
+  Square,
+  Tv,
+  X
+} from 'lucide-react'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { ActionBody } from '@/components/_shared/LinkBody'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { useSend } from '@/lib/hooks/useSend'
+import ManualPickerOverlay from '@/components/_shared/ManualPickerOverlay'
+import type { Member } from '@/types/guiding-light.types'
+import { fmtDate } from '@/lib/utils/date.utils'
+import type { GuidingLightDeferral } from '@/lib/actions/guiding-light/getGuidingLightDeferral'
 import { SqyshVector, TypeText, type SqyshMode } from '@/components/_shared/SqyshVector'
 import {
   FOCUS,
@@ -50,9 +68,9 @@ function screenCommandFor(
     case 'membership':
       return { type: 'membership.show' }
     case 'lynn-chamber':
-      return { type: 'script.jump', value: 'lynn-chamber' }
+      return { type: 'script.jump', value: 'lynn-chamber', countdown: true }
     case 'latino-business':
-      return { type: 'script.jump', value: 'latino-business' }
+      return { type: 'script.jump', value: 'latino-business', countdown: true }
     case 'treasurer':
       return { type: 'treasurer.show' }
     case 'presentation':
@@ -64,7 +82,7 @@ function screenCommandFor(
     case 'matchups':
       return { type: 'matchups.show' }
     case 'close':
-      return { type: 'script.jump', value: 'close' }
+      return { type: 'script.jump', value: 'close', countdown: true }
   }
 }
 
@@ -82,6 +100,11 @@ export function HostRemoteClient({
   names,
   onOpenRound,
   onGenerateMatchups,
+  onDeferRound,
+  onChooseSelf,
+  onPickWinner,
+  members,
+  deferral,
   glRevealed: glRevealedInit = false
 }: {
   segments: Segment[]
@@ -90,6 +113,15 @@ export function HostRemoteClient({
   onOpenRound: () => Promise<{ success: boolean; error?: string }>
   /** generates this week's pairs, so the host never pre-runs it by hand */
   onGenerateMatchups?: () => Promise<{ success: boolean; error?: string }>
+  /** no Guiding Light this week: record it as deferred, the same judge carries over */
+  onDeferRound?: () => Promise<{ success: boolean; error?: string }>
+  /** the host takes the judge seat herself and picks the Guiding Light */
+  onChooseSelf?: () => Promise<{ success: boolean; error?: string }>
+  /** the host picks the Guiding Light winner herself */
+  onPickWinner?: (winnerId: string) => Promise<{ success: boolean; error?: string }>
+  members?: Member[]
+  /** the latest round was deferred, so this week's judge carries over */
+  deferral?: GuidingLightDeferral | null
   /** true when today's round is already revealed (remote reloaded after the pick) */
   glRevealed?: boolean
 }) {
@@ -102,6 +134,13 @@ export function HostRemoteClient({
   const [liveIdx, setLiveIdx] = useState(-1)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  // brief confirmation after a skip, since the TV (and so the readout) doesn't change
+  const [notice, setNotice] = useState('')
+  useEffect(() => {
+    if (!notice) return
+    const t = setTimeout(() => setNotice(''), 3500)
+    return () => clearTimeout(t)
+  }, [notice])
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(SPEED_DEFAULT)
   const [presenting, setPresenting] = useState(false)
@@ -114,6 +153,12 @@ export function HostRemoteClient({
   const [spotlight, setSpotlight] = useState(false)
   // once the judge picks, the Guiding Light step shows the winner, not the intro
   const [glRevealed, setGlRevealed] = useState(glRevealedInit)
+  // sections the host passed over. Nothing is sent to the TV, so the room never sees it.
+  // true once the host has taken the Guiding Light judge seat herself
+  const [judgingSelf, setJudgingSelf] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [picking, setPicking] = useState(false)
+  const [skipped, setSkipped] = useState<Set<number>>(new Set())
 
   const nextStep = RUN_OF_SHOW[stepIdx]
   const live = liveIdx >= 0 && liveIdx < RUN_OF_SHOW.length ? RUN_OF_SHOW[liveIdx] : null
@@ -124,22 +169,36 @@ export function HostRemoteClient({
   const shownIdx = live ? liveIdx : stepIdx
   const lcdKey = done ? 'done' : presenting && presentation ? 'presenting' : `${shown?.id}-${live ? 'live' : 'next'}`
 
+  // Back goes to the last section before the one on the TV, passing over skipped ones
+  let prevIdx = -1
+  if (liveIdx > 0) {
+    for (let i = liveIdx - 1; i >= 0; i--) {
+      if (!skipped.has(i)) {
+        prevIdx = i
+        break
+      }
+    }
+  }
+  const prevStep = prevIdx >= 0 ? RUN_OF_SHOW[prevIdx] : null
+
   // sqyshvertex: one sentence telling the host what to do right now
   const guideLine = done
     ? 'That’s a wrap, nice work.'
-    : presenting && presentation
-      ? 'They run the deck from their phone, so take over below only if you need to.'
-      : nextStep?.id === 'guiding-light' && glRevealed
-        ? 'Tap to put the winner back up on the TV.'
-        : nextStep?.id === 'guiding-light' && glIntro
-          ? 'Now tap to put the Guiding Light on the TV.'
-          : nextStep?.id === 'treasurer' && treasurerBoard
-            ? 'Now tap to put the treasurer board on the TV.'
-            : nextStep?.id === 'presentation' && !presentation && spotlight
-              ? 'Tap again when they wrap up and the script moves on to the Activity Round.'
-              : nextStep?.id === 'presentation' && !presentation
-                ? `Nothing was uploaded, so tap to put ${names.presenter ?? 'the presenter'}’s name and the clock on the TV while they talk.`
-                : (shown?.guide(names) ?? '')
+    : judgingSelf && !glRevealed
+      ? 'Everyone gives their 60 seconds. When they’re done, tap Pick the Guiding Light.'
+      : presenting && presentation
+        ? 'They run the deck from their phone, so take over below only if you need to.'
+        : nextStep?.id === 'guiding-light' && glRevealed
+          ? 'Tap to put the winner back up on the TV.'
+          : nextStep?.id === 'guiding-light' && glIntro
+            ? 'Now tap to put the Guiding Light on the TV.'
+            : nextStep?.id === 'treasurer' && treasurerBoard
+              ? 'Now tap to put the treasurer board on the TV.'
+              : nextStep?.id === 'presentation' && !presentation && spotlight
+                ? 'Tap again when they wrap up and the script moves on to the Activity Round.'
+                : nextStep?.id === 'presentation' && !presentation
+                  ? `Nothing was uploaded, so tap to put ${names.presenter ?? 'the presenter'}’s name and the clock on the TV while they talk.`
+                  : (shown?.guide(names) ?? '')
 
   // Sqysh reacts to the meeting: waves hello, splats excited when the step moves,
   // thinks while a command is in flight, and otherwise idles.
@@ -190,8 +249,13 @@ export function HostRemoteClient({
     }
   }, [])
 
-  async function next() {
-    const step = RUN_OF_SHOW[stepIdx]
+  // idx lets Skip run the section after the one it dropped; fresh ignores the two-tap
+  // state of the section it left behind.
+  async function next(idx = stepIdx, fresh = false) {
+    const glIntro_ = fresh ? false : glIntro
+    const treasurerBoard_ = fresh ? false : treasurerBoard
+    const spotlight_ = fresh ? false : spotlight
+    const step = RUN_OF_SHOW[idx]
     if (!step || busy) return
     setBusy(true)
     setErr('')
@@ -202,13 +266,13 @@ export function HostRemoteClient({
         setPlaying(okStep)
         break
       case 'guiding-light':
-        if (!glIntro) {
+        if (!glIntro_) {
           // first tap: teleprompter reads the Guiding Light intro
-          okStep = await send({ type: 'script.jump', value: 'guiding-light', play: true })
+          okStep = await send({ type: 'script.jump', value: 'guiding-light', countdown: true })
           if (okStep) {
             setGlIntro(true)
             setPlaying(true)
-            setLiveIdx(stepIdx)
+            setLiveIdx(idx)
             setBusy(false)
             play('ui-primary')
             return // stay on this step; next tap puts the Guiding Light on the TV
@@ -240,21 +304,26 @@ export function HostRemoteClient({
         okStep = await send({ type: 'membership.show' })
         break
       case 'lynn-chamber':
-        okStep = await send({ type: 'script.jump', value: 'lynn-chamber', play: true })
+        okStep = await send({ type: 'script.jump', value: 'lynn-chamber', play: true, countdown: fresh || undefined })
         setPlaying(okStep)
         break
       case 'latino-business':
-        okStep = await send({ type: 'script.jump', value: 'latino-business', play: true })
+        okStep = await send({
+          type: 'script.jump',
+          value: 'latino-business',
+          play: true,
+          countdown: fresh || undefined
+        })
         setPlaying(okStep)
         break
       case 'treasurer':
-        if (!treasurerBoard) {
+        if (!treasurerBoard_) {
           // first tap: teleprompter counts 3-2-1, then reads the treasurer intro
           okStep = await send({ type: 'script.jump', value: 'treasurer', countdown: true })
           if (okStep) {
             setTreasurerBoard(true)
             setPlaying(true)
-            setLiveIdx(stepIdx)
+            setLiveIdx(idx)
             setBusy(false)
             play('ui-primary')
             return // stay on this step; next tap puts the board up
@@ -267,12 +336,12 @@ export function HostRemoteClient({
         break
       case 'presentation':
         if (!presentation) {
-          if (!spotlight) {
+          if (!spotlight_) {
             // nothing uploaded: put their name and the clock on the TV while they talk
             okStep = await send({ type: 'presenter.spotlight', name: names.presenter })
             if (okStep) {
               setSpotlight(true)
-              setLiveIdx(stepIdx)
+              setLiveIdx(idx)
               setBusy(false)
               play('ui-primary')
               return // stay on this step; tap again when they wrap up
@@ -295,7 +364,7 @@ export function HostRemoteClient({
         okStep = await send({ type: 'present.start', presentationId: presentation.id })
         if (okStep) {
           setPresenting(true)
-          setLiveIdx(stepIdx)
+          setLiveIdx(idx)
           setPage(1)
           setBusy(false)
           play('ui-primary')
@@ -321,15 +390,91 @@ export function HostRemoteClient({
       case 'close':
         // teleprompter reads the closing words; when it finishes, the TV moves to
         // the quotes on its own
-        okStep = await send({ type: 'script.jump', value: 'close', play: true })
+        okStep = await send({ type: 'script.jump', value: 'close', play: true, countdown: fresh || undefined })
         break
     }
     setBusy(false)
     if (okStep) {
       play('ui-primary')
-      setLiveIdx(stepIdx)
+      setLiveIdx(idx)
       setStepIdx((i) => i + 1)
     }
+  }
+
+  // The 60 seconds is where the Guiding Light gets picked. No Guiding Light today:
+  // record the deferral and pass over it. Nothing goes to the TV.
+  async function deferRound() {
+    if (!onDeferRound || busy) return
+    setBusy(true)
+    setErr('')
+    const r = await onDeferRound()
+    setBusy(false)
+    if (!r.success) {
+      setErr(r.error ?? 'Could not defer the Guiding Light.')
+      return
+    }
+    play('ui-primary')
+    setSkipped((prev) => new Set(prev).add(stepIdx))
+    setStepIdx((i) => i + 1)
+  }
+
+  // The host judges herself: open the round with her in the judge seat, put the 60
+  // seconds on the TV, and bring up the member picker on this remote.
+  async function pickMyself() {
+    if (!onChooseSelf || busy) return
+    setBusy(true)
+    setErr('')
+    const r = await onChooseSelf()
+    if (!r.success) {
+      setBusy(false)
+      setErr(r.error ?? 'Could not open the round.')
+      return
+    }
+    const okStep = await send({ type: 'sixty.show' })
+    setBusy(false)
+    if (!okStep) {
+      setErr('Could not reach the TV.')
+      return
+    }
+    play('ui-primary')
+    setJudgingSelf(true)
+    setLiveIdx(stepIdx)
+    setStepIdx((i) => i + 1)
+    setPickerOpen(true)
+  }
+
+  async function pickWinner(memberId: string) {
+    if (!onPickWinner || picking) return
+    setPicking(true)
+    setErr('')
+    const r = await onPickWinner(memberId)
+    setPicking(false)
+    if (!r.success) {
+      setErr(r.error ?? 'Could not pick the winner.')
+      return
+    }
+    play('ui-primary')
+    setPickerOpen(false)
+    setJudgingSelf(false)
+    setGlRevealed(true)
+  }
+
+  // Skip the section that's up next and put the one after it on the TV, so a section
+  // the host doesn't want to read (or run) never holds the meeting up. The skipped
+  // section stays in the jump list in case she changes her mind.
+  async function skip() {
+    if (!nextStep || busy) return
+    play('ui-tap')
+    setErr('')
+    setNotice(`Skipped ${nextStep.title}`)
+    setSkipped((prev) => new Set(prev).add(stepIdx))
+    setPresenting(false)
+    setGlIntro(false)
+    setTreasurerBoard(false)
+    setSpotlight(false)
+    const after = stepIdx + 1
+    setStepIdx(after)
+    if (after < RUN_OF_SHOW.length) await next(after, true)
   }
 
   // Jump straight to a section: put that section on the TV and leave the remote
@@ -343,6 +488,7 @@ export function HostRemoteClient({
     setPresenting(false)
     setTreasurerBoard(false)
     setSpotlight(false)
+    setGlIntro(false)
     const okStep = await send(screenCommandFor(target.id, presentation, names.presenter))
     setBusy(false)
     if (!okStep) {
@@ -350,6 +496,12 @@ export function HostRemoteClient({
       return
     }
     play('se2')
+    setSkipped((prev) => {
+      if (!prev.has(i)) return prev
+      const copy = new Set(prev)
+      copy.delete(i)
+      return copy
+    })
     setPlaying(target.id === 'open')
     setLiveIdx(i)
     if (target.id === 'presentation') {
@@ -479,11 +631,13 @@ export function HostRemoteClient({
                         <span
                           key={s.id}
                           className={`h-1 w-3 ${
-                            i <= liveIdx
-                              ? 'bg-primary-light shadow-[0_0_6px] shadow-primary-light/60 dark:bg-primary-dark dark:shadow-primary-dark/60'
-                              : i === stepIdx
-                                ? 'animate-pulse bg-primary-light/60 dark:bg-primary-dark/60'
-                                : 'bg-black/10 dark:bg-white/10'
+                            skipped.has(i)
+                              ? 'bg-amber-500/50'
+                              : i <= liveIdx
+                                ? 'bg-primary-light shadow-[0_0_6px] shadow-primary-light/60 dark:bg-primary-dark dark:shadow-primary-dark/60'
+                                : i === stepIdx
+                                  ? 'animate-pulse bg-primary-light/60 dark:bg-primary-dark/60'
+                                  : 'bg-black/10 dark:bg-white/10'
                           }`}
                         />
                       ))}
@@ -492,9 +646,28 @@ export function HostRemoteClient({
                   <p className="mt-2 font-sora text-[26px] font-black leading-tight text-text-light dark:text-text-dark">
                     {shown.title}
                   </p>
+                  {notice && (
+                    <p
+                      className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400"
+                      role="status"
+                    >
+                      {notice}
+                    </p>
+                  )}
+                  {live && nextStep && (
+                    <p className="mt-2 font-mono text-[11px] tracking-wide text-text-light/50 dark:text-text-dark/50">
+                      Up next &middot; {nextStep.title}
+                    </p>
+                  )}
                   {nextStep?.id === 'presentation' && !presentation && !spotlight && (
                     <p className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400/80">
                       Nothing uploaded. The TV shows their name and the clock instead.
+                    </p>
+                  )}
+                  {nextStep?.id === 'sixty' && deferral && (
+                    <p className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400/80">
+                      {deferral.today ? 'Deferred to next week.' : `Deferred from ${fmtDate(deferral.meetingDate)}.`}
+                      {deferral.judge ? ` ${deferral.judge.name.split(' ')[0]} is still the judge.` : ''}
                     </p>
                   )}
                   {err && (
@@ -531,6 +704,8 @@ export function HostRemoteClient({
               play('ui-tap')
               setStepIdx(0)
               setLiveIdx(-1)
+              setSkipped(new Set())
+              setJudgingSelf(false)
               setTreasurerBoard(false)
               setSpotlight(false)
             }}
@@ -550,7 +725,7 @@ export function HostRemoteClient({
             />
             <button
               type="button"
-              onClick={next}
+              onClick={() => next()}
               disabled={busy}
               className={`relative flex min-h-26 w-full flex-col items-center justify-center gap-1 overflow-hidden border border-primary-light/60 bg-primary-light px-4 text-center font-sora text-[22px] font-black text-white transition-[filter,transform] duration-75 active:translate-y-px active:brightness-110 disabled:opacity-60 dark:border-primary-dark/60 dark:bg-primary-dark ${FOCUS}`}
             >
@@ -577,6 +752,67 @@ export function HostRemoteClient({
                 icon={<ChevronRight size={24} aria-hidden="true" />}
                 iconAfter
               />
+            </button>
+          </div>
+        )}
+
+        {/* the 60 seconds: pick the Guiding Light yourself, or defer it to next week */}
+        {nextStep?.id === 'sixty' && !judgingSelf && !done && !presenting && (
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={deferRound}
+              disabled={busy || !onDeferRound}
+              className={`${KEY} h-14 text-[13px] ${FOCUS}`}
+            >
+              Defer to next week
+            </button>
+            <button
+              type="button"
+              onClick={pickMyself}
+              disabled={busy || !onChooseSelf}
+              className={`${KEY} h-14 text-[13px] ${FOCUS}`}
+            >
+              I&rsquo;ll pick today
+            </button>
+          </div>
+        )}
+
+        {/* host is the judge: choose the winner right here */}
+        {judgingSelf && !glRevealed && (
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className={`${KEY} h-16 w-full border-primary-light/60 text-[16px] ${FOCUS}`}
+          >
+            Pick the Guiding Light
+          </button>
+        )}
+
+        {/* back / skip: the host runs the meeting her way, no fixed order */}
+        {!(presenting && presentation) && (
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={() => prevStep && jumpTo(prevIdx)}
+              disabled={busy || !prevStep}
+              className={`${KEY} h-16 flex-col gap-0 px-3 text-[13px] ${FOCUS}`}
+            >
+              <span className="flex items-center gap-1 font-mono text-[9px] tracking-[0.25em] uppercase opacity-60">
+                <ChevronLeft size={12} aria-hidden="true" /> Back
+              </span>
+              <span className="max-w-full truncate">{prevStep?.title ?? 'Nothing before'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={skip}
+              disabled={busy || !nextStep}
+              className={`${KEY} h-16 flex-col gap-0 px-3 text-[13px] ${FOCUS}`}
+            >
+              <span className="flex items-center gap-1 font-mono text-[9px] tracking-[0.25em] uppercase opacity-60">
+                Skip <SkipForward size={12} aria-hidden="true" />
+              </span>
+              <span className="max-w-full truncate">{nextStep?.title ?? 'End of meeting'}</span>
             </button>
           </div>
         )}
@@ -681,6 +917,8 @@ export function HostRemoteClient({
               send({ type: 'holding' })
               setStepIdx(0)
               setLiveIdx(-1)
+              setSkipped(new Set())
+              setJudgingSelf(false)
               setPlaying(false)
               setTreasurerBoard(false)
               setSpotlight(false)
@@ -758,6 +996,11 @@ export function HostRemoteClient({
                       <span className="min-w-0 flex-1">
                         <span className="block font-sora text-[16px] font-bold text-text-light dark:text-text-dark">
                           {s.title}
+                          {skipped.has(i) && (
+                            <span className="ml-2 font-mono text-[10px] tracking-widest text-amber-600 uppercase dark:text-amber-400">
+                              Skipped
+                            </span>
+                          )}
                         </span>
                         <span className="block font-nunito text-[12px] leading-snug text-text-light/50 dark:text-text-dark/45">
                           {s.help(names)}
@@ -776,6 +1019,14 @@ export function HostRemoteClient({
           </motion.div>
         )}
       </AnimatePresence>
+      <ManualPickerOverlay
+        title="Pick the Guiding Light"
+        show={pickerOpen}
+        submitting={picking}
+        members={members ?? []}
+        onClose={() => setPickerOpen(false)}
+        onSelect={pickWinner}
+      />
     </div>
   )
 }

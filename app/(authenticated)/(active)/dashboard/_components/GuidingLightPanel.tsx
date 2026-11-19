@@ -9,6 +9,7 @@ import { LinkBody } from '@/components/_shared/LinkBody'
 interface GuidingLightRecord {
   id: string
   meetingDate: string
+  status: string
   winner: { id: string; name: string; company: string; profileImage: string | null } | null
   judgedBy: { id: string; name: string } | null
 }
@@ -16,10 +17,13 @@ interface GuidingLightRecord {
 interface Props {
   records: GuidingLightRecord[]
   currentJudge: { id: string; name: string } | null
+  deferral: { meetingDate: string; today: boolean; judge: { id: string; name: string } | null } | null
 }
 
-export function GuidingLightPanel({ records, currentJudge }: Props) {
-  const latest = records[0] ?? null
+export function GuidingLightPanel({ records, currentJudge, deferral }: Props) {
+  // deferred weeks have no winner, so "last winner" is the newest round that has one
+  const latest = records.find((r) => r.winner) ?? null
+  const history = records.filter((r) => r !== latest).slice(0, 3)
   const reduceMotion = useReducedMotion()
 
   return (
@@ -35,6 +39,19 @@ export function GuidingLightPanel({ records, currentJudge }: Props) {
           </p>
         )}
       </div>
+
+      {deferral && (
+        <div className="px-4 py-3 border-b border-border-light dark:border-border-dark bg-amber-400/6">
+          <p className="text-f10 font-mono tracking-[0.12em] uppercase text-amber-600 dark:text-amber-400">
+            {deferral.today ? 'Deferred to next week' : `Deferred from ${fmtDate(deferral.meetingDate)}`}
+          </p>
+          {deferral.judge && (
+            <p className="text-[14px] font-nunito text-muted-light dark:text-muted-dark mt-1">
+              {deferral.judge.name.split(' ')[0]} is still the judge.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Latest winner */}
       {latest?.winner ? (
@@ -97,9 +114,9 @@ export function GuidingLightPanel({ records, currentJudge }: Props) {
       )}
 
       {/* Recent history */}
-      {records.length > 1 && (
+      {history.length > 0 && (
         <div className="divide-y divide-border-light dark:divide-border-dark">
-          {records.slice(1, 4).map((r, i) => (
+          {history.map((r, i) => (
             <motion.div
               key={r.id}
               initial={{ opacity: 0 }}
@@ -110,7 +127,8 @@ export function GuidingLightPanel({ records, currentJudge }: Props) {
               {r.winner && <Avatar member={r.winner} alt={r.winner.name} />}
               <div className="flex-1 min-w-0">
                 <p className="font-sora font-bold text-[15px] text-text-light dark:text-text-dark truncate">
-                  {r.winner?.name ?? '—'}
+                  {r.winner?.name ??
+                    (r.status === 'DEFERRED' ? 'Deferred' : r.status === 'OPEN' ? 'Not picked yet' : '—')}
                 </p>
                 <p className="text-[14px] font-mono text-muted-light dark:text-muted-dark mt-0.5">
                   {fmtDate(r.meetingDate)}

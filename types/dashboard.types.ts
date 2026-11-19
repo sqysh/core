@@ -63,20 +63,22 @@ export interface MemberDashboardProps {
   }
   exclusions: { reason: string; date: string }[]
   guidingLight: {
-    currentJudge: { id: string; name: string }
+    currentJudge: { id: string; name: string } | null
+    deferral: { meetingDate: string; today: boolean; judge: { id: string; name: string } | null } | null
     records: {
       meetingDate: string
       id: string
+      status: string
       winner: {
         name: string
         id: string
         company: string
         profileImage: string
-      }
+      } | null
       judgedBy: {
         name: string
         id: string
-      }
+      } | null
     }[]
   }
   leadership: {

@@ -679,6 +679,7 @@ enum QuestionAnswer {
 enum GuidingLightStatus {
   OPEN
   REVEALED
+  DEFERRED // nobody was picked this week; the same judge carries over
 }
 
 enum UserRole {

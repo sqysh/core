@@ -2,6 +2,7 @@
 
 import QuickActions from './_components/QuickActions'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import PresenterSchedule from './_components/PresentersSchedule'
 import { MemberList } from './_components/MemberList'
 import { HistoryTabs } from './_components/HistoryTabs'
@@ -195,7 +196,11 @@ export default function DashboardClient({
         {/* ── Guiding Light ── */}
         <FadeUp delay={0.15} className="pt-8 scroll-mt-16" id="guiding-light">
           <SectionLabel>Guiding Light</SectionLabel>
-          <GuidingLightPanel currentJudge={guidingLight.currentJudge} records={guidingLight.records} />
+          <GuidingLightPanel
+            currentJudge={guidingLight.currentJudge}
+            records={guidingLight.records}
+            deferral={guidingLight.deferral}
+          />
         </FadeUp>
 
         {/* ── Leadership ── */}
@@ -220,7 +225,7 @@ export default function DashboardClient({
               href="/events"
               className="text-f10 font-mono tracking-widest uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
             >
-              View Past →
+              <LinkBody>View Past →</LinkBody>
             </Link>
           </div>
         </FadeUp>

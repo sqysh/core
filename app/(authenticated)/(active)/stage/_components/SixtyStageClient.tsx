@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { getPusherClient } from '@/lib/pusher/pusherClient'
 import { getInitials } from '@/lib/utils/shared.utils'
 import { Member, Winner } from '@/types/guiding-light.types'
@@ -258,7 +259,7 @@ export default function SixtyStageClient({ members, judgeName, initialWinner = n
             href="/"
             className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-dark hover:text-red-400"
           >
-            Home
+            <LinkBody>Home</LinkBody>
           </Link>
         </div>
       )}

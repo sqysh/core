@@ -2,6 +2,8 @@ import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
+import { displayStatus } from '@/lib/actions/guiding-light/getGuidingLightDeferral'
+import { etDateISO } from '@/lib/utils/date.utils'
 import GuidingLightDashboardClient from './GuidingLightDashboardClient'
 
 export const dynamic = 'force-dynamic'
@@ -11,21 +13,24 @@ export default async function GuidingLightDashboardPage() {
   if (!session?.user?.id) redirect('/login')
 
   const records = await prisma.guidingLight.findMany({
-    where: { chapterId, status: 'REVEALED' },
+    where: { chapterId },
     orderBy: { meetingDate: 'desc' },
     select: {
       id: true,
       meetingDate: true,
+      status: true,
       winner: { select: { id: true, name: true, company: true, profileImage: true } },
       judgedBy: { select: { id: true, name: true, company: true, profileImage: true } }
     }
   })
 
+  const todayStart = new Date(`${await etDateISO()}T00:00:00Z`)
   const timesWon = records.filter((r) => r.winner?.id === session.user.id).length
-  const timesJudged = records.filter((r) => r.judgedBy?.id === session.user.id).length
+  const timesJudged = records.filter((r) => r.status === 'REVEALED' && r.judgedBy?.id === session.user.id).length
 
   const serialized = records.map((r) => ({
     ...r,
+    status: displayStatus(r.status, r.meetingDate, todayStart),
     meetingDate: r.meetingDate.toISOString(),
     isMyWin: r.winner?.id === session.user.id,
     wasMyJudge: r.judgedBy?.id === session.user.id

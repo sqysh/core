@@ -109,7 +109,12 @@ export async function getUserDashboard() {
       closedAmountThisWeek
     }
 
-    const recentActivity = formatRecentActivity(user.id, recent.recentOneTwoOnes, recent.recentMaps, recent.recentClosedBusinesses)
+    const recentActivity = formatRecentActivity(
+      user.id,
+      recent.recentOneTwoOnes,
+      recent.recentMaps,
+      recent.recentClosedBusinesses
+    )
 
     const events = rawEvents.map((e) => ({ ...e, createdAt: e.createdAt.toISOString() }))
 

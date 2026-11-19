@@ -2,7 +2,9 @@ import { auth } from '@/lib/auth/auth'
 import { redirect } from 'next/navigation'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
+import { etDateISO } from '@/lib/utils/date.utils'
 import { SuperGuidingLightClient } from './SuperGuidingLightClient'
+import { displayStatus, getGuidingLightDeferral } from '@/lib/actions/guiding-light/getGuidingLightDeferral'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +25,8 @@ export default async function SuperGuidingLightPage() {
     }
   })
 
+  const deferral = await getGuidingLightDeferral()
+
   const members = await prisma.user.findMany({
     where: { chapterId, membershipStatus: 'ACTIVE' },
     select: {
@@ -34,10 +38,12 @@ export default async function SuperGuidingLightPage() {
     orderBy: { name: 'asc' }
   })
 
+  const todayStart = new Date(`${await etDateISO()}T00:00:00Z`)
   const serialized = records.map((r) => ({
     ...r,
+    status: displayStatus(r.status, r.meetingDate, todayStart),
     meetingDate: r.meetingDate.toISOString()
   }))
 
-  return <SuperGuidingLightClient records={serialized} members={members} />
+  return <SuperGuidingLightClient records={serialized} members={members} deferral={deferral} />
 }

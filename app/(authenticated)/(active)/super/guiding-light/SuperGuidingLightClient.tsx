@@ -3,13 +3,17 @@
 import { TableHead } from '@/components/_shared/TableHead'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { Member } from '@/types/guiding-light.types'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { deferGuidingLight } from '@/lib/actions/guiding-light/deferGuidingLight'
 import { updatePreviousWinner } from '@/lib/actions/guiding-light/updatePreviousWinner'
 import ManualPickerOverlay from '@/components/_shared/ManualPickerOverlay'
 import { RowContent } from './_components/RowContent'
 import { RecordRoundForm } from './_components/RecordRoundForm'
+import { fmtDate } from '@/lib/utils/date.utils'
+import type { GuidingLightDeferral } from '@/lib/actions/guiding-light/getGuidingLightDeferral'
 
 export interface GuidingLightRecord {
   id: string
@@ -24,11 +28,29 @@ const COLS = 'grid grid-cols-[1fr_2fr_2fr_80px] gap-4 px-4'
 const HEADS = ['Date', 'Winner', 'Judged By', 'Status']
 
 // ─── Main ────────────────────────────────────────────────────────────────────
-export function SuperGuidingLightClient({ records, members }: { records: GuidingLightRecord[]; members: Member[] }) {
+export function SuperGuidingLightClient({
+  records,
+  members,
+  deferral
+}: {
+  records: GuidingLightRecord[]
+  members: Member[]
+  deferral: GuidingLightDeferral | null
+}) {
+  const openRound = records.find((r) => r.status === 'OPEN')
+  const [deferring, setDeferring] = useState(false)
+  const latestRevealedId = records.find((r) => r.status === 'REVEALED')?.id
   const router = useRouter()
   const [showWinnerPicker, setShowWinnerPicker] = useState(false)
   const [changingWinner, setChangingWinner] = useState(false)
   const [showRecord, setShowRecord] = useState(false)
+
+  async function handleDefer(id: string) {
+    setDeferring(true)
+    await deferGuidingLight(id)
+    setDeferring(false)
+    router.refresh()
+  }
 
   async function handleUpdateWinner(memberId: string) {
     setChangingWinner(true)
@@ -70,6 +92,39 @@ export function SuperGuidingLightClient({ records, members }: { records: Guiding
           </div>
         </div>
 
+        {openRound && (
+          <div className="mb-4 flex items-center justify-between gap-4 border border-primary-light/30 bg-primary-light/5 px-4 py-3 dark:border-primary-dark/30 dark:bg-primary-dark/5">
+            <div>
+              <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary-light dark:text-primary-dark">
+                Round open &middot; {fmtDate(openRound.meetingDate)}
+              </p>
+              <p className="mt-1 text-[12.5px] font-nunito text-muted-light dark:text-muted-dark">
+                No winner picked. Defer it to next week and the same judge carries over.
+              </p>
+            </div>
+            <button
+              onClick={() => handleDefer(openRound.id)}
+              disabled={deferring}
+              className="h-9 shrink-0 px-4 bg-primary-light font-sora text-[12px] font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50 dark:bg-button-dark"
+            >
+              {deferring ? 'Deferring…' : 'Defer to next week'}
+            </button>
+          </div>
+        )}
+
+        {deferral && (
+          <div className="mb-4 border border-amber-400/30 bg-amber-400/6 px-4 py-3">
+            <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-amber-600 dark:text-amber-400">
+              {deferral.today ? 'Deferred to next week' : `Deferred from ${fmtDate(deferral.meetingDate)}`}
+            </p>
+            {deferral.judge && (
+              <p className="mt-1 text-[12.5px] font-nunito text-muted-light dark:text-muted-dark">
+                {deferral.judge.name} is still the judge.
+              </p>
+            )}
+          </div>
+        )}
+
         <AnimatePresence>
           {showRecord && (
             <RecordRoundForm
@@ -93,7 +148,7 @@ export function SuperGuidingLightClient({ records, members }: { records: Guiding
               <TableHead cols={COLS} heads={HEADS} />
               <div className="divide-y divide-border-light dark:divide-border-dark">
                 {records.map((r, i) => {
-                  const isLatestRevealed = i === 0 && r.status === 'REVEALED'
+                  const isLatestRevealed = r.id === latestRevealedId
                   return (
                     <motion.div
                       key={r.id}
@@ -106,7 +161,9 @@ export function SuperGuidingLightClient({ records, members }: { records: Guiding
                           href="/guiding-light/stage"
                           className={`${COLS} items-center px-4 py-3.5 transition-colors bg-primary-light/5 dark:bg-primary-dark/5 hover:bg-primary-light/10 dark:hover:bg-primary-dark/10`}
                         >
-                          <RowContent r={r} />
+                          <LinkBody>
+                            <RowContent r={r} onDefer={() => handleDefer(r.id)} />
+                          </LinkBody>
                         </Link>
                       ) : (
                         <div

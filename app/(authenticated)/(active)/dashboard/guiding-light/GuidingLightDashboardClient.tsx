@@ -5,6 +5,7 @@ import { TableHead } from '@/components/_shared/TableHead'
 import { motion } from 'framer-motion'
 import { fmtDate } from '@/lib/utils/date.utils'
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { ArrowLeft } from 'lucide-react'
 
 interface Member {
@@ -17,6 +18,7 @@ interface Member {
 interface GuidingLightRecord {
   id: string
   meetingDate: string
+  status: string
   isMyWin: boolean
   wasMyJudge: boolean
   winner: Member | null
@@ -41,8 +43,10 @@ export default function GuidingLightDashboardClient({ records, timesWon, timesJu
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-[10px] sm:text-f10 font-mono tracking-[0.2em] uppercase text-muted-light dark:text-muted-dark hover:text-primary-light dark:hover:text-primary-dark transition-colors mb-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
         >
-          <ArrowLeft size={11} aria-hidden="true" />
-          Back to Dashboard
+          <LinkBody>
+            <ArrowLeft size={11} aria-hidden="true" />
+            Back to Dashboard
+          </LinkBody>
         </Link>
         {/* ── Header ── */}
         <motion.div
@@ -137,6 +141,12 @@ export default function GuidingLightDashboardClient({ records, timesWon, timesJu
                           </p>
                         </div>
                       </div>
+                    ) : r.status === 'DEFERRED' ? (
+                      <span className="text-[12px] font-mono text-amber-600 dark:text-amber-400">Deferred</span>
+                    ) : r.status === 'OPEN' ? (
+                      <span className="text-[12px] font-mono text-muted-light dark:text-muted-dark">
+                        Not picked yet
+                      </span>
                     ) : (
                       <span className="text-[12px] font-mono text-muted-light dark:text-muted-dark">—</span>
                     )}

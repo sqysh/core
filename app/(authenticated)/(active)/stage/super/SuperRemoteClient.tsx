@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import {
+  CloudLightning,
   CalendarDays,
   ClipboardList,
   Clock3,
@@ -41,6 +42,7 @@ import {
 } from '@/lib/constants/stage.constants'
 import { GuidingLightControls } from '@/app/(authenticated)/(active)/stage/_components/controls/GuidingLightControls'
 import { Member } from '@/types/guiding-light.types'
+import { startStorm } from '@/lib/actions/attendance/startStorm'
 import { createGame } from '@/lib/actions/games/createGame'
 import { announceGame } from '@/lib/actions/games/wheel/announceGame'
 import { openElection } from '@/lib/actions/election/openElection'
@@ -362,6 +364,16 @@ export function SuperRemoteClient({
             className="flex h-14 items-center justify-center gap-2 border border-amber-400/30 bg-amber-400/6 font-sora text-[13px] font-black text-amber-300 active:bg-amber-400/15 disabled:opacity-40"
           >
             <Shuffle size={16} aria-hidden="true" /> Generate pairs
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              play('ui-tap')
+              void startStorm()
+            }}
+            className="col-span-2 flex h-14 items-center justify-center gap-2 border border-cyan-400/30 bg-cyan-400/6 font-sora text-[13px] font-black text-cyan-300 active:bg-cyan-400/15"
+          >
+            <CloudLightning size={16} aria-hidden="true" /> Roll in a storm (check-in board)
           </button>
         </div>
 
