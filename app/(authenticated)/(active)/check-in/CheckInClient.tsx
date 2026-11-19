@@ -11,6 +11,7 @@ import { useSqyshStage } from './_hooks/useSqyshStage'
 import { useWakeLock } from './_hooks/useWakeLock'
 import { AttendanceRing } from './_components/AttendanceRing'
 import { MemberPanel } from './_components/MemberPanel'
+import { ReactionBar } from './_components/ReactionBar'
 import { RolePanel } from './_components/RolePanel'
 import { SpeechBubbles } from './_components/SpeechBubbles'
 import { SqyshActor } from './_components/SqyshActor'
@@ -108,13 +109,7 @@ export default function CheckInClient({
             <div className="h-full w-full rounded-full bg-[radial-gradient(circle,var(--key-soft)_0%,transparent_62%)] opacity-0 animate-[ciHalo_5.4s_ease_forwards]" />
           </div>
 
-          <SpeechBubbles
-            bubbles={bubbles}
-            firstName={firstName}
-            settle={S}
-            reduce={reduce.current}
-            sendOff={sendOff}
-          />
+          <SpeechBubbles bubbles={bubbles} firstName={firstName} settle={S} reduce={reduce.current} sendOff={sendOff} />
           <AttendanceRing pct={pct} settle={S} numRef={numRef} />
           {stage.sq && (
             <SqyshActor sq={stage.sq} spot={stage.spot} corner={stage.corner} mode={mode} reduce={reduce.current} />
@@ -154,6 +149,8 @@ export default function CheckInClient({
             onFix={setFixing}
           />
         )}
+
+        {checkedIn && <ReactionBar settle={S} />}
       </div>
 
       {/* Top bar: Sqysh lands at the right edge, the bubble gets everything to his left */}

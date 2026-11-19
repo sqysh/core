@@ -26,7 +26,9 @@ export default async function AttendanceBoard() {
     // today's check-ins; swap model/field names for yours
     prisma.attendance.findMany({
       where: { createdAt: { gte: dayStart, lte: dayEnd } },
-      select: { userId: true }
+      select: { userId: true },
+      // arrival order decides each boat's berth, so a reload has to replay it
+      orderBy: { createdAt: 'asc' }
     })
   ])
 

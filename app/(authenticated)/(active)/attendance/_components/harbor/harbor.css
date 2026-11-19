@@ -1,0 +1,228 @@
+/* The harbor's loops. Everything animates transform or opacity only, so a TV can keep it smooth all meeting. */
+
+/* Waves pass under the moored boats left to right; each boat's delay is set from its x so neighbours rise in turn */
+.harbor-bob {
+  animation: harbor-bob 4.6s ease-in-out infinite;
+}
+@keyframes harbor-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.1deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1.1deg);
+  }
+}
+
+.harbor-ripple {
+  animation: harbor-ripple 4.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes harbor-ripple {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scaleX(1.07);
+  }
+}
+
+.harbor-puff {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.9),
+    rgba(220, 244, 255, 0.55) 55%,
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+  animation: harbor-puff 1.9s ease-out forwards;
+}
+@keyframes harbor-puff {
+  from {
+    opacity: 0.85;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.1, 1.6);
+  }
+}
+
+.harbor-drift {
+  animation: harbor-drift linear infinite;
+}
+@keyframes harbor-drift {
+  from {
+    transform: translateX(var(--from));
+  }
+  to {
+    transform: translateX(var(--to));
+  }
+}
+
+.harbor-flight {
+  animation: harbor-flight linear infinite;
+}
+@keyframes harbor-flight {
+  0% {
+    transform: translate(var(--from), 0);
+  }
+  25% {
+    transform: translate(
+      calc(var(--from) + (var(--to) - var(--from)) * 0.25),
+      -30px
+    );
+  }
+  50% {
+    transform: translate(
+      calc(var(--from) + (var(--to) - var(--from)) * 0.5),
+      10px
+    );
+  }
+  55%,
+  100% {
+    transform: translate(var(--to), -10px);
+  }
+}
+
+.harbor-flap {
+  animation: harbor-flap 0.55s ease-in-out infinite alternate;
+  transform-box: fill-box;
+}
+@keyframes harbor-flap {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(-0.35);
+  }
+}
+
+.harbor-swell {
+  animation: harbor-swell linear infinite;
+}
+@keyframes harbor-swell {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--shift));
+  }
+}
+
+.harbor-twinkle {
+  animation: harbor-twinkle ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes harbor-twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  45%,
+  55% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.harbor-cap {
+  animation: harbor-cap ease-out infinite;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes harbor-cap {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px) scaleX(0.3);
+  }
+  18% {
+    opacity: 0.95;
+    transform: translateX(0) scaleX(1);
+  }
+  45% {
+    opacity: 0;
+    transform: translateX(14px) scaleX(1.25);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(14px) scaleX(1.25);
+  }
+}
+
+.harbor-lap {
+  animation: harbor-lap 5.5s ease-in-out infinite;
+}
+@keyframes harbor-lap {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+    stroke-dashoffset: 0;
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(5px);
+    stroke-dashoffset: -60;
+  }
+}
+
+.harbor-flicker {
+  animation: harbor-flicker 2.8s ease-in-out infinite;
+}
+@keyframes harbor-flicker {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  30% {
+    opacity: 0.95;
+  }
+  55% {
+    opacity: 0.72;
+  }
+  80% {
+    opacity: 1;
+  }
+}
+
+.harbor-haze {
+  animation: harbor-haze 14s ease-in-out infinite;
+}
+@keyframes harbor-haze {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.harbor-sweep {
+  animation: harbor-sweep 22s ease-in-out infinite alternate;
+}
+@keyframes harbor-sweep {
+  from {
+    transform: translateX(-600px) skewX(-18deg);
+  }
+  to {
+    transform: translateX(600px) skewX(-18deg);
+  }
+}
+
+/* Plates and their ropes glide from following the boat to their resting place once it's moored */
+.harbor-settle,
+.harbor-settle .harbor-rope {
+  transition:
+    transform 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+    height 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}

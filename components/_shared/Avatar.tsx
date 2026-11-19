@@ -3,11 +3,12 @@ import { getInitials } from '@/lib/utils/shared.utils'
 const SIZES = {
   xs: 'w-7 h-7 text-[9px]',
   sm: 'w-9 h-9 text-[11px]',
-  md: 'w-11 h-11 text-[13px]'
+  md: 'w-11 h-11 text-[13px]',
+  lg: 'w-16 h-16 text-[18px]'
 } as const
 
 interface AvatarProps {
-  member: { name: string; profileImage: string | null }
+  member: { name: string; profileImage?: string | null }
   size?: keyof typeof SIZES
   /** Leave empty when the name is printed beside the avatar */
   alt?: string

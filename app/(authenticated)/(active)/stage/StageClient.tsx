@@ -26,6 +26,7 @@ import { CoDirectorsIntro } from './_components/screens/co-directors/CoDirectors
 import { RoleIntroStage } from './_components/RoleIntroStage'
 import { ClosingStage } from './_components/ClosingStage'
 import { PresenterSpotlight } from './_components/PresenterSpotlight'
+import { ReactionOverlay } from './_components/ReactionOverlay'
 
 // The TV: Greg's laptop on /attendance. Five states, all driven by the host's
 // remote over Pusher. Nothing on this screen is ever touched directly.
@@ -369,6 +370,9 @@ export default function StageClient({
           showChrome={false}
         />
       )}
+
+      {/* ── Emoji from members' phones ── */}
+      <ReactionOverlay />
 
       {/* ── One-tap start gate: arms audio for the meeting, then reveals the stage ── */}
       {!started && (
