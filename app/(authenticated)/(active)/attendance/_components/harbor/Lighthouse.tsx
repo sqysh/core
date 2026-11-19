@@ -38,8 +38,8 @@ export function LighthouseCutout() {
     <img
       src={SCENE_SRC}
       alt=""
-      className="pointer-events-none absolute left-0 top-0 h-full w-full"
-      style={{ clipPath: TOWER }}
+      className="pointer-events-none absolute left-0 top-0"
+      style={{ width: 3200, height: 1280, clipPath: TOWER }}
     />
   )
 }

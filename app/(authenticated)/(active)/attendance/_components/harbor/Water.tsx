@@ -1,4 +1,6 @@
-import { HORIZON_Y, SCENE_H, SCENE_W, SHORE } from '../../_lib/harborMap'
+import { EXTEND_H, HORIZON_Y, SCENE_H, SCENE_W, SHORE } from '../../_lib/harborMap'
+
+const SEA_H = SCENE_H + EXTEND_H
 import { isWater, lengthAt } from '../../_lib/harborLayout'
 import { seeded } from '../../_lib/random'
 
@@ -12,7 +14,12 @@ const SWELLS = [
   { y: 1045, amp: 7, period: 480, seconds: 38, stroke: 4, opacity: 0.38, dash: '170 260' },
   { y: 1110, amp: 10, period: 600, seconds: 31, stroke: 5, opacity: 0.35, dash: '220 320' },
   { y: 1185, amp: 13, period: 760, seconds: 26, stroke: 6, opacity: 0.32, dash: '280 380' },
-  { y: 1255, amp: 16, period: 900, seconds: 22, stroke: 7, opacity: 0.3, dash: '340 420' }
+  { y: 1255, amp: 16, period: 900, seconds: 22, stroke: 7, opacity: 0.3, dash: '340 420' },
+  { y: 1335, amp: 19, period: 1050, seconds: 19, stroke: 8, opacity: 0.28, dash: '400 480' },
+  { y: 1430, amp: 22, period: 1200, seconds: 17, stroke: 9, opacity: 0.26, dash: '460 540' },
+  { y: 1540, amp: 25, period: 1350, seconds: 15, stroke: 10, opacity: 0.24, dash: '520 600' },
+  { y: 1665, amp: 28, period: 1500, seconds: 14, stroke: 11, opacity: 0.22, dash: '580 660' },
+  { y: 1800, amp: 30, period: 1650, seconds: 13, stroke: 12, opacity: 0.2, dash: '640 720' }
 ]
 
 function crestPath(amp: number, period: number, width: number) {
@@ -41,8 +48,8 @@ function scatter(n: number, yMin: number, yMax: number) {
   return out
 }
 
-const GLINTS = scatter(70, HORIZON_Y + 6, SCENE_H - 6)
-const CAPS = scatter(22, HORIZON_Y + 30, SCENE_H - 10)
+const GLINTS = scatter(130, HORIZON_Y + 6, SEA_H - 6)
+const CAPS = scatter(40, HORIZON_Y + 30, SEA_H - 10)
 
 export function Water() {
   return (
@@ -112,14 +119,14 @@ export function Water() {
           left: SCENE_W * 0.3,
           top: HORIZON_Y,
           width: 700,
-          height: SCENE_H - HORIZON_Y,
+          height: SEA_H - HORIZON_Y,
           background: 'linear-gradient(to right, rgba(255,255,255,0), rgba(220,248,255,0.16), rgba(255,255,255,0))',
           mixBlendMode: 'screen'
         }}
       />
 
       {/* Whitecaps forming and spilling */}
-      <svg className="absolute inset-0" width={SCENE_W} height={SCENE_H}>
+      <svg className="absolute inset-0" width={SCENE_W} height={SEA_H}>
         {CAPS.map((c, i) => (
           <path
             key={i}

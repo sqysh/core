@@ -1,6 +1,6 @@
 // The harbor's rules, all in the illustration's own pixels (see harborMap.ts): where the water is, how big a boat
 // is at a given depth, where boats berth, how they sail in, and where their nameplates go.
-import { HORIZON_Y, SCENE_H, SCENE_W, SHORE, WATER_CELL, WATER_ROWS } from './harborMap'
+import { EXTEND_H, HORIZON_Y, SCENE_H, SCENE_W, SHORE, WATER_CELL, WATER_ROWS } from './harborMap'
 
 export interface Point {
   x: number
@@ -70,7 +70,7 @@ export interface Berth extends Point {
 }
 
 const FIRST_ROW = 968
-const LAST_ROW = 1215
+const LAST_ROW = 1470
 
 /**
  * Every spot a boat could moor. Rows are spaced by depth so there's a clear lane in front of each one to sail along,
@@ -97,12 +97,11 @@ export const BERTHS: Berth[] = (() => {
 /** How much each depth is wanted. Mid-to-near water shows boats at a size you can read; the far rows near the horizon
  * are tiny, so they only fill once the closer water is busy. */
 const PREFERENCE: [number, number][] = [
-  [960, 0.18],
-  [1000, 0.35],
-  [1040, 0.75],
-  [1090, 1],
-  [1170, 1],
-  [1220, 0.8]
+  [960, 0.35],
+  [1020, 0.7],
+  [1070, 1],
+  [1440, 1],
+  [1500, 0.7]
 ]
 function depthPreference(y: number) {
   if (y <= PREFERENCE[0][0]) return PREFERENCE[0][1]
@@ -212,7 +211,7 @@ export function planVoyage(berth: Berth, L: number): Voyage {
   }
 
   // Straight up from below the picture
-  const start = { x: berth.x, y: SCENE_H + 0.6 * L }
+  const start = { x: berth.x, y: SCENE_H + EXTEND_H }
   const points = sample([(t) => ({ x: berth.x, y: start.y + (berth.y - start.y) * t })])
   return { points, facing: berth.x < SCENE_W / 2 ? 1 : -1, duration: 7 }
 }

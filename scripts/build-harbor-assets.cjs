@@ -11,6 +11,7 @@ const LIB = ROOT + "/app/(authenticated)/(active)/attendance/_lib/harborMap.ts";
 const DEBUG = process.argv[2]; // optional path for a mask preview PNG
 
 const HORIZON = 919;
+const EXTEND = 900; // rows of extra sea drawn below the picture
 const CUT_TOP = 760; // nothing above this can ever overlap a boat
 
 (async () => {
@@ -120,27 +121,63 @@ const CUT_TOP = 760; // nothing above this can ever overlap a boat
     layers.push({ src: `/images/harbor/${name}`, x: x0, y: y0, w, h, z: hi });
   }
 
-  // Water mask: white where the animated water may draw
+  // Water mask: white where the animated water may draw, and open sea all the way down the extension below
   {
-    const buf = Buffer.alloc(W * H * 4);
-    for (let y = 0; y < H; y++)
+    const TH = H + EXTEND;
+    const buf = Buffer.alloc(W * TH * 4);
+    for (let y = 0; y < TH; y++)
       for (let x = 0; x < W; x++) {
         const o = (y * W + x) * 4;
         buf[o] = buf[o + 1] = buf[o + 2] = 255;
-        buf[o + 3] = water(x, y) ? 255 : 0;
+        buf[o + 3] = y >= H || water(x, y) ? 255 : 0;
       }
-    await sharp(buf, { raw: { width: W, height: H, channels: 4 } })
+    await sharp(buf, { raw: { width: W, height: TH, channels: 4 } })
       .blur(1.5)
       .png()
       .toFile(`${OUT}/water-mask.png`);
   }
 
   await sharp(SRC).webp({ quality: 90 }).toFile(`${OUT}/scene.webp`);
-  // The picture's top row, stretched upward to fill taller screens with exactly its sky
-  await sharp(SRC)
-    .extract({ left: 0, top: 0, width: W, height: 2 })
-    .webp({ quality: 95 })
-    .toFile(`${OUT}/sky-top.webp`);
+  // More sea below the picture: plain open water in the colour of the picture's own bottom edge (taken from the clear
+  // water at either side, so the island's reflection isn't smeared downward), deepening toward the viewer. Its top
+  // edge fades in over the picture's last rows, so the island's reflection fades out with distance and there is no
+  // seam where the two meet. The animated swell, glints and whitecaps give it its detail.
+  {
+    const FADE = 120;
+    const edge = await sharp(SRC)
+      .extract({ left: 0, top: H - 6, width: W, height: 6 })
+      .removeAlpha()
+      .raw()
+      .toBuffer();
+    let r = 0,
+      g = 0,
+      b = 0,
+      n = 0;
+    for (let row = 0; row < 6; row++)
+      for (const x of [...Array(260).keys()].flatMap((i) => [
+        i + 20,
+        W - 20 - i,
+      ])) {
+        const o = (row * W + x) * 3;
+        r += edge[o];
+        g += edge[o + 1];
+        b += edge[o + 2];
+        n++;
+      }
+    const top = `rgb(${Math.round(r / n)},${Math.round(g / n)},${Math.round(b / n)})`;
+    const sea = `<svg width="${W}" height="${EXTEND}"><defs>
+      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${top}"/><stop offset="0.35" stop-color="#0a7fc4"/><stop offset="1" stop-color="#04408c"/>
+      </linearGradient>
+      <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="${FADE / EXTEND}" stop-color="#fff" stop-opacity="1"/>
+      </linearGradient>
+      <mask id="m"><rect width="${W}" height="${EXTEND}" fill="url(#f)"/></mask></defs>
+      <rect width="${W}" height="${EXTEND}" fill="url(#g)" mask="url(#m)"/></svg>`;
+    await sharp(Buffer.from(sea))
+      .webp({ quality: 90 })
+      .toFile(`${OUT}/sea-extension.webp`);
+  }
 
   // Coarse water grid, run-length encoded per row (alternating land/water counts of CELL-wide cells)
   const CELL = 8;
@@ -205,6 +242,8 @@ const CUT_TOP = 760; // nothing above this can ever overlap a boat
 
 export const SCENE_W = ${W}
 export const SCENE_H = ${H}
+/** Extra sea drawn below the picture, in the same units */
+export const EXTEND_H = ${EXTEND}
 export const HORIZON_Y = ${HORIZON}
 
 /** Water grid: one run-length row per ${CELL} units of y from the horizon down, alternating land/water counts of ${CELL}-unit cells */

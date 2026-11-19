@@ -3,6 +3,8 @@
 
 export const SCENE_W = 3200
 export const SCENE_H = 1280
+/** Extra sea drawn below the picture, in the same units */
+export const EXTEND_H = 900
 export const HORIZON_Y = 919
 
 /** Water grid: one run-length row per 8 units of y from the horizon down, alternating land/water counts of 8-unit cells */
