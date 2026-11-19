@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
@@ -21,18 +22,6 @@ interface Props {
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[2fr_1fr_1fr_80px] gap-4 px-4'
 const HEADS = ['Member', 'Company', 'Scheduled', 'Position']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 function PresentingNextBanner({ m, date }: { m: QueueMember; date: string }) {
   return (
@@ -267,7 +256,7 @@ export default function SuperPresenterQueueClient({
 
       {/* ── Queue table ── */}
       <div className="border border-border-light dark:border-border-dark overflow-hidden">
-        <TableHead />
+        <TableHead cols={COLS} heads={HEADS} />
         {sorted.length === 0 ? (
           <p className="px-4 py-8 text-[12.5px] font-nunito text-muted-light dark:text-muted-dark text-center">
             No members in queue.

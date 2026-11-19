@@ -1,12 +1,12 @@
 'use client'
 
+import { Avatar } from '@/components/_shared/Avatar'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { LeadershipPosition } from '@/src/generated/prisma/enums'
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
-import { getInitials } from '@/lib/utils/shared.utils'
 import { LinkBody } from '@/components/_shared/LinkBody'
 
 interface Term {
@@ -39,23 +39,6 @@ function groupByPosition(terms: Term[]) {
   })).filter((g) => g.holders.length > 0)
 }
 
-function Avatar({ holder, size = 'sm' }: { holder: Term['holder']; size?: 'sm' | 'md' }) {
-  const dim = size === 'sm' ? 'w-7 h-7 text-[9px]' : 'w-9 h-9 text-[10px]'
-  return (
-    <div
-      className={`${dim} shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center`}
-    >
-      {holder.profileImage ? (
-        <img src={holder.profileImage} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <span className="font-sora font-black text-primary-light dark:text-primary-dark">
-          {getInitials(holder.name)}
-        </span>
-      )}
-    </div>
-  )
-}
-
 function ReturningBadge() {
   return (
     <span className="shrink-0 text-[8px] font-mono tracking-widest uppercase px-1.5 py-0.5 border bg-primary-light/5 dark:bg-primary-dark/5 text-primary-light dark:text-primary-dark border-primary-light/20 dark:border-primary-dark/20">
@@ -67,7 +50,7 @@ function ReturningBadge() {
 function Holder({ t, returning, size = 'sm' }: { t: Term; returning: boolean; size?: 'sm' | 'md' }) {
   return (
     <div className="flex items-center gap-2.5 min-w-0">
-      <Avatar holder={t.holder} size={size} />
+      <Avatar member={t.holder} size={size === 'sm' ? 'xs' : 'sm'} />
       <div className="min-w-0">
         <div className="flex items-center gap-2 min-w-0">
           <p

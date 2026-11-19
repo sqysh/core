@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { useRouter } from 'next/navigation'
 import { MembershipStatus, UserRole } from '@/src/generated/prisma/enums'
 import { lastSeenColor, lastSeenLabel } from '@/lib/utils/date.utils'
@@ -60,18 +61,6 @@ function SubDot({ active }: { active: boolean }) {
     >
       {active ? '✓' : '✗'}
     </span>
-  )
-}
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
   )
 }
 
@@ -178,7 +167,7 @@ export default function SuperMembersClient({
 
       {/* Active */}
       <div className="border border-border-light dark:border-border-dark overflow-hidden">
-        <TableHead />
+        <TableHead cols={COLS} heads={HEADS} />
         {activeMembers.map((m) => (
           <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
         ))}
@@ -194,7 +183,7 @@ export default function SuperMembersClient({
             <span className="text-[11px] font-mono text-on-dark">{approvedMembers.length}</span>
           </div>
           <div className="border border-amber-200 dark:border-amber-400/20 overflow-hidden">
-            <TableHead />
+            <TableHead cols={COLS} heads={HEADS} />
             {approvedMembers.map((m) => (
               <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
             ))}
@@ -211,7 +200,7 @@ export default function SuperMembersClient({
             <span className="text-[11px] font-mono text-on-dark">{inactiveMembers.length}</span>
           </div>
           <div className="border border-border-light dark:border-border-dark overflow-hidden opacity-70">
-            <TableHead />
+            <TableHead cols={COLS} heads={HEADS} />
             {inactiveMembers.map((m) => (
               <MemberRow key={m.id} m={m} onClick={() => push(m.id)} />
             ))}

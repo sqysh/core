@@ -1,7 +1,9 @@
 'use client'
 
+import { FloatingEmojiEl } from '@/components/_shared/FloatingEmoji'
+import type { FloatingEmoji } from '@/types/attendance.types'
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { formatCurrency } from '@/lib/utils/currency.utils'
@@ -9,12 +11,6 @@ import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { triggerReaction } from '@/lib/actions/visitor-day/triggerReaction'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-export interface FloatingEmoji {
-  id: string
-  emoji: string
-  x: number
-}
 
 interface VisitorClientProps {
   date: string
@@ -68,33 +64,6 @@ const SCHEDULE = [
     note: 'We share recent referrals, face-to-face meetings, and closed business thank-yous.'
   }
 ]
-
-// ─── Floating emoji ───────────────────────────────────────────────────────────
-
-export function FloatingEmojiEl({ emoji, x, onDone }: { emoji: string; x: number; onDone: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 1, y: 0, scale: 0.8, x: 0 }}
-      animate={{
-        opacity: [1, 1, 1, 0],
-        y: -window.innerHeight,
-        scale: [0.8, 1.4, 1.2, 1],
-        x: [0, 30, -25, 20, -15, 0]
-      }}
-      transition={{
-        duration: 5,
-        ease: 'easeOut',
-        x: { duration: 5, ease: 'easeInOut', times: [0, 0.25, 0.5, 0.75, 0.9, 1] },
-        opacity: { duration: 5, times: [0, 0.6, 0.8, 1] }
-      }}
-      onAnimationComplete={onDone}
-      className="fixed bottom-32 z-50 pointer-events-none select-none text-3xl"
-      style={{ left: `${x}%` }}
-    >
-      {emoji}
-    </motion.div>
-  )
-}
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -150,7 +119,7 @@ export default function VisitorClient({
       {/* ── Floating emojis ── */}
       <AnimatePresence>
         {floaters.map((f) => (
-          <FloatingEmojiEl key={f.id} emoji={f.emoji} x={f.x} onDone={() => removeFloater(f.id)} />
+          <FloatingEmojiEl key={f.id} emoji={f.emoji} x={f.x} size="text-3xl" onDone={() => removeFloater(f.id)} />
         ))}
       </AnimatePresence>
 

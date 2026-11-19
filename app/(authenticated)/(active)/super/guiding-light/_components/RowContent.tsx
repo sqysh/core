@@ -1,21 +1,6 @@
+import { Avatar } from '@/components/_shared/Avatar'
 import { GuidingLightRecord } from '../SuperGuidingLightClient'
 import { fmtDate } from '@/lib/utils/date.utils'
-import { getInitials } from '@/lib/utils/shared.utils'
-import { Member } from '@/types/guiding-light.types'
-
-function Avatar({ member }: { member: Member }) {
-  return (
-    <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center">
-      {member.profileImage ? (
-        <img src={member.profileImage} alt={member.name} className="w-full h-full object-cover" />
-      ) : (
-        <span className="font-sora font-black text-[9px] text-primary-light dark:text-primary-dark">
-          {getInitials(member.name)}
-        </span>
-      )}
-    </div>
-  )
-}
 
 export function RowContent({
   r,
@@ -34,7 +19,7 @@ export function RowContent({
       {/* Winner */}
       {r.winner ? (
         <div className="flex items-center gap-2.5 min-w-0">
-          <Avatar member={r.winner} />
+          <Avatar member={r.winner} alt={r.winner.name} size="xs" />
           <div className="min-w-0">
             <p className="font-sora font-bold text-[13px] text-text-light dark:text-text-dark truncate">
               {r.winner.name}

@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fmtDate, timeAgo } from '@/lib/utils/date.utils'
@@ -13,18 +14,6 @@ import { InlineActionBtn } from '@/app/(authenticated)/(active)/super/_component
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-4 px-4'
 const HEADS = ['Members', 'Company · Date', 'Status', 'Created']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 export function OneTwoOneClient({ oneTwoOnes }: { oneTwoOnes: SuperUserOneTwoOne[] }) {
@@ -67,7 +56,7 @@ export function OneTwoOneClient({ oneTwoOnes }: { oneTwoOnes: SuperUserOneTwoOne
           </p>
         ) : (
           <>
-            <TableHead />
+            <TableHead cols={COLS} heads={HEADS} />
             <div className="divide-y divide-border-light dark:divide-border-dark">
               {oneTwoOnes?.map((m, i) => (
                 <motion.div

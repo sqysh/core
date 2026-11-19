@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { QRCodeSVG } from 'qrcode.react'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
-import { FloatingEmojiEl } from '../../../components/_shared/FloatingEmoji'
+import { FloatingEmojiEl } from '@/components/_shared/FloatingEmoji'
 import { FloatingEmoji } from '@/types/attendance.types'
 import { formatCurrency } from '@/lib/utils/currency.utils'
 

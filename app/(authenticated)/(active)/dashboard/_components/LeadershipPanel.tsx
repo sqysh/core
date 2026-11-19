@@ -1,9 +1,9 @@
 'use client'
 
+import { Avatar } from '@/components/_shared/Avatar'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { POSITIONS } from '@/lib/constants/leadership.constants'
-import { getInitials } from '@/lib/utils/shared.utils'
 import { LinkBody } from '@/components/_shared/LinkBody'
 import { LeadershipPosition } from '@/src/generated/prisma/enums'
 
@@ -14,23 +14,6 @@ interface Seat {
 }
 
 const FEATURED: LeadershipPosition[] = ['HOST', 'CO_DIRECTOR']
-
-function Avatar({ holder, size = 'sm' }: { holder: Seat['holder']; size?: 'sm' | 'md' }) {
-  const dim = size === 'sm' ? 'w-9 h-9 text-[11px]' : 'w-11 h-11 text-[13px]'
-  return (
-    <div
-      className={`${dim} shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center`}
-    >
-      {holder.profileImage ? (
-        <img src={holder.profileImage} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <span className="font-sora font-black text-primary-light dark:text-primary-dark">
-          {getInitials(holder.name)}
-        </span>
-      )}
-    </div>
-  )
-}
 
 export default function LeadershipPanel({
   season,
@@ -59,7 +42,7 @@ export default function LeadershipPanel({
       <div className="px-4 py-4 bg-primary-light/5 dark:bg-primary-dark/5 border-b border-border-light dark:border-border-dark flex flex-col gap-4">
         {featured.map((s) => (
           <div key={s.id} className="flex items-center gap-3 min-w-0">
-            <Avatar holder={s.holder} size="md" />
+            <Avatar member={s.holder} size="md" />
             <div className="min-w-0">
               <p className="text-f10 font-mono tracking-[0.12em] uppercase text-primary-light dark:text-primary-dark">
                 {POSITIONS[s.position].label}
@@ -76,7 +59,7 @@ export default function LeadershipPanel({
       <div className="divide-y divide-border-light dark:divide-border-dark">
         {rest.map((s) => (
           <div key={s.id} className="flex items-center gap-3 px-4 py-3 min-w-0">
-            <Avatar holder={s.holder} />
+            <Avatar member={s.holder} />
             <div className="min-w-0 flex-1">
               <p className="font-sora font-bold text-[15px] text-text-light dark:text-text-dark truncate">
                 {s.holder.name}

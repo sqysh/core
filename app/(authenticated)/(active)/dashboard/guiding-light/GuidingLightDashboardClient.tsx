@@ -1,8 +1,9 @@
 'use client'
 
+import { Avatar } from '@/components/_shared/Avatar'
+import { TableHead } from '@/components/_shared/TableHead'
 import { motion } from 'framer-motion'
 import { fmtDate } from '@/lib/utils/date.utils'
-import { getInitials } from '@/lib/utils/shared.utils'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
@@ -28,34 +29,8 @@ interface Props {
   timesJudged: number
 }
 
-function Avatar({ member }: { member: Member }) {
-  return (
-    <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center">
-      {member.profileImage ? (
-        <img src={member.profileImage} alt={member.name} className="w-full h-full object-cover" />
-      ) : (
-        <span className="font-sora font-black text-[9px] text-primary-light dark:text-primary-dark">
-          {getInitials(member.name)}
-        </span>
-      )}
-    </div>
-  )
-}
-
 const COLS = 'grid grid-cols-[1fr_2fr_2fr] gap-4 px-4'
 const HEADS = ['Date', 'Winner', 'Judged By']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 export default function GuidingLightDashboardClient({ records, timesWon, timesJudged }: Props) {
   return (
@@ -112,7 +87,7 @@ export default function GuidingLightDashboardClient({ records, timesWon, timesJu
             </p>
           ) : (
             <>
-              <TableHead />
+              <TableHead cols={COLS} heads={HEADS} />
               <div className="divide-y divide-border-light dark:divide-border-dark">
                 {records.map((r, i) => (
                   <motion.div
@@ -146,7 +121,7 @@ export default function GuidingLightDashboardClient({ records, timesWon, timesJu
                     {/* Winner */}
                     {r.winner ? (
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <Avatar member={r.winner} />
+                        <Avatar member={r.winner} alt={r.winner.name} size="xs" />
                         <div className="min-w-0">
                           <p
                             className={`font-sora font-bold text-[13px] truncate ${
@@ -169,7 +144,7 @@ export default function GuidingLightDashboardClient({ records, timesWon, timesJu
                     {/* Judged by */}
                     {r.judgedBy ? (
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <Avatar member={r.judgedBy} />
+                        <Avatar member={r.judgedBy} alt={r.judgedBy.name} size="xs" />
                         <div className="min-w-0">
                           <p
                             className={`font-sora font-bold text-[13px] truncate ${

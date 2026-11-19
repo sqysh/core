@@ -1,8 +1,8 @@
 'use client'
 
+import { Avatar } from '@/components/_shared/Avatar'
 import { motion, useReducedMotion } from 'framer-motion'
 import { fmtDate } from '@/lib/utils/date.utils'
-import { getInitials } from '@/lib/utils/shared.utils'
 import Link from 'next/link'
 import { LinkBody } from '@/components/_shared/LinkBody'
 
@@ -16,29 +16,6 @@ interface GuidingLightRecord {
 interface Props {
   records: GuidingLightRecord[]
   currentJudge: { id: string; name: string } | null
-}
-
-function Avatar({
-  member,
-  size = 'sm'
-}: {
-  member: { name: string; profileImage: string | null }
-  size?: 'sm' | 'md'
-}) {
-  const dim = size === 'sm' ? 'w-9 h-9 text-[11px]' : 'w-11 h-11 text-[13px]'
-  return (
-    <div
-      className={`${dim} shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center`}
-    >
-      {member.profileImage ? (
-        <img src={member.profileImage} alt={member.name} className="w-full h-full object-cover" />
-      ) : (
-        <span className="font-sora font-black text-primary-light dark:text-primary-dark">
-          {getInitials(member.name)}
-        </span>
-      )}
-    </div>
-  )
 }
 
 export function GuidingLightPanel({ records, currentJudge }: Props) {
@@ -66,7 +43,7 @@ export function GuidingLightPanel({ records, currentJudge }: Props) {
             Last winner · {fmtDate(latest.meetingDate)}
           </p>
           <div className="flex items-center gap-3">
-            <Avatar member={latest.winner} size="md" />
+            <Avatar member={latest.winner} alt={latest.winner.name} size="md" />
             <div className="min-w-0">
               <p className="font-sora font-bold text-[16px] text-text-light dark:text-text-dark truncate">
                 {latest.winner.name}
@@ -130,7 +107,7 @@ export function GuidingLightPanel({ records, currentJudge }: Props) {
               transition={{ duration: 0.3, delay: i * 0.05 }}
               className="flex items-center gap-3 px-4 py-3"
             >
-              {r.winner && <Avatar member={r.winner} />}
+              {r.winner && <Avatar member={r.winner} alt={r.winner.name} />}
               <div className="flex-1 min-w-0">
                 <p className="font-sora font-bold text-[15px] text-text-light dark:text-text-dark truncate">
                   {r.winner?.name ?? '—'}

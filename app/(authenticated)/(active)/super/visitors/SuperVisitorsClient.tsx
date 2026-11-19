@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
@@ -12,18 +13,6 @@ import { Visitor } from '@/types/visitor.types'
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-4 px-4'
 const HEADS = ['Visitor', 'Email', 'Visit Date', 'Invited By']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 export function SuperVisitorsClient({ visitors }: { visitors: Visitor[] }) {
@@ -66,7 +55,7 @@ export function SuperVisitorsClient({ visitors }: { visitors: Visitor[] }) {
           </p>
         ) : (
           <>
-            <TableHead />
+            <TableHead cols={COLS} heads={HEADS} />
             <div className="divide-y divide-border-light dark:divide-border-dark">
               {visitors?.map((v, i) => (
                 <motion.div

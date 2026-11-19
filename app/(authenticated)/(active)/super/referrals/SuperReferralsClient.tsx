@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
@@ -13,18 +14,6 @@ import { timeAgo } from '@/lib/utils/date.utils'
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-4 px-4'
 const HEADS = ['Members', 'Client · Service', 'Status', 'Created']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 export function SuperReferralsClient({ referrals }: { referrals: SuperUserReferral[] }) {
@@ -67,7 +56,7 @@ export function SuperReferralsClient({ referrals }: { referrals: SuperUserReferr
           </p>
         ) : (
           <>
-            <TableHead />
+            <TableHead cols={COLS} heads={HEADS} />
             <div className="divide-y divide-border-light dark:divide-border-dark">
               {referrals?.map((r, i) => (
                 <motion.div

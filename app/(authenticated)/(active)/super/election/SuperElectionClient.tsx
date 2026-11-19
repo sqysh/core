@@ -1,9 +1,10 @@
 'use client'
 
+import { Avatar } from '@/components/_shared/Avatar'
+import { TableHead } from '@/components/_shared/TableHead'
 import { motion } from 'framer-motion'
 import { LeadershipPosition } from '@/src/generated/prisma/enums'
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
-import { getInitials } from '@/lib/utils/shared.utils'
 
 interface Term {
   id: string
@@ -17,32 +18,6 @@ interface Term {
 
 const COLS = 'grid grid-cols-[1.5fr_2fr_1fr] gap-4 px-4'
 const HEADS = ['Position', 'Holder', 'Status']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-function Avatar({ holder }: { holder: Term['holder'] }) {
-  return (
-    <div className="w-7 h-7 shrink-0 rounded-full overflow-hidden border border-primary-light/20 dark:border-primary-dark/20 bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center">
-      {holder.profileImage ? (
-        <img src={holder.profileImage} alt="" className="w-full h-full object-cover" />
-      ) : (
-        <span className="font-sora font-black text-[9px] text-primary-light dark:text-primary-dark">
-          {getInitials(holder.name)}
-        </span>
-      )}
-    </div>
-  )
-}
 
 export function SuperElectionClient({ terms }: { terms: Term[] }) {
   const seasons = [...new Set(terms.map((t) => t.season))].sort((a, b) => b.localeCompare(a))
@@ -98,7 +73,7 @@ export function SuperElectionClient({ terms }: { terms: Term[] }) {
                 </div>
 
                 <div className="border border-border-light dark:border-border-dark overflow-hidden">
-                  <TableHead />
+                  <TableHead cols={COLS} heads={HEADS} />
                   <div className="divide-y divide-border-light dark:divide-border-dark">
                     {byPosition.map(({ position, holders }, i) => (
                       <motion.div
@@ -122,7 +97,7 @@ export function SuperElectionClient({ terms }: { terms: Term[] }) {
                         <div className="flex flex-col gap-2 min-w-0">
                           {holders.map((t) => (
                             <div key={t.id} className="flex items-center gap-2.5 min-w-0">
-                              <Avatar holder={t.holder} />
+                              <Avatar member={t.holder} size="xs" />
                               <div className="min-w-0">
                                 <p className="font-sora font-bold text-[13px] text-text-light dark:text-text-dark truncate">
                                   {t.holder.name}

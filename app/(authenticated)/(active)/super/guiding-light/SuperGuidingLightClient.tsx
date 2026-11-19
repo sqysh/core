@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
 import { Member } from '@/types/guiding-light.types'
@@ -21,18 +22,6 @@ export interface GuidingLightRecord {
 // ─── Sub-components ──────────────────────────────────────────────────────────
 const COLS = 'grid grid-cols-[1fr_2fr_2fr_80px] gap-4 px-4'
 const HEADS = ['Date', 'Winner', 'Judged By', 'Status']
-
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 export function SuperGuidingLightClient({ records, members }: { records: GuidingLightRecord[]; members: Member[] }) {
@@ -101,7 +90,7 @@ export function SuperGuidingLightClient({ records, members }: { records: Guiding
             </p>
           ) : (
             <>
-              <TableHead />
+              <TableHead cols={COLS} heads={HEADS} />
               <div className="divide-y divide-border-light dark:divide-border-dark">
                 {records.map((r, i) => {
                   const isLatestRevealed = i === 0 && r.status === 'REVEALED'

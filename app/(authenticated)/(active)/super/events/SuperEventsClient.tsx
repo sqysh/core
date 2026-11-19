@@ -1,5 +1,6 @@
 'use client'
 
+import { TableHead } from '@/components/_shared/TableHead'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -28,18 +29,6 @@ const COLS = 'grid grid-cols-[2fr_1.5fr_1fr] gap-4 px-4'
 const HEADS = ['Event', 'Org', 'Status']
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
-function TableHead() {
-  return (
-    <div className={`${COLS} py-2.5 bg-bg-light dark:bg-bg-dark border-b border-border-light dark:border-border-dark`}>
-      {HEADS.map((h) => (
-        <span key={h} className="text-[9.5px] font-mono tracking-[0.15em] uppercase text-on-dark">
-          {h}
-        </span>
-      ))}
-    </div>
-  )
-}
-
 function EventRow({ event, index }: { event: SuperEvent; index: number }) {
   const [status, setStatus] = useState<EventStatus>(event.status)
   const [isPending, startTransition] = useTransition()
@@ -121,7 +110,7 @@ export function SuperEventsClient({ events }: { events: SuperEvent[] }) {
           </p>
         ) : (
           <>
-            <TableHead />
+            <TableHead cols={COLS} heads={HEADS} />
             <div className="divide-y divide-border-light dark:divide-border-dark">
               {events.map((e, i) => (
                 <EventRow key={e.id} event={e} index={i} />

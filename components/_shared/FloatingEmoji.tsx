@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion'
 
-export interface FloatingEmoji {
-  id: string
+interface FloatingEmojiElProps {
   emoji: string
   x: number
+  onDone: () => void
+  /** Tailwind text size class */
+  size?: string
 }
 
-export function FloatingEmojiEl({ emoji, x, onDone }: { emoji: string; x: number; onDone: () => void }) {
+export function FloatingEmojiEl({ emoji, x, onDone, size = 'text-4xl' }: FloatingEmojiElProps) {
   return (
     <motion.div
       initial={{ opacity: 1, y: 0, scale: 0.8, x: 0 }}
@@ -23,7 +25,7 @@ export function FloatingEmojiEl({ emoji, x, onDone }: { emoji: string; x: number
         opacity: { duration: 5, times: [0, 0.6, 0.8, 1] }
       }}
       onAnimationComplete={onDone}
-      className="fixed bottom-32 z-50 pointer-events-none select-none text-4xl"
+      className={`fixed bottom-32 z-50 pointer-events-none select-none ${size}`}
       style={{ left: `${x}%` }}
     >
       {emoji}
