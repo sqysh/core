@@ -44,7 +44,6 @@ import { GuidingLightControls } from '../_components/controls/GuidingLightContro
 import { Member } from '@/types/guiding-light.types'
 import { createGame } from '@/lib/actions/games/createGame'
 import { announceGame } from '@/lib/actions/games/wheel/announceGame'
-import { seedGuidingLight } from '@/lib/actions/guiding-light/seedGuidingLight'
 import { openElection } from '@/lib/actions/election/openElection'
 import { announceElection } from '@/lib/actions/election/announceElection'
 import { notifyTreasurer } from '@/lib/actions/treasury/notifyTreasurer'
@@ -196,20 +195,6 @@ export function SuperRemoteClient({
     }
   }
 
-  async function seedGL() {
-    if (busy) return
-    setBusy(true)
-    setErr('')
-    try {
-      const res = await seedGuidingLight()
-      if (!res.success) setErr(res.error ?? 'Could not seed guiding light.')
-    } catch {
-      setErr('Seed failed, check the logs.')
-    } finally {
-      setBusy(false)
-    }
-  }
-
   async function summonTreasurer() {
     if (busy) return
     setBusy(true)
@@ -230,6 +215,12 @@ export function SuperRemoteClient({
     send({ type: 'script.jump', value, play: true })
     setPlaying(true)
     setLast(key)
+  }
+
+  async function recallHost() {
+    play('ui-tap')
+    setErr('')
+    if (!(await send({ type: 'host.recall' }))) setErr('Could not reach the host.')
   }
 
   function togglePlay() {
@@ -467,6 +458,14 @@ export function SuperRemoteClient({
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={recallHost}
+            className="mt-2.5 flex w-full items-center justify-center gap-2 border border-cyan-500/15 px-2 py-2 font-mono text-[10px] tracking-wide text-slate-400 active:bg-cyan-400/5"
+          >
+            <Smartphone size={14} aria-hidden="true" />
+            SEND HOST BACK TO THE REMOTE
+          </button>
         </div>
 
         {/* poll */}
@@ -476,16 +475,6 @@ export function SuperRemoteClient({
           </p>
           <PollPicker send={send} />
         </div>
-
-        {/* utility: reseed the guiding light pool */}
-        <button
-          type="button"
-          onClick={seedGL}
-          disabled={busy}
-          className="flex h-10 items-center justify-center gap-2 border border-cyan-500/15 bg-white/2 font-mono text-[10px] tracking-[0.15em] uppercase text-slate-400 active:bg-cyan-400/5 disabled:opacity-40"
-        >
-          <Sprout size={13} aria-hidden="true" /> Seed guiding light
-        </button>
       </div>
     </div>
   )

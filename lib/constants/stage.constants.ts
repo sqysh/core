@@ -66,14 +66,28 @@ export function buildScript({
       id: 'welcome',
       speaker: 'HOST',
       title: 'Welcome',
-      flow: true, // reads straight into the Guiding Light instructions
+      flow: true, // reads straight into the Leadership Team intro
       lines: [
-        'Good morning, and welcome to Coastal Referral Exchange.',
-        'At this time, we ask that you please silence all your phones.',
-        'CORE helps business owners grow through trusted, referral-based connections.',
-        'We keep a supportive, high-energy room where members build relationships, pass referrals, and share what actually works.',
-        'Four things we ask of every member: be on time, come to every meeting, pass referrals, and have one-to-ones with each other.'
+        'Good morning, Coastal Referral Exchange Members and Visitors!',
+        'With us today, we have: (introduce attendees as needed)',
+        'As we begin our official business, please silence your phones.',
+        'Coastal Referral Exchange helps its members achieve sustainable financial growth through trusted, referral-based connections. By fostering a supportive, high-energy environment, we empower our members to build meaningful relationships, exchange high-quality referrals, and share best practices that drive measurable results — not only for their own businesses, but for the success of their partners and community.',
+        'Here is what we ask of every member:',
+        'Attend Regularly',
+        'Schedule a Face to Face',
+        'Give Referrals',
+        'Track Success',
+        'Recruit Members',
+        'Be a Leader in the North Shore',
+        'Maintain Professionalism'
       ]
+    },
+    {
+      id: 'leadership',
+      speaker: 'HOST',
+      title: 'Leadership Team',
+      // no flow: the teleprompter stops here while the leadership introduce themselves
+      lines: ['At this time, I\u2019d like our Leadership Team to please stand and state your name and position.']
     },
     {
       id: 'guiding-light',
@@ -123,6 +137,18 @@ export function buildScript({
       title: 'Membership Committee',
       lines: [],
       handoff: { to: 'MEMBERSHIP', name: memb, note: 'Applications, renewals, and open seats.' }
+    },
+    {
+      id: 'lynn-chamber',
+      speaker: 'HOST',
+      title: 'Lynn Chamber of Commerce',
+      lines: ['Next, a connection moment from the Lynn Chamber of Commerce.']
+    },
+    {
+      id: 'latino-business',
+      speaker: 'HOST',
+      title: 'Latino Business Association',
+      lines: ['And now a connection moment from the Latino Business Association.']
     },
     {
       id: 'treasurer',
@@ -221,6 +247,8 @@ export type StageCommand =
   | { type: 'closing.show' }
   // back to the check-in board
   | { type: 'holding' }
+  // pull the host's phone back to the host remote if they wandered out of it
+  | { type: 'host.recall' }
 
 // Quotes that cycle on the closing screen once the host has read the closing words.
 export const CLOSING_QUOTES: { text: string; who: string }[] = [
@@ -279,6 +307,8 @@ export type StepId =
   | 'co-directors'
   | 'event-coordinator'
   | 'membership'
+  | 'lynn-chamber'
+  | 'latino-business'
   | 'treasurer'
   | 'presentation'
   | 'activity'
@@ -308,9 +338,9 @@ export const RUN_OF_SHOW: Step[] = [
     id: 'guiding-light',
     title: 'Guiding Light',
     help: (n) =>
-      `Puts ${n.guidingLight ?? 'the Guiding Light'} up on the TV as you read the intro. After the 60 seconds, tapping it again brings the winner back.`,
-    guide: (n) => `Put ${n.guidingLight ?? 'the Guiding Light'} up on the TV as this week’s Guiding Light.`,
-    button: 'Show the Guiding Light'
+      `Once the leadership team is done, tap to read the Guiding Light intro. Tap again to put ${n.guidingLight ?? 'the Guiding Light'} up on the TV. After the 60 seconds, tapping it again brings the winner back.`,
+    guide: () => 'Once the leadership team is done, tap to read the Guiding Light intro.',
+    button: 'Read the Guiding Light intro'
   },
   {
     id: 'education',
@@ -349,6 +379,20 @@ export const RUN_OF_SHOW: Step[] = [
     help: (n) => `Puts ${n.membership ?? 'the Membership Committee'} on the TV for membership updates.`,
     guide: (n) => `Hand it to ${n.membership ?? 'the Membership Committee'} for membership updates.`,
     button: 'Membership Committee'
+  },
+  {
+    id: 'lynn-chamber',
+    title: 'Lynn Chamber of Commerce',
+    help: () => 'Reads a short intro, then hand it over for the Lynn Chamber of Commerce connection moment.',
+    guide: () => 'Hand it over for the Lynn Chamber of Commerce connection moment.',
+    button: 'Lynn Chamber of Commerce'
+  },
+  {
+    id: 'latino-business',
+    title: 'Latino Business Association',
+    help: () => 'Reads a short intro, then hand it over for the Latino Business Association connection moment.',
+    guide: () => 'Hand it over for the Latino Business Association connection moment.',
+    button: 'Latino Business Association'
   },
   {
     id: 'treasurer',

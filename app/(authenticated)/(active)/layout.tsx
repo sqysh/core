@@ -5,6 +5,8 @@ import GuidingLightListener from '@/components/layout/GuidingLightListener'
 import TreasurerListener from '@/components/layout/TreasurerListener'
 import GameAnnounceListener from '@/components/game/shared/GameAnnounceListener'
 import ElectionListener from '@/components/layout/ElectionListener'
+import HostRecallListener from '@/components/layout/HostRecallListener'
+import { isActingHost } from '@/lib/actions/leadership/isActingHost'
 import { LivePoll } from './polls/LivePoll'
 
 export default async function ActiveLayout({ children }: { children: React.ReactNode }) {
@@ -24,12 +26,16 @@ export default async function ActiveLayout({ children }: { children: React.React
     redirect('/onboarding')
   }
 
+  const isHost = await isActingHost(session.user.id)
+
   return (
     <>
       <GuidingLightListener />
       <TreasurerListener />
       <GameAnnounceListener />
       <ElectionListener />
+
+      {isHost && <HostRecallListener />}
 
       <LivePoll />
 

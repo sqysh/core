@@ -49,6 +49,10 @@ function screenCommandFor(
       return { type: 'event-coordinator.show' }
     case 'membership':
       return { type: 'membership.show' }
+    case 'lynn-chamber':
+      return { type: 'script.jump', value: 'lynn-chamber' }
+    case 'latino-business':
+      return { type: 'script.jump', value: 'latino-business' }
     case 'treasurer':
       return { type: 'treasurer.show' }
     case 'presentation':
@@ -105,6 +109,7 @@ export function HostRemoteClient({
   const [menuOpen, setMenuOpen] = useState(false)
   // treasurer is a two-tap step: first the teleprompter intro, then the board
   const [treasurerBoard, setTreasurerBoard] = useState(false)
+  const [glIntro, setGlIntro] = useState(false)
   // presenter with nothing uploaded: their name + clock on the TV until the host ends it
   const [spotlight, setSpotlight] = useState(false)
   // once the judge picks, the Guiding Light step shows the winner, not the intro
@@ -126,13 +131,15 @@ export function HostRemoteClient({
       ? 'They run the deck from their phone, so take over below only if you need to.'
       : nextStep?.id === 'guiding-light' && glRevealed
         ? 'Tap to put the winner back up on the TV.'
-        : nextStep?.id === 'treasurer' && treasurerBoard
-          ? 'Now tap to put the treasurer board on the TV.'
-          : nextStep?.id === 'presentation' && !presentation && spotlight
-            ? 'Tap again when they wrap up and the script moves on to the Activity Round.'
-            : nextStep?.id === 'presentation' && !presentation
-              ? `Nothing was uploaded, so tap to put ${names.presenter ?? 'the presenter'}’s name and the clock on the TV while they talk.`
-              : (shown?.guide(names) ?? '')
+        : nextStep?.id === 'guiding-light' && glIntro
+          ? 'Now tap to put the Guiding Light on the TV.'
+          : nextStep?.id === 'treasurer' && treasurerBoard
+            ? 'Now tap to put the treasurer board on the TV.'
+            : nextStep?.id === 'presentation' && !presentation && spotlight
+              ? 'Tap again when they wrap up and the script moves on to the Activity Round.'
+              : nextStep?.id === 'presentation' && !presentation
+                ? `Nothing was uploaded, so tap to put ${names.presenter ?? 'the presenter'}’s name and the clock on the TV while they talk.`
+                : (shown?.guide(names) ?? '')
 
   // Sqysh reacts to the meeting: waves hello, splats excited when the step moves,
   // thinks while a command is in flight, and otherwise idles.
@@ -195,7 +202,22 @@ export function HostRemoteClient({
         setPlaying(okStep)
         break
       case 'guiding-light':
+        if (!glIntro) {
+          // first tap: teleprompter reads the Guiding Light intro
+          okStep = await send({ type: 'script.jump', value: 'guiding-light', play: true })
+          if (okStep) {
+            setGlIntro(true)
+            setPlaying(true)
+            setLiveIdx(stepIdx)
+            setBusy(false)
+            play('ui-primary')
+            return // stay on this step; next tap puts the Guiding Light on the TV
+          }
+          break
+        }
+        // second tap: switch to the Guiding Light screen
         okStep = await send({ type: 'guiding-light.show' })
+        if (okStep) setGlIntro(false)
         break
       case 'education':
         okStep = await send({ type: 'education.show' })
@@ -216,6 +238,14 @@ export function HostRemoteClient({
         break
       case 'membership':
         okStep = await send({ type: 'membership.show' })
+        break
+      case 'lynn-chamber':
+        okStep = await send({ type: 'script.jump', value: 'lynn-chamber', play: true })
+        setPlaying(okStep)
+        break
+      case 'latino-business':
+        okStep = await send({ type: 'script.jump', value: 'latino-business', play: true })
+        setPlaying(okStep)
         break
       case 'treasurer':
         if (!treasurerBoard) {
@@ -540,7 +570,9 @@ export function HostRemoteClient({
                       ? 'Show the treasurer board'
                       : nextStep?.id === 'guiding-light' && glRevealed
                         ? 'Show the winner'
-                        : nextStep?.button
+                        : nextStep?.id === 'guiding-light' && glIntro
+                          ? 'Show the Guiding Light'
+                          : nextStep?.button
                 }
                 icon={<ChevronRight size={24} aria-hidden="true" />}
                 iconAfter
@@ -669,10 +701,10 @@ export function HostRemoteClient({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10, transition: { duration: 0.14 } }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="absolute inset-0 z-10 flex flex-col bg-bg-light/98 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm dark:bg-bg-dark/98"
+            className="fixed inset-0 z-50 flex flex-col bg-bg-light/98 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm dark:bg-bg-dark/98"
           >
-            <div className="mx-auto flex w-full max-w-140 flex-1 flex-col px-5">
-              <div className="flex items-center justify-between pb-3 pt-1">
+            <div className="mx-auto flex min-h-0 w-full max-w-140 flex-1 flex-col px-5">
+              <div className="flex shrink-0 items-center justify-between pb-3 pt-1">
                 <span className="font-mono text-[12px] tracking-widest text-primary-light uppercase [text-shadow:0_0_10px_rgba(96,165,250,0.3)] dark:text-primary-dark dark:[text-shadow:0_0_10px_rgba(96,165,250,0.45)]">
                   Jump to a section
                 </span>
@@ -689,15 +721,15 @@ export function HostRemoteClient({
                 </button>
               </div>
               <div
-                className="mb-3 h-px w-full bg-linear-to-r from-transparent via-primary-light/50 to-transparent dark:via-primary-dark/60"
+                className="mb-3 h-px w-full shrink-0 bg-linear-to-r from-transparent via-primary-light/50 to-transparent dark:via-primary-dark/60"
                 aria-hidden="true"
               />
-              <p className="mb-3 font-nunito text-[12px] leading-snug text-text-light/50 dark:text-text-dark/45">
+              <p className="mb-3 shrink-0 font-nunito text-[12px] leading-snug text-text-light/50 dark:text-text-dark/45">
                 Taps the TV straight to that part of the meeting. Use it to skip ahead or go back — the big button keeps
                 going from there.
               </p>
               <motion.ol
-                className="flex-1 space-y-2 overflow-y-auto"
+                className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pb-4"
                 variants={{ hidden: {}, show: { transition: { staggerChildren: 0.035 } } }}
                 initial="hidden"
                 animate="show"
