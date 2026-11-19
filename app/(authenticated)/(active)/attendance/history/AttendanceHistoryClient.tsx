@@ -11,21 +11,6 @@ import { useState } from 'react'
 import { HistoryRowEl } from '@/app/(authenticated)/(active)/attendance/history/_components/HistoryRowEl'
 import { LinkBody } from '@/components/_shared/LinkBody'
 
-function Stat({ value, sub, highlight }: { value: string | number; sub: string; highlight?: boolean }) {
-  return (
-    <div>
-      <p
-        className={`font-sora text-[28px] font-black leading-none tabular-nums sm:text-[32px] ${
-          highlight ? 'text-primary-light dark:text-primary-dark' : 'text-text-light dark:text-text-dark'
-        }`}
-      >
-        {value}
-      </p>
-      <p className="mt-1.5 text-f9 font-mono tracking-widest text-muted-light dark:text-muted-dark">{sub}</p>
-    </div>
-  )
-}
-
 export function AttendanceHistoryClient({ userName, rows, summary, squares }: AttendanceHistoryClientProps) {
   const grouped = groupByMonth(rows)
   const firstName = userName.split(' ')[0]

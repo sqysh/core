@@ -3,7 +3,6 @@ import { electionReminderTemplate } from '@/lib/email/election-reminder.template
 import { resend } from '@/lib/resend/resend'
 import prisma from '@/prisma/client'
 import { LeadershipPosition } from '@/src/generated/prisma/enums'
-import { Resend } from 'resend'
 
 const DRY_RUN = process.argv.includes('--send') === false
 const TEST_EMAIL = 'greg@sqysh.com'

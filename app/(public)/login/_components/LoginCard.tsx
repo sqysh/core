@@ -1,6 +1,6 @@
 import { FC, FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertCircle, ArrowRight, Loader2, Mail } from 'lucide-react'
+import { AlertCircle, ArrowRight, Mail } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { ActionBody } from '@/components/_shared/LinkBody'
 

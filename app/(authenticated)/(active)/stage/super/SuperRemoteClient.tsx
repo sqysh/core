@@ -20,7 +20,6 @@ import {
   SkipBack,
   Smartphone,
   Sparkles,
-  Sprout,
   Square,
   Trophy,
   Tv,

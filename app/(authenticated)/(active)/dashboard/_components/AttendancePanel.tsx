@@ -1,13 +1,11 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { buildYearOfThursdays } from '@/lib/utils/attendance.utils'
 import { AttendanceSquareEl } from './AttendanceSquareEl'
 import Link from 'next/link'
 import { History } from 'lucide-react'
-import { fmtDate } from '@/lib/utils/date.utils'
 import { UserAttendanceRow } from '@/types/attendance.types'
 import { useAppStore } from '@/lib/store/appStore'
 import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
@@ -59,7 +57,6 @@ export function AttendancePanel({
   const pct = total > 0 ? Math.round((attended / total) * 100) : 0
 
   // Only show missed meetings in the detail list — strip them out of the full row list
-  const missedRows = useMemo(() => rows.filter((r) => !r.attended && r.meetingId), [rows])
 
   function handleReinstateClick(meetingId: string, date: string) {
     play('se9')

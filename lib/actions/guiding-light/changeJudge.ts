@@ -2,7 +2,6 @@
 
 import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
-import { chapterId } from '@/lib/constants/api/chapterId'
 import { pusher } from '@/lib/pusher/pusher'
 
 export async function changeJudge(guidingLightId: string, newJudgeId: string) {

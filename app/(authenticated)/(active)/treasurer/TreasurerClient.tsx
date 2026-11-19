@@ -1,4 +1,3 @@
-import React from 'react'
 import { TreasuryBalanceCard } from './_components/TreasuryBalanceCard'
 import { ObligationsCard } from './_components/ObligationsCard'
 import { TreasurerRoster } from './_components/TreasurerRoster'

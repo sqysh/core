@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { FC, memo, MouseEventHandler } from 'react'
+import { FC, memo, MouseEventHandler } from 'react'
 
 interface PictureProps {
   src: string

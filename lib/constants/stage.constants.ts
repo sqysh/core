@@ -41,7 +41,6 @@ export const DOORS_OPEN = '7:00'
 export const MEETING_STARTS = '7:15'
 
 export function buildScript({
-  host,
   guidingLight,
   education,
   presenter,

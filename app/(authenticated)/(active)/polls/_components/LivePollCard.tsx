@@ -2,7 +2,7 @@ import { castVote } from '@/lib/actions/poll/castVote'
 import { usePollResults } from '@/lib/hooks/usePollResults'
 import { pct } from '@/lib/utils/math.utils'
 import { PollView } from '@/types/poll.types'
-import { Check, X } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
 export function LivePollCard({ poll }: { poll: PollView }) {

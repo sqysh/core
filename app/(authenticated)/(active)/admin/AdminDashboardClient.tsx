@@ -1,6 +1,6 @@
 'use client'
 
-import { Users, Activity, DollarSign, Clock, FileText, LayoutDashboard, ArrowLeft } from 'lucide-react'
+import { Users, Activity, DollarSign, Clock, FileText, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { AdminDashboardData } from '@/lib/actions/admin/getAdminDashboardData'
 import { StatTile } from '@/app/(authenticated)/(active)/admin/_components/StatTile'
