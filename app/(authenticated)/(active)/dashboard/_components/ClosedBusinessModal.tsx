@@ -1,11 +1,11 @@
-import { createAnchor } from '@/lib/actions/tyfcb/createAnchor'
+import { createClosedBusiness } from '@/lib/actions/tyfcb/createAnchor'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { useState } from 'react'
-import { Modal } from '../../../../../components/_shared/Modal'
+import { Modal } from '@/components/_shared/Modal'
 import { MemberOptions } from './MemberOptions'
 import { inputCls } from '@/lib/constants/member/dashboard.constants'
 import { formatAmountInput } from '@/lib/utils/currency.utils'
-import { FormField } from '../../../../../components/_shared/FormField'
+import { FormField } from '@/components/_shared/FormField'
 import { FormSelectField } from '@/components/_shared/FormSelectField'
 
 export function ClosedBusinessModal({ open, members, onClose, onSuccess }) {
@@ -22,7 +22,7 @@ export function ClosedBusinessModal({ open, members, onClose, onSuccess }) {
     if (!amount) return setError('Please enter the amount.')
     if (!desc) return setError('Please add a brief description.')
     setIsPending(true)
-    const res = await createAnchor({
+    const res = await createClosedBusiness({
       businessValue: Number(amount),
       description: desc,
       closedDate: new Date(date),

@@ -3,7 +3,7 @@ import { OneTwoOneClient } from './OneTwoOneClient'
 import { chapterId } from '@/lib/constants/api/chapterId'
 
 export default async function OneTwoOnePage() {
-  const result = await prisma.parley
+  const result = await prisma.oneTwoOne
     .findMany({
       where: { chapterId },
       orderBy: { createdAt: 'desc' },

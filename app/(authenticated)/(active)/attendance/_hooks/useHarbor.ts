@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { Member } from '@/types/attendance.types'
-import { ART_LENGTH, BOATS, BoatKind, PALETTES, Palette, WATERLINE } from '../_lib/boats'
+import { ART_LENGTH, BOATS, BoatKind, PALETTES, Palette, WATERLINE } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
 import {
   Berth,
   Point,
@@ -13,8 +13,8 @@ import {
   plateScale,
   planVoyage,
   plateWidth
-} from '../_lib/harborLayout'
-import { hashString } from '../_lib/random'
+} from '@/app/(authenticated)/(active)/attendance/_lib/harborLayout'
+import { hashString } from '@/app/(authenticated)/(active)/attendance/_lib/random'
 
 export interface FleetBoat {
   id: string

@@ -1,10 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
-import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
+import { auth } from '@/lib/auth/auth'
+import { buildLogMessage, getRequestContext } from '@/lib/utils/log.utils'
 import { getActor } from './getActor'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function exportUserData(): Promise<{
   success: boolean

@@ -5,7 +5,7 @@ import VisitorClient from './VisitorClient'
 
 export interface GroupStats {
   totalRevenue: number
-  totalParleys: number
+  totalOneTwoOnes: number
   totalReferrals: number
 }
 
@@ -15,25 +15,25 @@ export async function getGroupStats(): Promise<{
   error?: string
 }> {
   try {
-    const [anchors, totalParleys, totalReferrals] = await Promise.all([
-      prisma.anchor
+    const [closedBusinesses, totalOneTwoOnes, totalReferrals] = await Promise.all([
+      prisma.closedBusiness
         .findMany({
           select: { businessValue: true }
         })
         .catch(() => []),
-      prisma.parley
+      prisma.oneTwoOne
         .count({
           where: { status: { not: 'CANCELLED' } }
         })
         .catch(() => 0),
-      prisma.treasureMap.count({}).catch(() => 0)
+      prisma.referral.count({}).catch(() => 0)
     ])
 
-    const totalRevenue = anchors.map((a) => parseFloat(String(a.businessValue))).reduce((sum, val) => sum + val, 0)
+    const totalRevenue = closedBusinesses.map((a) => parseFloat(String(a.businessValue))).reduce((sum, val) => sum + val, 0)
 
     return {
       success: true,
-      data: { totalRevenue, totalParleys, totalReferrals }
+      data: { totalRevenue, totalOneTwoOnes, totalReferrals }
     }
   } catch (err) {
     return { success: false, error: 'Failed to load group stats' }

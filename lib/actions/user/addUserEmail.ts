@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { createLog } from '@/lib/utils/api/createLog'
 import { revalidatePath } from 'next/cache'
-import { EMAIL_REGEX } from '../../utils/regex.utils'
+import { EMAIL_REGEX } from '@/lib/utils/regex.utils'
 
 const ALLOWED_DOMAINS = ['gmail.com', 'googlemail.com']
 

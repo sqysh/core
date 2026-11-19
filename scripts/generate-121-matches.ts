@@ -47,7 +47,7 @@ async function main() {
   const since = new Date()
   since.setDate(since.getDate() - HISTORY_WEEKS * 7)
 
-  const past = await prisma.parley.findMany({
+  const past = await prisma.oneTwoOne.findMany({
     where: { chapterId, createdAt: { gte: since } },
     select: { requesterId: true, recipientId: true, createdAt: true }
   })
@@ -60,7 +60,7 @@ async function main() {
   }
 
   console.log(`Members: ${members.length}`)
-  console.log(`Parleys in last ${HISTORY_WEEKS} weeks: ${past.length}`)
+  console.log(`OneTwoOnes in last ${HISTORY_WEEKS} weeks: ${past.length}`)
   console.log(`Distinct pairs with history: ${history.size}\n`)
 
   const pool = shuffle(members)
@@ -123,14 +123,14 @@ async function main() {
   if (missing.length) console.log(`MISSING: ${missing.map((m) => m.name).join(', ')}`)
 
   if (DRY_RUN) {
-    console.log('\nDry run, nothing written. Pass --send to create Parley records.')
+    console.log('\nDry run, nothing written. Pass --send to create OneTwoOne records.')
     return
   }
 
   const scheduledAt = new Date()
   scheduledAt.setDate(scheduledAt.getDate() + 7)
 
-  const created = await prisma.parley.createMany({
+  const created = await prisma.oneTwoOne.createMany({
     data: pairs.map(([a, b]) => ({
       chapterId,
       requesterId: a.id,
@@ -140,7 +140,7 @@ async function main() {
     }))
   })
 
-  console.log(`\nCreated ${created.count} Parley records.`)
+  console.log(`\nCreated ${created.count} OneTwoOne records.`)
 }
 
 main()

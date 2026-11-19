@@ -1,10 +1,10 @@
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
-import googleProvider from '../providers/google.provider'
-import { magicLinkConfig } from '../providers/magic-link.provider'
-import { handleEmailCallback } from '../callbacks/magic-link.callback'
-import { handleGoogleCallback } from '../callbacks/google.callback'
+import googleProvider from '@/lib/providers/google.provider'
+import { magicLinkConfig } from '@/lib/providers/magic-link.provider'
+import { handleEmailCallback } from '@/lib/callbacks/magic-link.callback'
+import { handleGoogleCallback } from '@/lib/callbacks/google.callback'
 import { UserRole } from '@/src/generated/prisma/enums'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({

@@ -15,12 +15,12 @@ export interface ActivityItem {
 }
 
 interface DashboardStats {
-  parleyThisWeek: number
-  treasureMapsThisWeek: number
-  anchorsThisWeek: number
-  totalParleys: number
-  totalTreasureMaps: number
-  totalAnchors: number
+  oneTwoOneThisWeek: number
+  referralsThisWeek: number
+  closedBusinessesThisWeek: number
+  totalOneTwoOnes: number
+  totalReferrals: number
+  totalClosedBusinesses: number
   closedAmountThisWeek: string
   totalClosedAmount: string
 }

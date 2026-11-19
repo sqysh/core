@@ -1,9 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { EXTEND_H, ISLAND_LAYERS, SCENE_H, SCENE_W } from '../../_lib/harborMap'
-import { WATERLINE } from '../../_lib/boats'
-import { FleetBoat } from '../../_hooks/useHarbor'
+import { EXTEND_H, ISLAND_LAYERS, SCENE_H, SCENE_W } from '@/app/(authenticated)/(active)/attendance/_lib/harborMap'
+import { WATERLINE } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
+import { FleetBoat } from '@/app/(authenticated)/(active)/attendance/_hooks/useHarbor'
 import { HarborBoat, Nameplate } from './HarborBoat'
 import { LighthouseCutout, LighthouseLight, SCENE_SRC } from './Lighthouse'
 import { DriftingClouds, Seabirds } from './Sky'

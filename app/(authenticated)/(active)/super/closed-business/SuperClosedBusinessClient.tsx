@@ -4,8 +4,8 @@ import { TableHead } from '@/components/_shared/TableHead'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { SuperUserAnchor } from '@/types/super.types'
-import { deleteAnchor } from '@/lib/actions/super/superUserActions'
+import { SuperUserClosedBusiness } from '@/types/super.types'
+import { deleteClosedBusiness } from '@/lib/actions/super/superUserActions'
 import { SuperDashStatusBadge } from '@/app/(authenticated)/(active)/super/_components/SuperDashStatusBadge'
 import { InlineActionBtn } from '@/app/(authenticated)/(active)/super/_components/InlineActionButton'
 import { useSounds } from '@/lib/hooks/useSounds'
@@ -17,7 +17,7 @@ const COLS = 'grid grid-cols-[1fr_2fr_1.5fr_1fr_1fr] gap-4 px-4'
 const HEADS = ['Value', 'Members', 'Description · Closed', 'Status', 'Created']
 
 // ─── Main ────────────────────────────────────────────────────────────────────
-export function SuperClosedBusinessClient({ anchors }: { anchors: SuperUserAnchor[] }) {
+export function SuperClosedBusinessClient({ closedBusinesses }: { closedBusinesses: SuperUserClosedBusiness[] }) {
   const router = useRouter()
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
@@ -25,7 +25,7 @@ export function SuperClosedBusinessClient({ anchors }: { anchors: SuperUserAncho
 
   async function handleDelete(id: string) {
     setLoadingId(id)
-    const res = await deleteAnchor(id)
+    const res = await deleteClosedBusiness(id)
     if (res.success) {
       play('se7')
       router.refresh()
@@ -46,12 +46,12 @@ export function SuperClosedBusinessClient({ anchors }: { anchors: SuperUserAncho
             Closed Business
           </h1>
         </div>
-        <span className="text-[11px] font-mono text-on-dark">{anchors?.length ?? 0}</span>
+        <span className="text-[11px] font-mono text-on-dark">{closedBusinesses?.length ?? 0}</span>
       </div>
 
       {/* ── Table ── */}
       <div className="border border-border-light dark:border-border-dark overflow-hidden">
-        {anchors?.length === 0 ? (
+        {closedBusinesses?.length === 0 ? (
           <p className="px-4 py-8 text-[12.5px] font-nunito text-muted-light dark:text-muted-dark text-center">
             No closed business yet
           </p>
@@ -59,7 +59,7 @@ export function SuperClosedBusinessClient({ anchors }: { anchors: SuperUserAncho
           <>
             <TableHead cols={COLS} heads={HEADS} />
             <div className="divide-y divide-border-light dark:divide-border-dark">
-              {anchors?.map((a, i) => (
+              {closedBusinesses?.map((a, i) => (
                 <motion.div
                   key={a.id}
                   initial={{ opacity: 0 }}

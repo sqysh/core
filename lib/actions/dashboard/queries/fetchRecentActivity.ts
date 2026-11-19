@@ -1,8 +1,8 @@
 import prisma from '@/prisma/client'
 
 export async function fetchRecentActivity(userId: string) {
-  const [recentParleys, recentMaps, recentAnchors] = await Promise.all([
-    prisma.parley.findMany({
+  const [recentOneTwoOnes, recentMaps, recentClosedBusinesses] = await Promise.all([
+    prisma.oneTwoOne.findMany({
       where: { OR: [{ requesterId: userId }, { recipientId: userId }] },
       orderBy: { createdAt: 'desc' },
       select: {
@@ -13,7 +13,7 @@ export async function fetchRecentActivity(userId: string) {
         recipient: { select: { name: true } }
       }
     }),
-    prisma.treasureMap.findMany({
+    prisma.referral.findMany({
       where: { OR: [{ giverId: userId }, { receiverId: userId }] },
       orderBy: { createdAt: 'desc' },
       select: {
@@ -26,7 +26,7 @@ export async function fetchRecentActivity(userId: string) {
         receiver: { select: { name: true } }
       }
     }),
-    prisma.anchor.findMany({
+    prisma.closedBusiness.findMany({
       where: { OR: [{ giverId: userId }, { receiverId: userId }] },
       orderBy: { createdAt: 'desc' },
       select: {
@@ -40,8 +40,8 @@ export async function fetchRecentActivity(userId: string) {
     })
   ])
   return {
-    recentParleys,
+    recentOneTwoOnes,
     recentMaps,
-    recentAnchors
+    recentClosedBusinesses
   }
 }

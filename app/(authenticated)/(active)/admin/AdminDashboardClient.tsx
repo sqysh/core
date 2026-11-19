@@ -34,9 +34,9 @@ export default function AdminDashboardClient({ data }: { data: AdminDashboardDat
         <FadeUp delay={0.05} className="mb-6">
           <div className="grid grid-cols-3 border-t border-l border-border-light dark:border-border-dark">
             <StatTile value={stats.totalRevenue} label="Revenue" icon={DollarSign} delay={0.06} />
-            <StatTile value={stats.totalParleys} label="Meetings" icon={Users} delay={0.09} />
+            <StatTile value={stats.totalOneTwoOnes} label="Meetings" icon={Users} delay={0.09} />
             <StatTile value={stats.totalReferrals} label="Referrals" icon={Activity} delay={0.12} />
-            <StatTile value={stats.totalAnchors} label="Closed" icon={Clock} delay={0.15} />
+            <StatTile value={stats.totalClosedBusinesses} label="Closed" icon={Clock} delay={0.15} />
             <StatTile value={stats.activeMembers} label="Members" icon={Users} delay={0.18} />
             <StatTile value={stats.pendingApps} label="Pending" icon={FileText} delay={0.21} />
           </div>

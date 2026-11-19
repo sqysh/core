@@ -8,7 +8,7 @@ import { broadcast } from './broadcast'
 import { revalidatePath } from 'next/cache'
 import { pusher } from '@/lib/pusher/pusher'
 import { POLL_LAUNCH_EVENT, POLL_LIVE_CHANNEL } from '@/lib/constants/poll.constants'
-import { isActingHost } from '../leadership/isActingHost'
+import { isActingHost } from '@/lib/actions/leadership/isActingHost'
 
 export async function launchPoll(pollId: string): Promise<ActionResult> {
   const session = await auth()

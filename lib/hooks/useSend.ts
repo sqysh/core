@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { StageCommand } from '../constants/stage.constants'
-import { sendStageCommand } from '../actions/stage/sendStageCommand'
+import { StageCommand } from '@/lib/constants/stage.constants'
+import { sendStageCommand } from '@/lib/actions/stage/sendStageCommand'
 
 export function useSend() {
   const [ok, setOk] = useState(true)

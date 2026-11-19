@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Script } from '../_lib/script'
-import type { SqyshMode } from '../_lib/types'
+import type { Script } from '@/app/(authenticated)/(active)/check-in/_lib/script'
+import type { SqyshMode } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 // Sqysh's act, driven off the script's mode schedule
 export function useSqyshAct(script: Script) {

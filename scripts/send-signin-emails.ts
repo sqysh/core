@@ -1,5 +1,5 @@
 import { chapterId } from '@/lib/constants/api/chapterId'
-import prisma from '../prisma/client'
+import prisma from '@/prisma/client'
 import { resend } from '@/lib/resend/resend'
 import { signInActionRequiredTemplate, signInHeadsUpTemplate } from '@/lib/email/templates/sign-in-migration.template'
 

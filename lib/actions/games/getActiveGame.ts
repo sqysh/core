@@ -8,7 +8,7 @@ import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { serializeGame, GAME_SELECT } from '@/lib/games/serializeGame'
 import type { SerializedGame } from '@/types/game.types'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 type Result = { success: true; data: SerializedGame | null } | { success: false; error: string }
 

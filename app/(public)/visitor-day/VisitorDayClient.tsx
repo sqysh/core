@@ -20,7 +20,7 @@ interface VisitorDayTVProps {
   isVisitorDay: boolean
   stats?: {
     totalRevenue: number
-    totalParleys: number
+    totalOneTwoOnes: number
     totalReferrals: number
   } | null
 }
@@ -156,7 +156,7 @@ export default function VisitorDayTV({
             <div className="flex items-end gap-6 lg:gap-10">
               {[
                 { value: formatCurrency(stats.totalRevenue), label: 'Closed Business' },
-                { value: stats.totalParleys, label: '1-2-1 Meetings' },
+                { value: stats.totalOneTwoOnes, label: '1-2-1 Meetings' },
                 { value: stats.totalReferrals, label: 'Referrals' }
               ].map(({ value, label }) => (
                 <div key={label}>

@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { getUserAttendance } from '../attendance/getUserAttendance'
+import { getUserAttendance } from '@/lib/actions/attendance/getUserAttendance'
 import { BillingOrder, BillingPaymentMethod } from '@/types/billing.types'
 
 export async function getBillingData(): Promise<{

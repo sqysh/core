@@ -1,4 +1,4 @@
-import { Anchor, Parley } from '@/src/generated/prisma/client'
+import { ClosedBusiness, OneTwoOne } from '@/src/generated/prisma/client'
 import { UserRole } from '@/src/generated/prisma/enums'
 import { JsonValue } from '@prisma/client/runtime/client'
 
@@ -93,11 +93,11 @@ export interface User {
 
   // Relationships
   accounts?: Account[]
-  givenCredits?: Anchor[]
-  receivedCredits?: Anchor[]
+  givenCredits?: ClosedBusiness[]
+  receivedCredits?: ClosedBusiness[]
   logs?: Log[]
-  receivedMeetings?: Parley[]
-  requestedMeetings?: Parley[]
+  receivedMeetings?: OneTwoOne[]
+  requestedMeetings?: OneTwoOne[]
   sessions?: Session[]
 
   // Prisma optional arrays
@@ -160,7 +160,7 @@ export interface UserFormData {
 // User profile (for detailed views)
 export interface UserProfile extends User {
   chapter: Chapter
-  recentMeetings?: Parley[]
+  recentMeetings?: OneTwoOne[]
   totalMeetings?: number
   totalReferrals?: number
 }

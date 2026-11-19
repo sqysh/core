@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth/auth'
-import { EMAIL_REGEX } from '../../utils/regex.utils'
+import { EMAIL_REGEX } from '@/lib/utils/regex.utils'
 import prisma from '@/prisma/client'
 
 export async function updateEmail(email: string): Promise<{

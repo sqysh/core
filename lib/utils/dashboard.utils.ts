@@ -1,5 +1,5 @@
 import { ActivityType } from '@/types/dashboard.types'
-import { fetchRecentActivity } from '../actions/dashboard/queries/fetchRecentActivity'
+import { fetchRecentActivity } from '@/lib/actions/dashboard/queries/fetchRecentActivity'
 import { timeAgo } from './date.utils'
 
 /**
@@ -8,12 +8,12 @@ import { timeAgo } from './date.utils'
  */
 export function formatRecentActivity(
   userId: string,
-  parleys: Awaited<ReturnType<typeof fetchRecentActivity>>['recentParleys'],
+  oneTwoOnes: Awaited<ReturnType<typeof fetchRecentActivity>>['recentOneTwoOnes'],
   maps: Awaited<ReturnType<typeof fetchRecentActivity>>['recentMaps'],
-  anchors: Awaited<ReturnType<typeof fetchRecentActivity>>['recentAnchors']
+  closedBusinesses: Awaited<ReturnType<typeof fetchRecentActivity>>['recentClosedBusinesses']
 ) {
   return [
-    ...parleys.map((p) => ({
+    ...oneTwoOnes.map((p) => ({
       id: p.id,
       type: 'MEETING' as ActivityType,
       label:
@@ -32,7 +32,7 @@ export function formatRecentActivity(
       clientPhone: m.clientPhone ?? null,
       createdAt: m.createdAt
     })),
-    ...anchors.map((a) => ({
+    ...closedBusinesses.map((a) => ({
       id: a.id,
       type: 'CLOSED' as ActivityType,
       label:

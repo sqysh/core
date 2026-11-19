@@ -1,9 +1,9 @@
 import { ScheduledPresenter } from '@/types/presenter-queue.types'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { chapterId } from '../../constants/api/chapterId'
-import { buildSchedule, getUpcomingMeetingDates } from '../../utils/presenter-engine.utils'
-import { getAllUpcomingThursdays } from '../../utils/attendance.utils'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { buildSchedule, getUpcomingMeetingDates } from '@/lib/utils/presenter-engine.utils'
+import { getAllUpcomingThursdays } from '@/lib/utils/attendance.utils'
 
 export async function getPresenterSchedule(): Promise<{
   success: boolean

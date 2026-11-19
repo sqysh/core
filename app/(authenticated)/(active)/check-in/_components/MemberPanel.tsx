@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { LIFT, delay, shortDate } from '../_lib/motion'
-import type { MissedMeeting } from '../_lib/types'
+import { LIFT, delay, shortDate } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
+import type { MissedMeeting } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 import { CtaLink } from './CtaLink'
 
 // Routes for logging each one; point at your existing forms

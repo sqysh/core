@@ -1,14 +1,14 @@
 'use server'
 
 import { CreateUserInput, CreateUserResponse } from '@/types/user.types'
-import { validateUserData } from '../../utils/validations/validateUserData'
+import { validateUserData } from '@/lib/utils/validations/validateUserData'
 import prisma from '@/prisma/client'
-import { createLog } from '../../utils/api/createLog'
-import { chapterId } from '../../constants/api/chapterId'
-import { applicationConfirmationTemplate } from '../../email/application-confirmation.template'
-import { adminVisitorNotificationTemplate } from '../../email/admin-visitor-notification'
-import { calculateExpiresAt } from '../../utils/date.utils'
-import { resend } from '../../resend/resend'
+import { createLog } from '@/lib/utils/api/createLog'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { applicationConfirmationTemplate } from '@/lib/email/application-confirmation.template'
+import { adminVisitorNotificationTemplate } from '@/lib/email/admin-visitor-notification'
+import { calculateExpiresAt } from '@/lib/utils/date.utils'
+import { resend } from '@/lib/resend/resend'
 
 const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
 

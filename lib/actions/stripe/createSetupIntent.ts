@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { stripe } from '../../stripe/stripe'
+import { stripe } from '@/lib/stripe/stripe'
 
 export async function createSetupIntent(): Promise<{
   success: boolean

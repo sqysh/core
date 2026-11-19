@@ -13,7 +13,7 @@ import { draftTeams } from '@/lib/games/draftTeams'
 import { serializeGame, GAME_SELECT } from '@/lib/games/serializeGame'
 import { GAME_EVENTS, channelFor } from '@/lib/games/registry'
 import { GameActionResult, LobbyMember } from '@/types/game.types'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function draftTeamsAction(
   gameId: string,

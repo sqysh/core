@@ -2,8 +2,8 @@
 
 import { PollResults, PollView } from '@/types/poll.types'
 import { useEffect, useState } from 'react'
-import { POLL_EVENT, pollChannel } from '../constants/poll.constants'
-import { getPusherClient, releaseChannel } from '../pusher/pusherClient'
+import { POLL_EVENT, pollChannel } from '@/lib/constants/poll.constants'
+import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 
 /** Keep a poll's tallies live over Pusher. Shared by the phone card and the TV. */
 export function usePollResults(initial: PollView | PollResults | null) {

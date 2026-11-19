@@ -1,8 +1,8 @@
 import { FormState } from './VisitorPanel'
-import { Modal } from '../../../../../components/_shared/Modal'
+import { Modal } from '@/components/_shared/Modal'
 import { formatPhone } from '@/lib/utils/phone.utils'
 import { inputCls } from '@/lib/constants/member/dashboard.constants'
-import { FormField } from '../../../../../components/_shared/FormField'
+import { FormField } from '@/components/_shared/FormField'
 
 function getUpcomingThursdays(count = 12): { value: string; label: string }[] {
   const thursdays = []

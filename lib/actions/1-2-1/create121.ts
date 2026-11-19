@@ -1,11 +1,11 @@
 'use server'
 
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { chapterId } from '../../constants/api/chapterId'
-import { createLog } from '../../utils/api/createLog'
-import { oneTwoOneTemplate } from '../../email/1.2.1.template'
-import { resend } from '../../resend/resend'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { createLog } from '@/lib/utils/api/createLog'
+import { oneTwoOneTemplate } from '@/lib/email/1.2.1.template'
+import { resend } from '@/lib/resend/resend'
 
 type CreateFace2FaceInputs = {
   recipientId: string
@@ -44,7 +44,7 @@ export async function create121(data: CreateFace2FaceInputs) {
   }
 
   // Check for exact duplicate
-  const duplicate = await prisma.parley.findUnique({
+  const duplicate = await prisma.oneTwoOne.findUnique({
     where: {
       requesterId_recipientId_scheduledAt: {
         requesterId,
@@ -62,13 +62,13 @@ export async function create121(data: CreateFace2FaceInputs) {
       requesterId,
       recipientId,
       scheduledAt,
-      existingParleyId: duplicate.id
+      existingOneTwoOneId: duplicate.id
     })
     return { success: false, error: 'A meeting between you and this member at this time already exists.' }
   }
 
   // Create completed meeting
-  const face2face = await prisma.parley.create({
+  const face2face = await prisma.oneTwoOne.create({
     data: {
       requesterId,
       recipientId,

@@ -118,12 +118,12 @@ model User {
   paymentMethods       PaymentMethod[]
   presenterQueue       PresenterQueue?
   visitorInvites       Visitor[]             @relation("VisitorInvites")
-  givenCredits         Anchor[]              @relation("AnchorGiver")
-  receivedCredits      Anchor[]              @relation("AnchorReceiver")
-  requestedMeetings    Parley[]              @relation("ParleyRequester")
-  receivedMeetings     Parley[]              @relation("ParleyRecipient")
-  giver                TreasureMap[]         @relation("TreasureMapGiver")
-  receiver             TreasureMap[]         @relation("TreasureMapReceiver")
+  givenCredits         ClosedBusiness[]      @relation("ClosedBusinessGiver")
+  receivedCredits      ClosedBusiness[]      @relation("ClosedBusinessReceiver")
+  requestedMeetings    OneTwoOne[]           @relation("OneTwoOneRequester")
+  receivedMeetings     OneTwoOne[]           @relation("OneTwoOneRecipient")
+  giver                Referral[]            @relation("ReferralGiver")
+  receiver             Referral[]            @relation("ReferralReceiver")
   attendances          Attendance[]
   alternateEmails      UserEmail[]
   guidingLightsWon     GuidingLight[]        @relation("GuidingLightWinner")
@@ -147,7 +147,7 @@ model User {
   isInitialReviewCompleted   Boolean @default(false)
 }
 
-model Parley {
+model OneTwoOne {
   id               String    @id @default(cuid())
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -168,16 +168,17 @@ model Parley {
   recipientNotes   String?
   chapterId        String?
   chapter          Chapter?  @relation(fields: [chapterId], references: [id])
-  recipient        User      @relation("ParleyRecipient", fields: [recipientId], references: [id])
-  requester        User      @relation("ParleyRequester", fields: [requesterId], references: [id])
+  recipient        User      @relation("OneTwoOneRecipient", fields: [recipientId], references: [id])
+  requester        User      @relation("OneTwoOneRequester", fields: [requesterId], references: [id])
 
   @@unique([requesterId, recipientId, scheduledAt])
   @@index([chapterId])
   @@index([scheduledAt])
   @@index([status])
+  @@map("Parley")
 }
 
-model Anchor {
+model ClosedBusiness {
   id                      String    @id @default(cuid())
   createdAt               DateTime  @default(now())
   updatedAt               DateTime  @updatedAt
@@ -200,14 +201,15 @@ model Anchor {
   externalReceiverEmail   String?
   externalReceiverName    String?
   chapter                 Chapter   @relation(fields: [chapterId], references: [id])
-  giver                   User?     @relation("AnchorGiver", fields: [giverId], references: [id])
-  receiver                User?     @relation("AnchorReceiver", fields: [receiverId], references: [id])
+  giver                   User?     @relation("ClosedBusinessGiver", fields: [giverId], references: [id])
+  receiver                User?     @relation("ClosedBusinessReceiver", fields: [receiverId], references: [id])
 
   @@index([chapterId])
   @@index([giverId])
   @@index([receiverId])
   @@index([closedDate])
   @@index([announcedAt])
+  @@map("Anchor")
 }
 
 model Chapter {
@@ -222,10 +224,10 @@ model Chapter {
   hasUnlockedBooty  Boolean          @default(false)
   hasUnlockedGrog   Boolean          @default(false)
   hasUnlockedMuster Boolean          @default(false)
-  anchors           Anchor[]
+  closedBusinesses  ClosedBusiness[]
   events            Event[]
-  parleys           Parley[]
-  treasureMaps      TreasureMap[]
+  oneTwoOnes        OneTwoOne[]
+  referrals         Referral[]
   users             User[]
   visitors          Visitor[]
   meetings          Meeting[]
@@ -259,7 +261,7 @@ model Log {
   user      User?    @relation(fields: [userId], references: [id])
 }
 
-model TreasureMap {
+model Referral {
   id            String    @id @default(cuid())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -278,14 +280,15 @@ model TreasureMap {
   chapterId     String
   isThirdParty  Boolean   @default(false)
   chapter       Chapter   @relation(fields: [chapterId], references: [id])
-  giver         User      @relation("TreasureMapGiver", fields: [giverId], references: [id])
-  receiver      User      @relation("TreasureMapReceiver", fields: [receiverId], references: [id])
+  giver         User      @relation("ReferralGiver", fields: [giverId], references: [id])
+  receiver      User      @relation("ReferralReceiver", fields: [receiverId], references: [id])
 
   @@index([chapterId])
   @@index([giverId])
   @@index([receiverId])
   @@index([status])
   @@index([createdAt])
+  @@map("TreasureMap")
 }
 
 model PresenterQueue {

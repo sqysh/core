@@ -1,5 +1,5 @@
 import { Avatar } from '@/components/_shared/Avatar'
-import { GuidingLightRecord } from '../SuperGuidingLightClient'
+import { GuidingLightRecord } from '@/app/(authenticated)/(active)/super/guiding-light/SuperGuidingLightClient'
 import { fmtDate } from '@/lib/utils/date.utils'
 
 export function RowContent({

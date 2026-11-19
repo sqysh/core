@@ -1,5 +1,5 @@
 import z from 'zod'
-import { POLL_QUESTION_MAX, POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX } from '../constants/poll.constants'
+import { POLL_QUESTION_MAX, POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX } from '@/lib/constants/poll.constants'
 
 export const pollSchema = z.object({
   question: z

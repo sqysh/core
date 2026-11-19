@@ -15,7 +15,7 @@ import { GAME_EVENTS, channelFor } from '@/lib/games/registry'
 import type { GameActionResult, GameType } from '@/types/game.types'
 import { pickPhrase } from '@/lib/games/wheel/phrases'
 import { initialWheelState } from '@/types/_wheel.types'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 /** Build the starting `state` blob for a given game type. */
 function initialStateFor(type: GameType) {

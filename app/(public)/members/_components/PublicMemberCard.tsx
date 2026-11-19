@@ -1,4 +1,4 @@
-import Picture from '../../../../components/_shared/Picture'
+import Picture from '@/components/_shared/Picture'
 import { ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { User } from '@/types/user.types'

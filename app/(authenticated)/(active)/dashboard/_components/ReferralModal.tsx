@@ -2,11 +2,11 @@ import { createReferral } from '@/lib/actions/referral/createReferral'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
-import { Modal } from '../../../../../components/_shared/Modal'
+import { Modal } from '@/components/_shared/Modal'
 import { MemberOptions } from './MemberOptions'
 import { formatPhone } from '@/lib/utils/phone.utils'
 import { inputCls } from '@/lib/constants/member/dashboard.constants'
-import { FormField } from '../../../../../components/_shared/FormField'
+import { FormField } from '@/components/_shared/FormField'
 import { FormSelectField } from '@/components/_shared/FormSelectField'
 
 export function ReferralModal({ open, members, onClose, onSuccess }) {

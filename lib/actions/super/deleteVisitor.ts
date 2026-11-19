@@ -1,10 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
-import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
-import { getActor } from '../user/getActor'
-import { createLog } from '../../utils/api/createLog'
+import { auth } from '@/lib/auth/auth'
+import { buildLogMessage, getRequestContext } from '@/lib/utils/log.utils'
+import { getActor } from '@/lib/actions/user/getActor'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function deleteVisitor({ id }: { id: string }): Promise<{
   success: boolean

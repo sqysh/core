@@ -1,6 +1,6 @@
 import { TYPE_MS, TypeText } from '@/components/_shared/SqyshVector'
-import { TYPE_LAG, type Bubble } from '../_lib/script'
-import { delay } from '../_lib/motion'
+import { TYPE_LAG, type Bubble } from '@/app/(authenticated)/(active)/check-in/_lib/script'
+import { delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 
 const SHELL =
   'absolute bottom-full left-1/2 w-max max-w-[min(calc(100vw-2rem),300px)] border border-white/15 bg-white/7 px-4 py-3 text-center backdrop-blur-md xs:px-5 opacity-0'

@@ -1,8 +1,8 @@
-import { EXTEND_H, HORIZON_Y, SCENE_H, SCENE_W, SHORE } from '../../_lib/harborMap'
+import { EXTEND_H, HORIZON_Y, SCENE_H, SCENE_W, SHORE } from '@/app/(authenticated)/(active)/attendance/_lib/harborMap'
 
 const SEA_H = SCENE_H + EXTEND_H
-import { isWater, lengthAt } from '../../_lib/harborLayout'
-import { seeded } from '../../_lib/random'
+import { isWater, lengthAt } from '@/app/(authenticated)/(active)/attendance/_lib/harborLayout'
+import { seeded } from '@/app/(authenticated)/(active)/attendance/_lib/random'
 
 // Movement for the illustration's sea, drawn over it and masked to the water so nothing spills onto the island.
 // Bands nearer the viewer are taller and faster than those out by the horizon, which gives the water its depth.

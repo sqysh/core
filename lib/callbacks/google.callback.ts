@@ -1,6 +1,6 @@
 import { User as NextAuthUser, Account, Profile } from 'next-auth'
 import prisma from '@/prisma/client'
-import { createLog } from '../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function handleGoogleCallback(user: NextAuthUser, account: Account, profile?: Profile): Promise<boolean> {
   if (!user.email) return false

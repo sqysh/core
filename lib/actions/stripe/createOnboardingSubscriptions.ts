@@ -1,11 +1,11 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
-import { stripe } from '../../stripe/stripe'
+import { auth } from '@/lib/auth/auth'
+import { stripe } from '@/lib/stripe/stripe'
 import Stripe from 'stripe'
-import { createLog } from '../../utils/api/createLog'
-import { getQuarterlyBillingAnchor } from '../../utils/billing.utils'
+import { createLog } from '@/lib/utils/api/createLog'
+import { getQuarterlyBillingAnchor } from '@/lib/utils/billing.utils'
 
 const ANNUAL_PRICE_ID = process.env.STRIPE_ANNUAL_PRICE_ID!
 const QUARTERLY_PRICE_ID = process.env.STRIPE_QUARTERLY_PRICE_ID!

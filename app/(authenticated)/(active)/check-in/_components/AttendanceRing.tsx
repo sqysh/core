@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 import Link from 'next/link'
-import { delay } from '../_lib/motion'
+import { delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 
 interface AttendanceRingProps {
   pct: number

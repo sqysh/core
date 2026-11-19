@@ -1,5 +1,5 @@
-import { delay } from '../_lib/motion'
-import type { SqyshUpdate } from '../_lib/types'
+import { delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
+import type { SqyshUpdate } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 // The changelog panel. Slides up over the stage; the top Sqysh stays put above it.
 export function UpdatesPanel({ updates, onClose }: { updates: SqyshUpdate[]; onClose: () => void }) {

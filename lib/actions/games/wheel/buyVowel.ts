@@ -12,7 +12,7 @@ import { GAME_EVENTS, channelFor } from '@/lib/games/registry'
 import { applyVowel } from '@/lib/games/wheel/logic'
 import { GameActionResult } from '@/types/game.types'
 import { WheelState } from '@/types/_wheel.types'
-import { createLog } from '../../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function buyVowel(gameId: string, rawLetter: string): Promise<GameActionResult> {
   try {

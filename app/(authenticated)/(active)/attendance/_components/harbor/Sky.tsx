@@ -1,4 +1,4 @@
-import { SCENE_W } from '../../_lib/harborMap'
+import { SCENE_W } from '@/app/(authenticated)/(active)/attendance/_lib/harborMap'
 
 // Clouds built the way the illustration's are: a flat underside, a cluster of round lobes on top, all white with a
 // lilac shadow showing along the lower edge and a paler lilac inside the lobes. Each variant is a list of lobes.

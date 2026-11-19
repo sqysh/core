@@ -16,7 +16,7 @@ import { GAME_EVENTS, channelFor } from '@/lib/games/registry'
 import { applySpin } from '@/lib/games/wheel/logic'
 import type { WheelState } from '@/types/_wheel.types'
 import type { GameActionResult } from '@/types/game.types'
-import { createLog } from '../../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function spinWheel(gameId: string): Promise<GameActionResult> {
   try {

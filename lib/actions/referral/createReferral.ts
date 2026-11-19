@@ -5,7 +5,7 @@ import { createLog } from '@/lib/utils/api/createLog'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { Resend } from 'resend'
-import referralNotificationTemplate from '../../email/referral-notificiation.template'
+import referralNotificationTemplate from '@/lib/email/referral-notificiation.template'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -62,7 +62,7 @@ export async function createReferral(data: {
     }
 
     // Create the Referral
-    const referral = await prisma.treasureMap.create({
+    const referral = await prisma.referral.create({
       data: {
         clientName,
         clientPhone,

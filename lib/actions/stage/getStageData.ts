@@ -11,8 +11,8 @@ import {
 } from '@/lib/constants/stage.constants'
 import { etDateISO, nextMeetingDate } from '@/lib/utils/date.utils'
 import prisma from '@/prisma/client'
-import { getPresenterSchedule } from '../presenter-queue/getPresenterSchedule'
-import { getThisWeeksMatchups } from '../matchups/getThisWeeksMatchups'
+import { getPresenterSchedule } from '@/lib/actions/presenter-queue/getPresenterSchedule'
+import { getThisWeeksMatchups } from '@/lib/actions/matchups/getThisWeeksMatchups'
 
 export async function getStageData(): Promise<{
   success: boolean

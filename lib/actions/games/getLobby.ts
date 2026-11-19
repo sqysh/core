@@ -9,7 +9,7 @@ import prisma from '@/prisma/client'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import type { LobbyMember } from '@/types/game.types'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 type Result = { success: true; data: LobbyMember[] } | { success: false; error: string }
 

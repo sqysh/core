@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
-import type { Corner, Spot } from '../_lib/types'
+import type { Corner, Spot } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 // One Sqysh for the whole scene. He lives in the riser (so he moves with the
 // ring for free) and is driven through four spots in pixels: off-stage below

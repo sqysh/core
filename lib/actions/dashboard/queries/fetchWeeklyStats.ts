@@ -1,20 +1,20 @@
 import prisma from '@/prisma/client'
 
 export async function fetchWeeklyStats(userId: string, startOfWeek: Date) {
-  const [parleyThisWeek, treasureMapsThisWeek, anchorsThisWeek] = await Promise.all([
-    prisma.parley.count({
+  const [oneTwoOneThisWeek, referralsThisWeek, closedBusinessesThisWeek] = await Promise.all([
+    prisma.oneTwoOne.count({
       where: {
         OR: [{ requesterId: userId }, { recipientId: userId }],
         scheduledAt: { gte: startOfWeek }
       }
     }),
-    prisma.treasureMap.count({
+    prisma.referral.count({
       where: {
         OR: [{ giverId: userId }, { receiverId: userId }],
         createdAt: { gte: startOfWeek }
       }
     }),
-    prisma.anchor.findMany({
+    prisma.closedBusiness.findMany({
       where: {
         OR: [{ giverId: userId }, { receiverId: userId }],
         closedDate: { gte: startOfWeek }
@@ -23,8 +23,8 @@ export async function fetchWeeklyStats(userId: string, startOfWeek: Date) {
     })
   ])
   return {
-    parleyThisWeek,
-    treasureMapsThisWeek,
-    anchorsThisWeek
+    oneTwoOneThisWeek,
+    referralsThisWeek,
+    closedBusinessesThisWeek
   }
 }

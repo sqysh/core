@@ -1,9 +1,9 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import { UserRole } from '@/src/generated/prisma/enums'
 import { UserEmailItem } from '@/types/user.types'
 
-export type MemberParleyActivity = {
+export type MemberOneTwoOneActivity = {
   id: string
   scheduledAt: string
   status: string
@@ -12,7 +12,7 @@ export type MemberParleyActivity = {
   recipient: { name: string }
 }
 
-export type MemberAnchorActivity = {
+export type MemberClosedBusinessActivity = {
   id: string
   businessValue: number
   description: string
@@ -63,8 +63,8 @@ export type SuperMemberEditData = {
     createdAt: string
   }[]
   activity: {
-    face2face: MemberParleyActivity[]
-    tyfcb: MemberAnchorActivity[]
+    face2face: MemberOneTwoOneActivity[]
+    tyfcb: MemberClosedBusinessActivity[]
     referrals: MemberReferralActivity[]
   }
 }
@@ -102,7 +102,7 @@ export async function getUserById(userId: string): Promise<{
           alternateEmails: true
         }
       }),
-      prisma.parley.findMany({
+      prisma.oneTwoOne.findMany({
         where: { OR: [{ requesterId: userId }, { recipientId: userId }] },
         orderBy: { scheduledAt: 'desc' },
         select: {
@@ -114,7 +114,7 @@ export async function getUserById(userId: string): Promise<{
           requesterId: true
         }
       }),
-      prisma.anchor.findMany({
+      prisma.closedBusiness.findMany({
         where: { OR: [{ giverId: userId }, { receiverId: userId }] },
         orderBy: { closedDate: 'desc' },
         select: {
@@ -128,7 +128,7 @@ export async function getUserById(userId: string): Promise<{
           giverId: true
         }
       }),
-      prisma.treasureMap.findMany({
+      prisma.referral.findMany({
         where: { OR: [{ giverId: userId }, { receiverId: userId }] },
         orderBy: { createdAt: 'desc' },
         select: {

@@ -2,20 +2,20 @@ import prisma from '@/prisma/client'
 import { fetchWeeklyStats } from './queries/fetchWeeklyStats'
 import { fetchAllTimeStats } from './queries/fetchAllTimeStats'
 import { fetchRecentActivity } from './queries/fetchRecentActivity'
-import { auth } from '../../auth/auth'
-import { getStartOfThursdayWeek } from '../../utils/date.utils'
-import { getClosestVisitorDay } from '../visitor-day/getClosestVisitorDay'
+import { auth } from '@/lib/auth/auth'
+import { getStartOfThursdayWeek } from '@/lib/utils/date.utils'
+import { getClosestVisitorDay } from '@/lib/actions/visitor-day/getClosestVisitorDay'
 import { fetchMembershipData } from './queries/fetchMembershipData'
-import { getUserAttendance } from '../attendance/getUserAttendance'
-import { formatRecentActivity } from '../../utils/dashboard.utils'
-import { getInitials } from '../../utils/shared.utils'
+import { getUserAttendance } from '@/lib/actions/attendance/getUserAttendance'
+import { formatRecentActivity } from '@/lib/utils/dashboard.utils'
+import { getInitials } from '@/lib/utils/shared.utils'
 import { getOtherActiveMembers } from './queries/getOtherActiveMembers'
 import { getEvents } from './queries/getEvents'
 import { getErrorMessage } from '@/lib/utils/api/getErrorMessage'
 import { getVisitors } from './queries/getVisitors'
 import { getCancelledMeetings } from './queries/getCancelledMeetings'
 import { getUserPaymentMethods } from './queries/getUserPaymentMethods'
-import { getPresenterSchedule } from '../presenter-queue/getPresenterSchedule'
+import { getPresenterSchedule } from '@/lib/actions/presenter-queue/getPresenterSchedule'
 import { getGuidingLightDashboardData } from './queries/getGuidingLightDashboardData'
 import { getLeadershipDashboardData } from './queries/getLeadershipDashboardData'
 
@@ -82,8 +82,8 @@ export async function getUserDashboard() {
       getLeadershipDashboardData()
     ])
 
-    const closedAmountThisWeek = `$${weekly.anchorsThisWeek.reduce((sum, a) => sum + Number(a.businessValue), 0).toLocaleString()}`
-    const totalClosedAmount = `$${allTime.totalAnchors.reduce((sum, a) => sum + Number(a.businessValue), 0).toLocaleString()}`
+    const closedAmountThisWeek = `$${weekly.closedBusinessesThisWeek.reduce((sum, a) => sum + Number(a.businessValue), 0).toLocaleString()}`
+    const totalClosedAmount = `$${allTime.totalClosedBusinesses.reduce((sum, a) => sum + Number(a.businessValue), 0).toLocaleString()}`
 
     const currentUser = {
       id: user.id,
@@ -99,17 +99,17 @@ export async function getUserDashboard() {
     }
 
     const stats = {
-      parleyThisWeek: weekly.parleyThisWeek,
-      treasureMapsThisWeek: weekly.treasureMapsThisWeek,
-      anchorsThisWeek: weekly.anchorsThisWeek.length,
-      totalParleys: allTime.totalParleys,
-      totalTreasureMaps: allTime.totalTreasureMaps,
-      totalAnchors: allTime.totalAnchors.length,
+      oneTwoOneThisWeek: weekly.oneTwoOneThisWeek,
+      referralsThisWeek: weekly.referralsThisWeek,
+      closedBusinessesThisWeek: weekly.closedBusinessesThisWeek.length,
+      totalOneTwoOnes: allTime.totalOneTwoOnes,
+      totalReferrals: allTime.totalReferrals,
+      totalClosedBusinesses: allTime.totalClosedBusinesses.length,
       totalClosedAmount,
       closedAmountThisWeek
     }
 
-    const recentActivity = formatRecentActivity(user.id, recent.recentParleys, recent.recentMaps, recent.recentAnchors)
+    const recentActivity = formatRecentActivity(user.id, recent.recentOneTwoOnes, recent.recentMaps, recent.recentClosedBusinesses)
 
     const events = rawEvents.map((e) => ({ ...e, createdAt: e.createdAt.toISOString() }))
 

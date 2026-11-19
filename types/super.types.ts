@@ -15,7 +15,7 @@ export type SuperUserMember = {
   lastLoginAt: string | null
   joinedAt: string | null
   loginCount: number
-  parleyCount: number
+  oneTwoOneCount: number
   referralCount: number
   closedCount: number
   hasAnnualSubscription: boolean
@@ -42,7 +42,7 @@ export type SuperUserReferral = {
   receiver: { id: string; name: string; company: string }
 }
 
-export type SuperUserAnchor = {
+export type SuperUserClosedBusiness = {
   id: string
   businessValue: string
   description: string
@@ -81,7 +81,7 @@ export type SuperUserDashboardData = {
   applicants: SuperUserApplicant[]
   oneTwoOnes: SuperUserOneTwoOne[]
   referrals: SuperUserReferral[]
-  anchors: SuperUserAnchor[]
+  closedBusinesses: SuperUserClosedBusiness[]
   chapter: Chapter
   visitors: Visitor[]
   events: SuperUserEvent[]

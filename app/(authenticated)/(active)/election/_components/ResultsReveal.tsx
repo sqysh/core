@@ -8,7 +8,7 @@ import { resolveTie } from '@/lib/actions/election/resolveTie'
 import type { PositionResult, QuestionResult } from '@/lib/actions/election/getElectionResults'
 import { POSITION_ORDER, POSITIONS } from '@/lib/constants/leadership.constants'
 import { ArrowRightLeft, Check, Plus, X } from 'lucide-react'
-import { Member } from '../stage/ElectionStageClient'
+import { Member } from '@/app/(authenticated)/(active)/election/stage/ElectionStageClient'
 import { finalizeElection } from '@/lib/actions/election/finalizeElection'
 import Link from 'next/link'
 

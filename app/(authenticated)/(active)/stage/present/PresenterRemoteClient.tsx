@@ -4,8 +4,8 @@ import { FOCUS, StagePresentation } from '@/lib/constants/stage.constants'
 import { useSend } from '@/lib/hooks/useSend'
 import { Play, Square } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { DeckControls } from '../_components/controls/DeckControls'
-import { LinkStatus } from '../_components/controls/LinkStatus'
+import { DeckControls } from '@/app/(authenticated)/(active)/stage/_components/controls/DeckControls'
+import { LinkStatus } from '@/app/(authenticated)/(active)/stage/_components/controls/LinkStatus'
 
 export function PresenterRemoteClient({ presentation }: { presentation: StagePresentation }) {
   const { ok, send } = useSend()

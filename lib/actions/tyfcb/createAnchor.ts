@@ -1,15 +1,15 @@
 'use server'
 
 import { Resend } from 'resend'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { chapterId } from '../../constants/api/chapterId'
-import { closedBusinessNotificationTemplate } from '../../email/closed-business.template'
-import { createLog } from '../../utils/api/createLog'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { closedBusinessNotificationTemplate } from '@/lib/email/closed-business.template'
+import { createLog } from '@/lib/utils/api/createLog'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-export async function createAnchor(data: {
+export async function createClosedBusiness(data: {
   businessValue: number
   description: string
   closedDate: Date
@@ -35,7 +35,7 @@ export async function createAnchor(data: {
     if (!giver) return { success: false, error: 'Member not found in this chapter.' }
   }
 
-  const anchor = await prisma.anchor.create({
+  const closedBusiness = await prisma.closedBusiness.create({
     data: {
       businessValue: data.businessValue,
       description: data.description,
@@ -54,7 +54,7 @@ export async function createAnchor(data: {
       process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
     const emailHtml = closedBusinessNotificationTemplate(
       session.user.name,
-      `${baseUrl}/dashboard?id=${anchor.id}&action=closed`
+      `${baseUrl}/dashboard?id=${closedBusiness.id}&action=closed`
     )
 
     await resend.emails.send({
@@ -69,12 +69,12 @@ export async function createAnchor(data: {
     'info',
     `Thank you for closed business — ${session.user.name} thanked ${isExternal ? 'an external member' : giver?.name}`,
     {
-      location: ['server action - createAnchor'],
+      location: ['server action - createClosedBusiness'],
       name: 'TYFCBCreated',
       timestamp: new Date().toISOString(),
-      anchorId: anchor.id
+      anchorId: closedBusiness.id
     }
   )
 
-  return { success: true, anchor: { ...anchor, businessValue: Number(anchor.businessValue) } }
+  return { success: true, closedBusiness: { ...closedBusiness, businessValue: Number(closedBusiness.businessValue) } }
 }

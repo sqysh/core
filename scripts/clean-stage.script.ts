@@ -7,7 +7,7 @@
 //
 // What it touches, all scoped to your chapterId:
 //   - GuidingLight rounds        (the 60-seconds winner/judge)
-//   - Parley "Auto-matched weekly 1-2-1" rows (the matchups board)
+//   - OneTwoOne "Auto-matched weekly 1-2-1" rows (the matchups board)
 //   - TreasuryObligation rows    (the obligations you add on the board)
 //   - ChapterTreasury balance    (only with --balance)
 // It never deletes members, leadership terms, or uploaded presentations.
@@ -51,14 +51,14 @@ async function main() {
     async () => (await prisma.guidingLight.deleteMany({ where: glWhere })).count
   )
 
-  // 2) Auto-matched parleys (the matchups board source)
+  // 2) Auto-matched oneTwoOnes (the matchups board source)
   const pWhere = ALL
     ? { chapterId, notes: 'Auto-matched weekly 1-2-1' }
     : { chapterId, notes: 'Auto-matched weekly 1-2-1', createdAt: { gte: todayStart } }
   await step(
-    'Matchups (auto-matched parleys)',
-    () => prisma.parley.count({ where: pWhere }),
-    async () => (await prisma.parley.deleteMany({ where: pWhere })).count
+    'Matchups (auto-matched oneTwoOnes)',
+    () => prisma.oneTwoOne.count({ where: pWhere }),
+    async () => (await prisma.oneTwoOne.deleteMany({ where: pWhere })).count
   )
 
   // 3) Treasury obligations

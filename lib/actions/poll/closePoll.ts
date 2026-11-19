@@ -6,7 +6,7 @@ import prisma from '@/prisma/client'
 import { ActionResult } from '@/types/action.types'
 import { revalidatePath } from 'next/cache'
 import { broadcast } from './broadcast'
-import { isActingHost } from '../leadership/isActingHost'
+import { isActingHost } from '@/lib/actions/leadership/isActingHost'
 import { pusher } from '@/lib/pusher/pusher'
 import { POLL_CLEAR_EVENT, POLL_LIVE_CHANNEL } from '@/lib/constants/poll.constants'
 

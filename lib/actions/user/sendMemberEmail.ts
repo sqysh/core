@@ -2,8 +2,8 @@
 
 import { auth } from '@/lib/auth/auth'
 import { Resend } from 'resend'
-import { memberMessageTemplate } from '../../email/member-message.template'
-import { createLog } from '../../utils/api/createLog'
+import { memberMessageTemplate } from '@/lib/email/member-message.template'
+import { createLog } from '@/lib/utils/api/createLog'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 

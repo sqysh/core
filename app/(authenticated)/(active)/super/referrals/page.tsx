@@ -11,7 +11,7 @@ export default async function SuperReferralsPage() {
   if (!session?.user?.id) redirect('/login')
   if (session.user.role !== 'SUPER_USER') redirect('/dashboard')
 
-  const referrals = await prisma.treasureMap.findMany({
+  const referrals = await prisma.referral.findMany({
     where: { chapterId },
     select: {
       id: true,

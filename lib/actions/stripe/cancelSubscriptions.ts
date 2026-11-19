@@ -2,8 +2,8 @@
 
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { stripe } from '../../stripe/stripe'
-import { createLog } from '../../utils/api/createLog'
+import { stripe } from '@/lib/stripe/stripe'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export type CancelErrorCode =
   | 'UNAUTHORIZED'

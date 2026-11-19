@@ -8,10 +8,10 @@ import { auth } from '@/lib/auth/auth'
 import { pusher } from '@/lib/pusher/pusher'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { GameActionResult } from '@/types/game.types'
-import { GAME_SELECT, serializeGame } from '../../../games/serializeGame'
+import { GAME_SELECT, serializeGame } from '@/lib/games/serializeGame'
 import { WheelState } from '@/types/_wheel.types'
-import { applySolve } from '../../../games/wheel/logic'
-import { channelFor, GAME_EVENTS } from '../../../games/registry'
+import { applySolve } from '@/lib/games/wheel/logic'
+import { channelFor, GAME_EVENTS } from '@/lib/games/registry'
 import { createLog } from '@/lib/utils/api/createLog'
 
 export async function solvePhrase(gameId: string, attempt: string): Promise<GameActionResult> {

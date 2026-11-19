@@ -15,7 +15,7 @@ export async function sendMatchupEmails() {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
-  const parleys = await prisma.parley.findMany({
+  const oneTwoOnes = await prisma.oneTwoOne.findMany({
     where: { chapterId, createdAt: { gte: start }, notes: 'Auto-matched weekly 1-2-1' },
     select: {
       requester: {
@@ -41,12 +41,12 @@ export async function sendMatchupEmails() {
     }
   })
 
-  if (!parleys.length) return { success: false, error: 'No matchups found for today' }
+  if (!oneTwoOnes.length) return { success: false, error: 'No matchups found for today' }
 
-  type M = (typeof parleys)[number]['requester']
+  type M = (typeof oneTwoOnes)[number]['requester']
   const assignments = new Map<string, { member: M; partners: M[] }>()
 
-  for (const p of parleys) {
+  for (const p of oneTwoOnes) {
     for (const [self, other] of [
       [p.requester, p.recipient],
       [p.recipient, p.requester]

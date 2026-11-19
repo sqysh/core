@@ -1,5 +1,5 @@
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { storage } from '../../firebase/firebase.config'
+import { storage } from '@/lib/firebase/firebase.config'
 
 /**
  * Uploads a video or image file to Firebase Storage.

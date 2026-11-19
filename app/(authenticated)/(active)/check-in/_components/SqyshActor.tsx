@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { SqyshVector } from '@/components/_shared/SqyshVector'
-import { jumpPath } from '../_lib/motion'
-import type { Corner, Spot, SqyshMode } from '../_lib/types'
+import { jumpPath } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
+import type { Corner, Spot, SqyshMode } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 interface SqyshActorProps {
   sq: { w: number; h: number }

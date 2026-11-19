@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { chapterId } from '../../constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 
 export async function getTodayAttendance(): Promise<string[]> {
   const today = new Date()

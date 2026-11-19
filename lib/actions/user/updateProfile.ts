@@ -1,9 +1,9 @@
 'use server'
 
 import { UpdateProfileInput } from '@/types/user.types'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function updateProfile(data: UpdateProfileInput): Promise<{ success: boolean; error?: string }> {
   try {

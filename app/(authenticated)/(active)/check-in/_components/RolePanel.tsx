@@ -1,5 +1,5 @@
-import { LIFT, delay } from '../_lib/motion'
-import { REMOTE_HREF, SUPER_HREF, TREASURER_HREF, type Role } from '../_lib/roles'
+import { LIFT, delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
+import { REMOTE_HREF, SUPER_HREF, TREASURER_HREF, type Role } from '@/app/(authenticated)/(active)/check-in/_lib/roles'
 import { CtaLink } from './CtaLink'
 
 interface RoleContent {

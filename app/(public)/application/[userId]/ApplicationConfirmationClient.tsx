@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { CheckCircle, User, Briefcase, MapPin, Phone, Mail, Building2, Hash } from 'lucide-react'
-import { ApplicationConfirmationProps } from '../_types/application.types'
-import { ConfirmRow } from '../_components/ConfirmRow'
+import { ApplicationConfirmationProps } from '@/app/(public)/application/_types/application.types'
+import { ConfirmRow } from '@/app/(public)/application/_components/ConfirmRow'
 
 export default function ApplicationConfirmation({ application }: ApplicationConfirmationProps) {
   return (

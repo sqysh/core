@@ -4,10 +4,10 @@ import prisma from '@/prisma/client'
 import { createLog } from '@/lib/utils/api/createLog'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { memberAcceptedTemplate } from '../../email/application-approved.template'
-import { memberRejectedTemplate } from '../../email/application-rejected.template'
+import { memberAcceptedTemplate } from '@/lib/email/application-approved.template'
+import { memberRejectedTemplate } from '@/lib/email/application-rejected.template'
 import { MembershipStatus, UserRole } from '@/src/generated/prisma/enums'
-import { resend } from '../../resend/resend'
+import { resend } from '@/lib/resend/resend'
 
 export async function updateUserStatus(userId: string, approve: boolean) {
   const session = await auth()

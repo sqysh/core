@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { useSounds } from '@/lib/hooks/useSounds'
 import { sendStageReaction } from '@/lib/actions/stage/sendStageReaction'
 import { REACTION_COOLDOWN_MS, REACTION_EMOJIS } from '@/lib/constants/reactions.constants'
-import { LIFT, delay } from '../_lib/motion'
+import { LIFT, delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 
 // Tap one and it floats up the TV
 export function ReactionBar({ settle }: { settle: number }) {

@@ -11,7 +11,7 @@ export default async function SuperClosedBusinessPage() {
   if (!session?.user?.id) redirect('/login')
   if (session.user.role !== 'SUPER_USER') redirect('/dashboard')
 
-  const anchors = await prisma.anchor.findMany({
+  const closedBusinesses = await prisma.closedBusiness.findMany({
     where: { chapterId },
     select: {
       id: true,
@@ -26,12 +26,12 @@ export default async function SuperClosedBusinessPage() {
     orderBy: { createdAt: 'desc' }
   })
 
-  const serialized = anchors.map((a) => ({
+  const serialized = closedBusinesses.map((a) => ({
     ...a,
     businessValue: a.businessValue.toString(),
     closedDate: a.closedDate.toISOString(),
     createdAt: a.createdAt.toISOString()
   }))
 
-  return <SuperClosedBusinessClient anchors={serialized} />
+  return <SuperClosedBusinessClient closedBusinesses={serialized} />
 }

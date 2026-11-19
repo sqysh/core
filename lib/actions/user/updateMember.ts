@@ -1,9 +1,9 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import { MembershipStatus } from '@/types/user.types'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 import { UserRole } from '@/src/generated/prisma/enums'
 
 export async function updateMember(

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CircleCheck, Circle } from 'lucide-react'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { getElectionResults, QuestionResult, type PositionResult } from '@/lib/actions/election/getElectionResults'
-import ResultsReveal from '../_components/ResultsReveal'
+import ResultsReveal from '@/app/(authenticated)/(active)/election/_components/ResultsReveal'
 
 export interface Member {
   id: string

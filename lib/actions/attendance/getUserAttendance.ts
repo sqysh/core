@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth/auth'
-import { chapterId } from '../../constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 import prisma from '@/prisma/client'
 import { UserAttendanceRow } from '@/types/attendance.types'
 

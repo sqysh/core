@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 
 export async function deleteLog(id: string): Promise<{ success: boolean; error?: string }> {
   try {

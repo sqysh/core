@@ -1,15 +1,15 @@
 'use server'
 
 import { CreateVisitorInput } from '@/types/visitor.types'
-import { auth } from '../../auth/auth'
-import { EMAIL_REGEX } from '../../utils/regex.utils'
-import { buildLogMessage, getRequestContext } from '../../utils/log.utils'
-import { getActor } from '../user/getActor'
+import { auth } from '@/lib/auth/auth'
+import { EMAIL_REGEX } from '@/lib/utils/regex.utils'
+import { buildLogMessage, getRequestContext } from '@/lib/utils/log.utils'
+import { getActor } from '@/lib/actions/user/getActor'
 import prisma from '@/prisma/client'
-import { chapterId } from '../../constants/api/chapterId'
-import { createLog } from '../../utils/api/createLog'
-import { resend } from '../../resend/resend'
-import { visitorInviteTemplate } from '../../email/visitor.template'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { createLog } from '@/lib/utils/api/createLog'
+import { resend } from '@/lib/resend/resend'
+import { visitorInviteTemplate } from '@/lib/email/visitor.template'
 
 export async function createVisitor(input: CreateVisitorInput): Promise<{
   success: boolean

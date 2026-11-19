@@ -39,14 +39,14 @@ import {
   StageCommand,
   StagePresentation
 } from '@/lib/constants/stage.constants'
-import { GuidingLightControls } from '../_components/controls/GuidingLightControls'
+import { GuidingLightControls } from '@/app/(authenticated)/(active)/stage/_components/controls/GuidingLightControls'
 import { Member } from '@/types/guiding-light.types'
 import { createGame } from '@/lib/actions/games/createGame'
 import { announceGame } from '@/lib/actions/games/wheel/announceGame'
 import { openElection } from '@/lib/actions/election/openElection'
 import { announceElection } from '@/lib/actions/election/announceElection'
 import { notifyTreasurer } from '@/lib/actions/treasury/notifyTreasurer'
-import { PollPicker } from '../_components/controls/PollPicker'
+import { PollPicker } from '@/app/(authenticated)/(active)/stage/_components/controls/PollPicker'
 
 type Screen = { key: string; label: string; icon: typeof Tv; cmd: StageCommand }
 

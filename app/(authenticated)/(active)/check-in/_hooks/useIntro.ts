@@ -1,6 +1,6 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
-import { TOUR_AT } from '../_lib/script'
-import type { Spot, SqyshMode, TourState } from '../_lib/types'
+import { TOUR_AT } from '@/app/(authenticated)/(active)/check-in/_lib/script'
+import type { Spot, SqyshMode, TourState } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 interface Options {
   hasTour: boolean

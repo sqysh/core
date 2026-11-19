@@ -19,7 +19,7 @@ interface VisitorClientProps {
   presenterBio?: string | null
   stats?: {
     totalRevenue: number
-    totalParleys: number
+    totalOneTwoOnes: number
     totalReferrals: number
   } | null
 }
@@ -171,7 +171,7 @@ export default function VisitorClient({
             <div className="flex items-end gap-8 sm:gap-12">
               {[
                 { value: formatCurrency(stats.totalRevenue), label: 'Closed Business' },
-                { value: stats.totalParleys, label: 'Meetings' },
+                { value: stats.totalOneTwoOnes, label: 'Meetings' },
                 { value: stats.totalReferrals, label: 'Referrals' }
               ].map(({ value, label }) => (
                 <div key={label}>

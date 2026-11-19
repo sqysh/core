@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { getInitials } from '@/lib/utils/shared.utils'
-import { ART_CENTER, ART_H, ART_LENGTH, ART_W, WATERLINE } from '../../_lib/boats'
-import { PLATE_H, Point, lengthAt, pointAt, voyageProgress } from '../../_lib/harborLayout'
-import { FleetBoat, boatTop } from '../../_hooks/useHarbor'
+import { ART_CENTER, ART_H, ART_LENGTH, ART_W, WATERLINE } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
+import { PLATE_H, Point, lengthAt, pointAt, voyageProgress } from '@/app/(authenticated)/(active)/attendance/_lib/harborLayout'
+import { FleetBoat, boatTop } from '@/app/(authenticated)/(active)/attendance/_hooks/useHarbor'
 
 const PERIOD_S = 4.6
 

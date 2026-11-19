@@ -11,7 +11,7 @@ export async function getThisWeeksMatchups(): Promise<Matchup[]> {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
-  const parleys = await prisma.parley.findMany({
+  const oneTwoOnes = await prisma.oneTwoOne.findMany({
     where: { chapterId, createdAt: { gte: start }, notes: 'Auto-matched weekly 1-2-1' },
     orderBy: { createdAt: 'asc' },
     select: {
@@ -28,5 +28,5 @@ export async function getThisWeeksMatchups(): Promise<Matchup[]> {
     profileImage: u.profileImage
   })
 
-  return parleys.map((p) => ({ id: p.id, requester: shape(p.requester), recipient: shape(p.recipient) }))
+  return oneTwoOnes.map((p) => ({ id: p.id, requester: shape(p.requester), recipient: shape(p.recipient) }))
 }

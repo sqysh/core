@@ -1,21 +1,21 @@
 import prisma from '@/prisma/client'
 
 export async function fetchAllTimeStats(userId: string) {
-  const [totalParleys, totalTreasureMaps, totalAnchors] = await Promise.all([
-    prisma.parley.count({
+  const [totalOneTwoOnes, totalReferrals, totalClosedBusinesses] = await Promise.all([
+    prisma.oneTwoOne.count({
       where: { OR: [{ requesterId: userId }, { recipientId: userId }] }
     }),
-    prisma.treasureMap.count({
+    prisma.referral.count({
       where: { OR: [{ giverId: userId }, { receiverId: userId }] }
     }),
-    prisma.anchor.findMany({
+    prisma.closedBusiness.findMany({
       where: { OR: [{ giverId: userId }, { receiverId: userId }] },
       select: { businessValue: true }
     })
   ])
   return {
-    totalParleys,
-    totalTreasureMaps,
-    totalAnchors
+    totalOneTwoOnes,
+    totalReferrals,
+    totalClosedBusinesses
   }
 }

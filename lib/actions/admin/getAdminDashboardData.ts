@@ -1,13 +1,13 @@
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
-import { chapterId } from '../../constants/api/chapterId'
-import { formatCurrency } from '../../utils/currency.utils'
+import { auth } from '@/lib/auth/auth'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { formatCurrency } from '@/lib/utils/currency.utils'
 
 export type AdminDashboardData = {
   stats: {
     totalRevenue: string
-    totalParleys: number
-    totalAnchors: number
+    totalOneTwoOnes: number
+    totalClosedBusinesses: number
     totalReferrals: number
     activeMembers: number
     pendingApps: number
@@ -29,12 +29,12 @@ export async function getAdminDashboardData(): Promise<{
     const session = await auth()
     if (!session?.user?.id) return { success: false, error: 'Unauthorized' }
 
-    const [parleys, anchors, referrals, activeMembers, pendingApps, recentParleys, recentAnchors, recentReferrals] =
+    const [oneTwoOnes, closedBusinesses, referrals, activeMembers, pendingApps, recentOneTwoOnes, recentClosedBusinesses, recentReferrals] =
       await Promise.all([
-        prisma.parley.count({
+        prisma.oneTwoOne.count({
           where: { chapterId, status: { not: 'CANCELLED' } }
         }),
-        prisma.anchor.findMany({
+        prisma.closedBusiness.findMany({
           where: { chapterId },
           select: {
             businessValue: true,
@@ -44,7 +44,7 @@ export async function getAdminDashboardData(): Promise<{
             receiver: { select: { name: true } }
           }
         }),
-        prisma.treasureMap.count({ where: { chapterId } }),
+        prisma.referral.count({ where: { chapterId } }),
         prisma.user.count({ where: { chapterId, membershipStatus: 'ACTIVE' } }),
         prisma.user.count({
           where: {
@@ -52,7 +52,7 @@ export async function getAdminDashboardData(): Promise<{
             membershipStatus: { in: ['PENDING'] }
           }
         }),
-        prisma.parley.findMany({
+        prisma.oneTwoOne.findMany({
           where: { chapterId, status: { not: 'CANCELLED' } },
           orderBy: { createdAt: 'desc' },
 
@@ -63,7 +63,7 @@ export async function getAdminDashboardData(): Promise<{
             recipient: { select: { name: true } }
           }
         }),
-        prisma.anchor.findMany({
+        prisma.closedBusiness.findMany({
           where: { chapterId },
           orderBy: { createdAt: 'desc' },
 
@@ -75,7 +75,7 @@ export async function getAdminDashboardData(): Promise<{
             receiver: { select: { name: true } }
           }
         }),
-        prisma.treasureMap.findMany({
+        prisma.referral.findMany({
           where: { chapterId },
           orderBy: { createdAt: 'desc' },
 
@@ -89,17 +89,17 @@ export async function getAdminDashboardData(): Promise<{
         })
       ])
 
-    const totalRevenue = anchors.reduce((sum, a) => sum + Number(a.businessValue), 0)
+    const totalRevenue = closedBusinesses.reduce((sum, a) => sum + Number(a.businessValue), 0)
 
     const recentActivity = [
-      ...recentParleys.map((p) => ({
+      ...recentOneTwoOnes.map((p) => ({
         id: p.id,
         type: 'MEETING' as const,
         label: `Face-2-Face · ${p.requester.name} met with ${p.recipient.name}`,
         createdAt: p.createdAt.toISOString()
       })),
 
-      ...recentAnchors.map((a) => ({
+      ...recentClosedBusinesses.map((a) => ({
         id: a.id,
         type: 'CLOSED' as const,
         label: `Closed business · $${Number(a.businessValue).toLocaleString()} · from ${a.giver?.name ?? 'External'}`,
@@ -119,8 +119,8 @@ export async function getAdminDashboardData(): Promise<{
       data: {
         stats: {
           totalRevenue: formatCurrency(totalRevenue),
-          totalParleys: parleys,
-          totalAnchors: anchors.length,
+          totalOneTwoOnes: oneTwoOnes,
+          totalClosedBusinesses: closedBusinesses.length,
           totalReferrals: referrals,
           activeMembers,
           pendingApps

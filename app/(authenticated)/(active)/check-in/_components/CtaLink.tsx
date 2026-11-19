@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LIFT, delay } from '../_lib/motion'
+import { LIFT, delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 
 const ARROW = 'relative animate-[ciNudge_1.9s_ease-in-out_infinite]'
 const FOCUS = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60'

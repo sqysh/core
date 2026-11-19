@@ -6,7 +6,7 @@ import VisitorDayClient from './VisitorDayClient'
 
 export interface GroupStats {
   totalRevenue: number
-  totalParleys: number
+  totalOneTwoOnes: number
   totalReferrals: number
   reactionCount: number
 }
@@ -14,10 +14,10 @@ export interface GroupStats {
 async function getGroupStats(): Promise<GroupStats> {
   const today = new Date()
 
-  const [anchors, totalParleys, totalReferrals, visitorDay] = await Promise.all([
-    prisma.anchor.findMany({ where: { chapterId }, select: { businessValue: true } }),
-    prisma.parley.count({ where: { chapterId, status: { not: 'CANCELLED' } } }),
-    prisma.treasureMap.count({ where: { chapterId } }),
+  const [closedBusinesses, totalOneTwoOnes, totalReferrals, visitorDay] = await Promise.all([
+    prisma.closedBusiness.findMany({ where: { chapterId }, select: { businessValue: true } }),
+    prisma.oneTwoOne.count({ where: { chapterId, status: { not: 'CANCELLED' } } }),
+    prisma.referral.count({ where: { chapterId } }),
     prisma.visitorDay.findFirst({
       where: {
         chapterId,
@@ -33,11 +33,11 @@ async function getGroupStats(): Promise<GroupStats> {
     })
   ])
 
-  const totalRevenue = anchors.reduce((sum, a) => sum + parseFloat(String(a.businessValue)), 0)
+  const totalRevenue = closedBusinesses.reduce((sum, a) => sum + parseFloat(String(a.businessValue)), 0)
 
   return {
     totalRevenue,
-    totalParleys,
+    totalOneTwoOnes,
     totalReferrals,
     reactionCount: visitorDay?.reactionCount ?? 0
   }

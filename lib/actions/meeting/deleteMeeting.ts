@@ -2,7 +2,7 @@
 
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { createLog } from '../../utils/api/createLog'
+import { createLog } from '@/lib/utils/api/createLog'
 
 export async function deleteMeeting(id: string): Promise<{
   success: boolean

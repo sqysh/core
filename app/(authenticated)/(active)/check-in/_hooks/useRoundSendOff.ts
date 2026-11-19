@@ -1,8 +1,8 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { useRouter } from 'next/navigation'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
-import { JUDGE_HREF } from '../_lib/roles'
-import type { Spot, SqyshMode } from '../_lib/types'
+import { JUDGE_HREF } from '@/app/(authenticated)/(active)/check-in/_lib/roles'
+import type { Spot, SqyshMode } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 interface Options {
   active: boolean

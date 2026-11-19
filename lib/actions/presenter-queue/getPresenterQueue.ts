@@ -1,7 +1,7 @@
 import { QueueMember } from '@/types/presenter-queue.types'
-import { auth } from '../../auth/auth'
+import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
-import { chapterId } from '../../constants/api/chapterId'
+import { chapterId } from '@/lib/constants/api/chapterId'
 
 export async function getPresenterQueue(): Promise<{
   success: boolean

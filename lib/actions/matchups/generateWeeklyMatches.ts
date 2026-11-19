@@ -56,7 +56,7 @@ export async function generateWeeklyMatches({ dryRun = false }: { dryRun?: boole
   if (!dryRun) {
     const todayStart = new Date()
     todayStart.setHours(0, 0, 0, 0)
-    const existing = await prisma.parley.count({
+    const existing = await prisma.oneTwoOne.count({
       where: { chapterId, createdAt: { gte: todayStart }, notes: 'Auto-matched weekly 1-2-1' }
     })
     if (existing > 0) return { success: true, pairCount: existing, existing: true }
@@ -65,7 +65,7 @@ export async function generateWeeklyMatches({ dryRun = false }: { dryRun?: boole
   const since = new Date()
   since.setDate(since.getDate() - HISTORY_WEEKS * 7)
 
-  const past = await prisma.parley.findMany({
+  const past = await prisma.oneTwoOne.findMany({
     where: { chapterId, createdAt: { gte: since } },
     select: { requesterId: true, recipientId: true, createdAt: true }
   })
@@ -121,7 +121,7 @@ export async function generateWeeklyMatches({ dryRun = false }: { dryRun?: boole
   const scheduledAt = new Date()
   scheduledAt.setDate(scheduledAt.getDate() + 7)
 
-  await prisma.parley.createMany({
+  await prisma.oneTwoOne.createMany({
     data: pairs.map(([a, b]) => ({
       chapterId,
       requesterId: a.id,

@@ -1,10 +1,10 @@
 'use server'
 
 import prisma from '@/prisma/client'
-import { auth } from '../../auth/auth'
-import { chapterId } from '../../constants/api/chapterId'
-import { createLog } from '../../utils/api/createLog'
-import { formatCurrency } from '../../utils/currency.utils'
+import { auth } from '@/lib/auth/auth'
+import { chapterId } from '@/lib/constants/api/chapterId'
+import { createLog } from '@/lib/utils/api/createLog'
+import { formatCurrency } from '@/lib/utils/currency.utils'
 import { SuperUserDashboardData, SuperUserStats } from '@/types/super.types'
 
 export async function getSuperUserDashboardData(): Promise<
@@ -17,14 +17,14 @@ export async function getSuperUserDashboardData(): Promise<
     const [
       members,
       applicants,
-      parleys,
+      oneTwoOnes,
       referrals,
-      anchors,
+      closedBusinesses,
       visitors,
       chapter,
       meetingsTotal,
       referralsOpen,
-      anchorsAllTime,
+      closedBusinessesAllTime,
       events
     ] = await Promise.all([
       prisma.user
@@ -82,7 +82,7 @@ export async function getSuperUserDashboardData(): Promise<
         })
         .catch(() => null),
 
-      prisma.parley
+      prisma.oneTwoOne
         .findMany({
           where: { chapterId },
           orderBy: { createdAt: 'desc' },
@@ -98,7 +98,7 @@ export async function getSuperUserDashboardData(): Promise<
         })
         .catch(() => null),
 
-      prisma.treasureMap
+      prisma.referral
         .findMany({
           where: { chapterId },
           orderBy: { createdAt: 'desc' },
@@ -114,7 +114,7 @@ export async function getSuperUserDashboardData(): Promise<
         })
         .catch(() => null),
 
-      prisma.anchor
+      prisma.closedBusiness
         .findMany({
           where: { chapterId },
           orderBy: { createdAt: 'desc' },
@@ -165,19 +165,19 @@ export async function getSuperUserDashboardData(): Promise<
         })
         .catch(() => null),
 
-      prisma.parley
+      prisma.oneTwoOne
         .count({
           where: { chapterId, status: { not: 'CANCELLED' } }
         })
         .catch(() => 0),
 
-      prisma.treasureMap
+      prisma.referral
         .count({
           where: { chapterId, status: 'GIVEN' }
         })
         .catch(() => 0),
 
-      prisma.anchor
+      prisma.closedBusiness
         .findMany({
           where: { chapterId },
           select: { businessValue: true }
@@ -201,7 +201,7 @@ export async function getSuperUserDashboardData(): Promise<
         .catch(() => [])
     ])
 
-    const closedTotal = (anchorsAllTime ?? []).reduce((s, a) => s + Number(a.businessValue), 0)
+    const closedTotal = (closedBusinessesAllTime ?? []).reduce((s, a) => s + Number(a.businessValue), 0)
     const activeMembers = (members ?? []).filter((m) => m.membershipStatus === 'ACTIVE').length
 
     const stats: SuperUserStats = {
@@ -228,7 +228,7 @@ export async function getSuperUserDashboardData(): Promise<
           lastLoginAt: m.lastLoginAt?.toISOString() ?? null,
           joinedAt: m.joinedAt?.toISOString() ?? null,
           loginCount: 0,
-          parleyCount: m._count.requestedMeetings,
+          oneTwoOneCount: m._count.requestedMeetings,
           referralCount: m._count.giver,
           closedCount: m._count.givenCredits,
           profileImage: m.profileImage,
@@ -240,7 +240,7 @@ export async function getSuperUserDashboardData(): Promise<
           createdAt: a.createdAt.toISOString(),
           finalDecisionAt: a.finalDecisionAt
         })),
-        oneTwoOnes: (parleys ?? []).map((p) => ({
+        oneTwoOnes: (oneTwoOnes ?? []).map((p) => ({
           id: p.id,
           scheduledAt: p.scheduledAt.toISOString(),
           status: p.status,
@@ -258,7 +258,7 @@ export async function getSuperUserDashboardData(): Promise<
           giver: r.giver,
           receiver: r.receiver
         })),
-        anchors: (anchors ?? []).map((a) => ({
+        closedBusinesses: (closedBusinesses ?? []).map((a) => ({
           id: a.id,
           businessValue: Number(a.businessValue).toFixed(2),
           description: a.description,
@@ -298,12 +298,12 @@ export async function getSuperUserDashboardData(): Promise<
 
 // ─── Inline actions ────────────────────────────────────────────────────────────
 
-export async function deleteAnchor(id: string) {
+export async function deleteClosedBusiness(id: string) {
   try {
     const session = await auth()
     if (!session?.user) return { success: false, error: 'Unauthorized' }
 
-    await prisma.anchor.delete({ where: { id } })
+    await prisma.closedBusiness.delete({ where: { id } })
     return { success: true }
   } catch {
     return { success: false, error: 'Failed to delete' }

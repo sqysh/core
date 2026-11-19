@@ -37,21 +37,21 @@ export async function weekStart(): Promise<Date> {
 export async function getWeekActivity(): Promise<MemberWeek[]> {
   const since = await weekStart()
 
-  const [members, parleys, referrals, anchors] = await Promise.all([
+  const [members, oneTwoOnes, referrals, closedBusinesses] = await Promise.all([
     prisma.user.findMany({
       where: { chapterId, membershipStatus: 'ACTIVE' },
       select: { id: true, name: true },
       orderBy: { name: 'asc' }
     }),
-    prisma.parley.findMany({
+    prisma.oneTwoOne.findMany({
       where: { chapterId, completed: true, completedAt: { gte: since } },
       select: { requesterId: true, recipientId: true }
     }),
-    prisma.treasureMap.findMany({
+    prisma.referral.findMany({
       where: { chapterId, createdAt: { gte: since } },
       select: { giverId: true }
     }),
-    prisma.anchor.findMany({
+    prisma.closedBusiness.findMany({
       where: { chapterId, createdAt: { gte: since } },
       select: { receiverId: true, businessValue: true }
     })
@@ -60,7 +60,7 @@ export async function getWeekActivity(): Promise<MemberWeek[]> {
   const rows = new Map<string, MemberWeek>(
     members.map((m) => [m.id, { id: m.id, name: m.name ?? '', f2f: 0, referrals: 0, tyfcb: 0, tyfcbTotal: 0 }])
   )
-  for (const p of parleys) {
+  for (const p of oneTwoOnes) {
     const req = rows.get(p.requesterId)
     if (req) req.f2f++
     const rec = rows.get(p.recipientId)
@@ -71,7 +71,7 @@ export async function getWeekActivity(): Promise<MemberWeek[]> {
     const row = rows.get(r.giverId)
     if (row) row.referrals++
   }
-  for (const a of anchors) {
+  for (const a of closedBusinesses) {
     if (!a.receiverId) continue
     const row = rows.get(a.receiverId)
     if (!row) continue
