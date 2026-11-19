@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { LinkBody } from '@/components/_shared/LinkBody'
 import { LIFT, delay, shortDate } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 import type { MissedMeeting } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 import { CtaLink } from './CtaLink'
@@ -34,8 +35,10 @@ function WeekTally({ week, settle }: { week: Week; settle: number }) {
                   : 'border border-dashed border-(--key)/60 text-(--key) hover:bg-white/4'
               }`}
             >
-              <span className="font-sora text-[20px] font-black leading-none tabular-nums">{n > 0 ? n : '+'}</span>
-              <span className="mt-1 font-mono text-[9px] tracking-[0.14em] uppercase opacity-80">{r.label}</span>
+              <LinkBody>
+                <span className="font-sora text-[20px] font-black leading-none tabular-nums">{n > 0 ? n : '+'}</span>
+                <span className="mt-1 font-mono text-[9px] tracking-[0.14em] uppercase opacity-80">{r.label}</span>
+              </LinkBody>
             </Link>
           )
         })}
@@ -58,9 +61,7 @@ function MissedList({
 }) {
   return (
     <div className={`mt-5 ${SECTION}`} style={delay(settle + 1.95)}>
-      <p className={EYEBROW}>
-        {missed.length === 1 ? 'Missed Thursday' : 'Missed Thursdays'} · tap to reinstate
-      </p>
+      <p className={EYEBROW}>{missed.length === 1 ? 'Missed Thursday' : 'Missed Thursdays'} · tap to reinstate</p>
       <div className="mt-2.5 flex justify-center gap-2">
         {missed.map((m) => (
           <button

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
+import { useCheckInChime } from './_hooks/useCheckInChime'
 import { useCheckInTime } from './_hooks/useCheckInTime'
 import { useCountUp } from './_hooks/useCountUp'
 import { useIntro } from './_hooks/useIntro'
@@ -11,6 +12,7 @@ import { useSqyshStage } from './_hooks/useSqyshStage'
 import { useWakeLock } from './_hooks/useWakeLock'
 import { AttendanceRing } from './_components/AttendanceRing'
 import { MemberPanel } from './_components/MemberPanel'
+import { HonkButton } from './_components/HonkButton'
 import { ReactionBar } from './_components/ReactionBar'
 import { RolePanel } from './_components/RolePanel'
 import { SpeechBubbles } from './_components/SpeechBubbles'
@@ -45,6 +47,8 @@ export default function CheckInClient({
   const script = SCRIPT[stateKey]
   const S = script.settle
   const checkedIn = stateKey === 'ok' || stateKey === 'again'
+  // the chime is for the check-in itself, not for coming back to the page later
+  useCheckInChime(stateKey === 'ok')
   const pct = attendance.total > 0 ? Math.round((attendance.attended / attendance.total) * 100) : 0
 
   const role = resolveRole({ isSuper, isHost, isTreasurer, isGuidingLight }, checkedIn)
@@ -150,6 +154,7 @@ export default function CheckInClient({
           />
         )}
 
+        {checkedIn && <HonkButton settle={S} />}
         {checkedIn && <ReactionBar settle={S} />}
       </div>
 

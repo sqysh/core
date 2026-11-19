@@ -127,6 +127,8 @@ export interface BoatKind {
   /** Highest point above the waterline, in art units */
   top: number
   art: (p: Palette) => ReactNode
+  /** Where the boat's crew member stands on deck: feet at (x, y) in art units, and how big to draw them */
+  crew: { x: number; y: number; scale: number }
 }
 
 const shadeId = (p: Palette) => `harbor-hull-${p.hull.slice(1)}`
@@ -161,6 +163,7 @@ export const BOATS: BoatKind[] = [
     label: 'sailboat',
     size: 1,
     top: 16,
+    crew: { x: 178, y: 140, scale: 1 },
     art: (p) => (
       <>
         <path d="M112 18 L112 128 L46 132 Q66 74 112 18 Z" fill={p.sail} />
@@ -189,6 +192,7 @@ export const BOATS: BoatKind[] = [
     label: 'schooner',
     size: 1.22,
     top: 8,
+    crew: { x: 192, y: 141, scale: 1 },
     art: (p) => (
       <>
         <path d="M150 12 L150 130 L106 132 L104 40 Z" fill={p.sail} />
@@ -219,6 +223,7 @@ export const BOATS: BoatKind[] = [
     label: 'fishing trawler',
     size: 1.05,
     top: 34,
+    crew: { x: 98, y: 138, scale: 1 },
     art: (p) => (
       <>
         <rect x="140" y="34" width="3.5" height="98" rx="1.5" fill={RIG} />
@@ -245,6 +250,7 @@ export const BOATS: BoatKind[] = [
     label: 'lobster boat',
     size: 0.95,
     top: 92,
+    crew: { x: 120, y: 143, scale: 1 },
     art: (p) => (
       <>
         <rect x="168" y="92" width="3" height="20" fill={RIG} />
@@ -272,6 +278,7 @@ export const BOATS: BoatKind[] = [
     label: 'motor yacht',
     size: 1.1,
     top: 84,
+    crew: { x: 38, y: 146, scale: 0.95 },
     art: (p) => (
       <>
         <path d="M118 98 L118 84 L124 84 L128 98" stroke={RIG} strokeWidth="3" fill="none" />
@@ -295,6 +302,7 @@ export const BOATS: BoatKind[] = [
     label: 'tugboat',
     size: 0.86,
     top: 66,
+    crew: { x: 196, y: 141, scale: 0.95 },
     art: (p) => (
       <>
         <rect x="150" y="66" width="3" height="28" fill={RIG} />
@@ -322,6 +330,7 @@ export const BOATS: BoatKind[] = [
     label: 'sailing dinghy',
     size: 0.62,
     top: 18,
+    crew: { x: 150, y: 146, scale: 1.3 },
     art: (p) => (
       <>
         <path d="M120 18 L120 138 L58 142 Q78 80 120 18 Z" fill={p.accent} />
@@ -338,3 +347,58 @@ export const BOATS: BoatKind[] = [
     )
   }
 ]
+
+// ─── Crew ─────────────────────────────────────────────────────────────────────
+// One little sailor on each boat, drawn on the same flat-fill terms as the boats. Their look comes from a number
+// (the member's id hashed), so the same person turns up in the same shirt every week.
+
+const SHIRTS = ['#e2405c', '#2c5aa0', '#f2c14e', '#1d9ac7', '#fbf6ec', '#f58a5c', '#6bbf8a', '#8b6fd1']
+const SKINS = ['#f3d2b3', '#e2b48c', '#c68a5e', '#a0683f', '#74492c']
+const HAIRS = ['#2b2118', '#5a3a22', '#a9743a', '#d8b25a', '#7c7c86', '#8a3b2a']
+
+export function Crew({
+  x,
+  y,
+  scale,
+  seed,
+  waving
+}: {
+  x: number
+  y: number
+  scale: number
+  seed: number
+  waving: boolean
+}) {
+  const shirt = SHIRTS[(seed >>> 3) % SHIRTS.length]
+  const skin = SKINS[(seed >>> 6) % SKINS.length]
+  const hair = HAIRS[(seed >>> 9) % HAIRS.length]
+  const cap = ((seed >>> 12) & 1) === 1
+  const capColor = SHIRTS[(seed >>> 14) % SHIRTS.length]
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      {/* legs */}
+      <rect x="-3.6" y="-10" width="3.3" height="10" rx="1.4" fill="#2b3d6e" />
+      <rect x="0.3" y="-10" width="3.3" height="10" rx="1.4" fill="#26365f" />
+      {/* the arm at rest, then the one that waves */}
+      <rect x="-7.4" y="-23" width="3.2" height="11" rx="1.6" fill={shirt} />
+      <circle cx="-5.8" cy="-11.6" r="1.8" fill={skin} />
+      {/* torso */}
+      <rect x="-4.8" y="-24" width="9.6" height="15" rx="3.2" fill={shirt} />
+      <rect x="-4.8" y="-24" width="4" height="15" rx="2" fill="#000" opacity="0.08" />
+      <g className={waving ? 'harbor-arm' : undefined} style={{ transformBox: 'fill-box', transformOrigin: '50% 8%' }}>
+        <rect x="4.2" y="-23" width="3.2" height="11" rx="1.6" fill={shirt} />
+        <circle cx="5.8" cy="-11.6" r="1.8" fill={skin} />
+      </g>
+      {/* head */}
+      <circle cx="0" cy="-29" r="4.8" fill={skin} />
+      {cap ? (
+        <>
+          <path d="M-5 -29.4 A5 5 0 0 1 5 -29.4 Z" fill={capColor} />
+          <rect x="-1" y="-30" width="7" height="1.6" rx="0.8" fill={capColor} />
+        </>
+      ) : (
+        <path d="M-5 -29 A5 5 0 0 1 5 -29 Q0 -32.4 -5 -29 Z" fill={hair} />
+      )}
+    </g>
+  )
+}

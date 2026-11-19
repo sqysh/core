@@ -54,7 +54,24 @@ const SHAPES: { w: number; h: number; lobes: [number, number, number][] }[] = [
   }
 ]
 
-function Cloud({ variant }: { variant: number }) {
+export interface CloudTone {
+  shadow: string
+  body: string
+  inner: string
+  light: string
+  rim: string
+}
+
+const FAIR: CloudTone = { shadow: '#d6cdf3', body: '#ffffff', inner: '#ece7fc', light: '#ffffff', rim: '#ffffff' }
+export const STORM_TONE: CloudTone = {
+  shadow: '#1f2437',
+  body: '#4b5471',
+  inner: '#39405c',
+  light: '#6a7494',
+  rim: '#8791b3'
+}
+
+export function Cloud({ variant, tone = FAIR }: { variant: number; tone?: CloudTone }) {
   const { w, h, lobes } = SHAPES[variant % SHAPES.length]
   const base = h - 14
   const body = (
@@ -79,16 +96,16 @@ function Cloud({ variant }: { variant: number }) {
         </clipPath>
       </defs>
       <g clipPath={`url(#cloud-base-${variant})`}>
-        <g fill="#d6cdf3" transform="translate(8 12)">
+        <g fill={tone.shadow} transform="translate(8 12)">
           {body}
         </g>
-        <g fill="#ffffff">{body}</g>
-        <g fill="#ece7fc" opacity="0.8">
+        <g fill={tone.body}>{body}</g>
+        <g fill={tone.inner} opacity="0.8">
           {lobes.slice(1, -1).map(([x, y, r], i) => (
             <ellipse key={i} cx={x - r * 0.15} cy={y + r * 0.62} rx={r * 0.62} ry={r * 0.26} />
           ))}
         </g>
-        <g fill="#ffffff">
+        <g fill={tone.light}>
           {lobes.slice(1, -1).map(([x, y, r], i) => (
             <circle key={i} cx={x - r * 0.28} cy={y - r * 0.3} r={r * 0.34} />
           ))}
@@ -96,7 +113,7 @@ function Cloud({ variant }: { variant: number }) {
       </g>
       <path
         d={`M${w * 0.55} ${base + 2} Q${w * 0.9} ${base - 4} ${w * 1.3} ${base - 22} Q${w * 0.95} ${base + 6} ${w * 0.55} ${base + 8} Z`}
-        fill="#ffffff"
+        fill={tone.rim}
         opacity="0.55"
       />
     </svg>
@@ -115,7 +132,12 @@ const CLOUDS = [
 
 export function DriftingClouds() {
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+    // the fair-weather clouds give way as the storm rolls in
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{ opacity: 'max(0, calc(1 - var(--storm, 0) * 2.2))' }}
+      aria-hidden="true"
+    >
       {CLOUDS.map((c, i) => (
         <div
           key={i}
@@ -181,7 +203,12 @@ const FLOCKS = [
 
 export function Seabirds() {
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+    // the gulls head for shore
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{ opacity: 'max(0, calc(1 - var(--storm, 0) * 2.5))' }}
+      aria-hidden="true"
+    >
       {FLOCKS.map((f, i) => (
         <div
           key={i}

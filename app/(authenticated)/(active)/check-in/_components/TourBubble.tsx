@@ -3,7 +3,15 @@ import { TypeText } from '@/components/_shared/SqyshVector'
 // The offer, once Sqysh has landed in the corner. Sits in a fixed-width slot
 // to his left so it can never run off the screen. Mounted when the tour starts,
 // so every animation here is relative to mount.
-export function TourBubble({ reduce, onShow, onDismiss }: { reduce: boolean; onShow: () => void; onDismiss: () => void }) {
+export function TourBubble({
+  reduce,
+  onShow,
+  onDismiss
+}: {
+  reduce: boolean
+  onShow: () => void
+  onDismiss: () => void
+}) {
   return (
     <div className="pointer-events-auto relative ml-auto w-fit max-w-full border border-white/15 bg-white/7 px-4 py-3 backdrop-blur-md opacity-0 animate-[ciLift_0.5s_cubic-bezier(0.16,1,0.3,1)_0.3s_both]">
       <p className="m-0 font-sora text-[15px] font-semibold leading-snug tracking-[-0.015em] xs:text-[16px]">

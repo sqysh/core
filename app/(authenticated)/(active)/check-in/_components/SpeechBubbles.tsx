@@ -4,7 +4,8 @@ import { delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 
 const SHELL =
   'absolute bottom-full left-1/2 w-max max-w-[min(calc(100vw-2rem),300px)] border border-white/15 bg-white/7 px-4 py-3 text-center backdrop-blur-md xs:px-5 opacity-0'
-const TEXT = 'relative m-0 font-sora text-[15px] font-semibold leading-snug tracking-[-0.015em] text-balance xs:text-[16px]'
+const TEXT =
+  'relative m-0 font-sora text-[15px] font-semibold leading-snug tracking-[-0.015em] text-balance xs:text-[16px]'
 
 function Tail() {
   return (

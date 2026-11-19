@@ -1,7 +1,23 @@
 import { useEffect, useRef } from 'react'
+import { Engine, startEngine } from '@/app/(authenticated)/(active)/attendance/_lib/boatSounds'
+import { SCENE_H, SCENE_W, EXTEND_H } from '@/app/(authenticated)/(active)/attendance/_lib/harborMap'
 import { getInitials } from '@/lib/utils/shared.utils'
-import { ART_CENTER, ART_H, ART_LENGTH, ART_W, WATERLINE } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
-import { PLATE_H, Point, lengthAt, pointAt, voyageProgress } from '@/app/(authenticated)/(active)/attendance/_lib/harborLayout'
+import {
+  ART_CENTER,
+  ART_H,
+  ART_LENGTH,
+  ART_W,
+  Crew,
+  WATERLINE
+} from '@/app/(authenticated)/(active)/attendance/_lib/boats'
+import {
+  PLATE_H,
+  Point,
+  lengthAt,
+  pointAt,
+  voyageProgress
+} from '@/app/(authenticated)/(active)/attendance/_lib/harborLayout'
+import { hashString } from '@/app/(authenticated)/(active)/attendance/_lib/random'
 import { FleetBoat, boatTop } from '@/app/(authenticated)/(active)/attendance/_hooks/useHarbor'
 
 const PERIOD_S = 4.6
@@ -43,6 +59,12 @@ interface HarborBoatProps {
   plateEl: HTMLDivElement | null
 }
 
+// How fast the boat is moving along its voyage, 0 (stopped) to about 1 (cruising)
+function voyageSpeed(t: number) {
+  const dt = 0.01
+  return Math.min(1, (voyageProgress(Math.min(1, t + dt)) - voyageProgress(t)) / dt / 1.4)
+}
+
 export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
   const el = useRef<HTMLDivElement>(null)
   const { voyage, kind, palette, berth, L, facing } = boat
@@ -54,6 +76,7 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
     if (!voyage || !node) return
     let raf = 0
     let lastPuff = 0
+    let engine: Engine | null = null
     const { points, duration } = voyage
 
     function place(p: Point) {
@@ -68,6 +91,17 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
       const t = Math.min(1, Math.max(0, (now - boat.launchAt) / (duration * 1000)))
       const p = pointAt(points, voyageProgress(t))
       const len = place(p)
+
+      // the motor runs for the whole voyage: it starts as the boat leaves, works with its speed, and cuts as it moors
+      if (t > 0 && t < 0.5 && !engine) engine = startEngine(boat.voice)
+      if (engine) {
+        const near = Math.min(1, Math.max(0, (p.y - 500) / (SCENE_H + EXTEND_H - 500)))
+        engine.update(voyageSpeed(t), (p.x / SCENE_W) * 2 - 1, near)
+        if (t >= 1) {
+          engine.stop()
+          engine = null
+        }
+      }
       if (depthLayer && t > 0 && t < 0.96 && now - lastPuff > 110) {
         lastPuff = now
         spawnPuff(depthLayer, { x: p.x - facing * 0.46 * len, y: p.y }, len)
@@ -78,6 +112,8 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
 
     // Moored: the plate glides off to its own spot and the rope pays out to reach it
     function settle() {
+      // the sailor stops waving once they're tied up
+      node!.querySelector('.harbor-arm')?.classList.remove('harbor-arm')
       if (!plateEl) return
       plateEl.classList.add('harbor-settle')
       plateEl.style.transform = `translate(${boat.plate.x}px, ${boat.plate.y}px)`
@@ -91,7 +127,10 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
 
     place(points[0])
     raf = requestAnimationFrame(frame)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(raf)
+      engine?.stop()
+    }
   }, [voyage, boat, kind, facing, depthLayer, plateEl])
 
   // Bob in step with a swell rolling left to right across the harbor
@@ -109,33 +148,37 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
         zIndex: Math.round(start.y)
       }}
     >
-      <div
-        className="harbor-bob"
-        style={{ animationDelay: `${bobDelay}s`, transformOrigin: `${ART_CENTER}px ${WATERLINE}px` }}
-      >
-        <svg
-          width={ART_W}
-          height={ART_H}
-          viewBox={`0 0 ${ART_W} ${ART_H}`}
-          className="block overflow-visible"
-          style={{ transform: facing < 0 ? 'scaleX(-1)' : undefined, transformOrigin: `${ART_CENTER}px 0` }}
-          role="img"
-          aria-label={`${boat.member.name}'s ${kind.label}`}
+      {/* the swell layer: big swells lift and roll the boat as they pass (see Swells) */}
+      <div data-swell data-y={Math.round(berth.y)} style={{ transformOrigin: `${ART_CENTER}px ${WATERLINE}px` }}>
+        <div
+          className="harbor-bob"
+          style={{ animationDelay: `${bobDelay}s`, transformOrigin: `${ART_CENTER}px ${WATERLINE}px` }}
         >
-          <ellipse cx={ART_CENTER} cy={WATERLINE + 5} rx={106} ry={8} fill="#0a3f86" opacity="0.28" />
-          <g clipPath="url(#harbor-above-water)">{kind.art(palette)}</g>
-          <ellipse
-            className="harbor-ripple"
-            style={{ animationDelay: `${bobDelay}s` }}
-            cx={ART_CENTER}
-            cy={WATERLINE + 1}
-            rx={110}
-            ry={4.5}
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth="3"
-          />
-        </svg>
+          <svg
+            width={ART_W}
+            height={ART_H}
+            viewBox={`0 0 ${ART_W} ${ART_H}`}
+            className="block overflow-visible"
+            style={{ transform: facing < 0 ? 'scaleX(-1)' : undefined, transformOrigin: `${ART_CENTER}px 0` }}
+            role="img"
+            aria-label={`${boat.member.name}'s ${kind.label}`}
+          >
+            <ellipse cx={ART_CENTER} cy={WATERLINE + 5} rx={106} ry={8} fill="#0a3f86" opacity="0.28" />
+            <g clipPath="url(#harbor-above-water)">{kind.art(palette)}</g>
+            <Crew {...kind.crew} seed={hashString(boat.member.id)} waving={!!voyage} />
+            <ellipse
+              className="harbor-ripple"
+              style={{ animationDelay: `${bobDelay}s` }}
+              cx={ART_CENTER}
+              cy={WATERLINE + 1}
+              rx={110}
+              ry={4.5}
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="3"
+            />
+          </svg>
+        </div>
       </div>
     </div>
   )
@@ -143,11 +186,13 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
 
 interface NameplateProps {
   boat: FleetBoat
+  /** Counts up each time this boat honks, so every honk replays the bubble */
+  honk?: number
   register: (id: string, el: HTMLDivElement | null) => void
 }
 
 // A navy pill with a cream rope border, tied to the boat with a rope
-export function Nameplate({ boat, register }: NameplateProps) {
+export function Nameplate({ boat, register, honk = 0 }: NameplateProps) {
   const { plate, member, label, voyage, top } = boat
   const moored = !voyage
   const r = rope(plate, top)
@@ -163,6 +208,11 @@ export function Nameplate({ boat, register }: NameplateProps) {
         transform: moored ? `translate(${plate.x}px, ${plate.y}px)` : plateTransform(startTop, plate.w, plate.h)
       }}
     >
+      {honk > 0 && (
+        <span key={honk} className="harbor-honk" aria-hidden="true">
+          TOOT!
+        </span>
+      )}
       <div
         className="harbor-rope absolute left-1/2 top-full"
         style={{

@@ -7,10 +7,12 @@
 @keyframes harbor-bob {
   0%,
   100% {
-    transform: translateY(0) rotate(-1.1deg);
+    transform: translateY(calc(var(--wave, 0) * 5px))
+      rotate(calc(-1.1deg - var(--wave, 0) * 4deg));
   }
   50% {
-    transform: translateY(-4px) rotate(1.1deg);
+    transform: translateY(calc(-4px - var(--wave, 0) * 16px))
+      rotate(calc(1.1deg + var(--wave, 0) * 4deg));
   }
 }
 
@@ -28,6 +30,56 @@
   50% {
     opacity: 0.75;
     transform: scaleX(1.07);
+  }
+}
+
+.harbor-arm {
+  animation: harbor-wave 0.7s ease-in-out infinite;
+}
+@keyframes harbor-wave {
+  0%,
+  100% {
+    transform: rotate(-135deg);
+  }
+  50% {
+    transform: rotate(-172deg);
+  }
+}
+
+.harbor-honk {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #f6ecd2;
+  color: #1d3767;
+  font-family: var(--font-sora), system-ui, sans-serif;
+  font-weight: 900;
+  font-size: 30px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: harbor-honk 1.5s ease-out forwards;
+}
+@keyframes harbor-honk {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4);
+  }
+  12% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.25) rotate(-4deg);
+  }
+  25% {
+    transform: translateX(-50%) scale(1) rotate(2deg);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-26px) scale(1);
   }
 }
 
@@ -106,6 +158,10 @@
 
 .harbor-swell {
   animation: harbor-swell linear infinite;
+  /* a rough sea: the crests grow tall and whiter as the storm builds */
+  scale: 1 calc(1 + var(--wave, 0) * 2.6);
+  transform-origin: center;
+  filter: brightness(calc(1 + var(--wave, 0) * 0.6));
 }
 @keyframes harbor-swell {
   from {

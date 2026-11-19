@@ -1,6 +1,13 @@
 import { useCallback, useRef, useState } from 'react'
 import { Member } from '@/types/attendance.types'
-import { ART_LENGTH, BOATS, BoatKind, PALETTES, Palette, WATERLINE } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
+import {
+  ART_LENGTH,
+  BOATS,
+  BoatKind,
+  PALETTES,
+  Palette,
+  WATERLINE
+} from '@/app/(authenticated)/(active)/attendance/_lib/boats'
 import {
   Berth,
   Point,
@@ -14,6 +21,7 @@ import {
   planVoyage,
   plateWidth
 } from '@/app/(authenticated)/(active)/attendance/_lib/harborLayout'
+import { BoatVoice, voiceFor } from '@/app/(authenticated)/(active)/attendance/_lib/boatSounds'
 import { hashString } from '@/app/(authenticated)/(active)/attendance/_lib/random'
 
 export interface FleetBoat {
@@ -31,6 +39,8 @@ export interface FleetBoat {
   plateScale: number
   /** Top of the boat at its berth, where the nameplate's rope ties on */
   top: Point
+  /** This boat's own engine and horn */
+  voice: BoatVoice
   /** Null for boats already moored when the page loaded */
   voyage: Voyage | null
   /** performance.now() time the voyage starts, staggered so simultaneous check-ins sail in one after another */
@@ -55,7 +65,13 @@ function boatRect(b: FleetBoat): Rect {
 }
 
 // One boat for one member: its look comes from their id so it's the same every week, its berth from the arrival order
-function moor(fleet: FleetBoat[], member: Member, sail: boolean, launchAt: number): FleetBoat | null {
+function moor(
+  fleet: FleetBoat[],
+  member: Member,
+  sail: boolean,
+  launchAt: number,
+  voiceIndex: number
+): FleetBoat | null {
   const h = hashString(member.id)
   const kind = BOATS[h % BOATS.length]
   const palette = PALETTES[Math.floor(h / BOATS.length) % PALETTES.length]
@@ -97,6 +113,7 @@ function moor(fleet: FleetBoat[], member: Member, sail: boolean, launchAt: numbe
     plate,
     plateScale: scale,
     top,
+    voice: voiceFor(kind.key, voiceIndex),
     voyage,
     launchAt
   }
@@ -108,12 +125,14 @@ function moor(fleet: FleetBoat[], member: Member, sail: boolean, launchAt: numbe
  */
 export function useHarbor(members: Member[], initialIds: string[]) {
   const byId = useRef(new Map(members.map((m) => [m.id, m])))
+  // each member's place on the roster, by id so it doesn't shuffle when names change, picks their boat's voice
+  const voiceIndex = useRef(new Map([...members].sort((a, b) => a.id.localeCompare(b.id)).map((m, i) => [m.id, i])))
   const [fleet, setFleet] = useState<FleetBoat[]>(() => {
     const out: FleetBoat[] = []
     for (const id of initialIds) {
       const m = byId.current.get(id)
       if (!m || out.some((b) => b.id === id)) continue
-      const boat = moor(out, m, false, 0)
+      const boat = moor(out, m, false, 0, voiceIndex.current.get(id) ?? 0)
       if (boat) out.push(boat)
     }
     return out
@@ -127,7 +146,7 @@ export function useHarbor(members: Member[], initialIds: string[]) {
 
     const now = performance.now()
     const launchAt = Math.max(now, lastLaunch.current + LAUNCH_GAP_MS)
-    const boat = moor(fleetRef.current, member, true, launchAt)
+    const boat = moor(fleetRef.current, member, true, launchAt, voiceIndex.current.get(userId) ?? 0)
     if (!boat) return
 
     lastLaunch.current = launchAt
