@@ -1,4 +1,4 @@
-import type { SqyshUpdate } from '@/app/(authenticated)/(active)/check-in/CheckInClient'
+import type { SqyshUpdate } from '@/app/(authenticated)/(active)/check-in/_lib/types'
 
 // What Sqysh shows on the check-in screen this week. Rewrite before each
 // Thursday; leave it empty and he skips the tour.
