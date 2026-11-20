@@ -1,6 +1,6 @@
 'use client'
 
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -33,18 +33,66 @@ const BADGE_MS = 6000
 
 /** Stand-in crew for testing a bigger harbor than the chapter has members (?fleet=30) */
 const TEST_NAMES = [
-  'Avery Lane', 'Blake Turner', 'Casey Moore', 'Drew Ellis', 'Emery Cole', 'Finley Hart', 'Gray Morgan', 'Harper Quinn',
-  'Indy Shaw', 'Jordan Pike', 'Kendall Ross', 'Logan Reed', 'Morgan Blythe', 'Noel Grant', 'Oakley Dunn', 'Parker Wade',
-  'Quinn Avery', 'Riley Stone', 'Sawyer Brooks', 'Taylor West', 'Umber Fields', 'Val Marsh', 'Wren Hale', 'Xan Price',
-  'Yael Burke', 'Zion Cross', 'Arden Vale', 'Bellamy Fox', 'Corin Shaw', 'Dale Rivers'
+  'Avery Lane',
+  'Blake Turner',
+  'Casey Moore',
+  'Drew Ellis',
+  'Emery Cole',
+  'Finley Hart',
+  'Gray Morgan',
+  'Harper Quinn',
+  'Indy Shaw',
+  'Jordan Pike',
+  'Kendall Ross',
+  'Logan Reed',
+  'Morgan Blythe',
+  'Noel Grant',
+  'Oakley Dunn',
+  'Parker Wade',
+  'Quinn Avery',
+  'Riley Stone',
+  'Sawyer Brooks',
+  'Taylor West',
+  'Umber Fields',
+  'Val Marsh',
+  'Wren Hale',
+  'Xan Price',
+  'Yael Burke',
+  'Zion Cross',
+  'Arden Vale',
+  'Bellamy Fox',
+  'Corin Shaw',
+  'Dale Rivers'
 ]
 
-type Props = { members: Member[]; initialAttendees: string[]; todayISO: string }
+/**
+ * The glass's lens: a displacement map that leaves the middle of the panel undistorted and bends what's behind it
+ * along the edges (red moves it sideways, green up and down; 128 is neutral), so the sea seems to curve over the rim.
+ * Two gradients multiplied together, one per axis, stretched to the panel.
+ */
+const GLASS_MAP = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><defs>` +
+    `<linearGradient id='x' x1='0' x2='1' y1='0' y2='0'><stop offset='0' stop-color='rgb(215,255,255)'/><stop offset='.07' stop-color='rgb(128,255,255)'/><stop offset='.93' stop-color='rgb(128,255,255)'/><stop offset='1' stop-color='rgb(41,255,255)'/></linearGradient>` +
+    `<linearGradient id='y' x1='0' x2='0' y1='0' y2='1'><stop offset='0' stop-color='rgb(255,215,255)'/><stop offset='.22' stop-color='rgb(255,128,255)'/><stop offset='.78' stop-color='rgb(255,128,255)'/><stop offset='1' stop-color='rgb(255,41,255)'/></linearGradient></defs>` +
+    `<rect width='100' height='100' fill='url(#x)'/><rect width='100' height='100' fill='url(#y)' style='mix-blend-mode:multiply'/></svg>`
+)}`
 
-export default function CheckinVoyage({ members: realMembers, initialAttendees, todayISO }: Props) {
+type Props = { members: Member[]; initialAttendees: string[]; todayISO: string; onReady?: () => void; started?: boolean }
+
+/** Reports once the harbor has painted a few frames, i.e. after the scene is built and its shaders are compiled */
+function ReadySignal({ onReady }: { onReady?: () => void }) {
+  const frames = useRef(0)
+  useFrame(() => {
+    if (++frames.current === 4) onReady?.()
+  })
+  return null
+}
+
+export default function CheckinVoyage({ members: realMembers, initialAttendees, todayISO, onReady, started }: Props) {
   // ?fleet=30 pads the roster with stand-ins so the harbor can be tried at full size (development only)
   const [members] = useState<Member[]>(() => {
-    const want = typeof window === 'undefined' ? 0 : Number(new URLSearchParams(window.location.search).get('fleet')) || 0
+    const want =
+      typeof window === 'undefined' ? 0 : Number(new URLSearchParams(window.location.search).get('fleet')) || 0
     const extra = Array.from({ length: Math.max(0, want - realMembers.length) }, (_, k) => ({
       id: `test-${k}`,
       name: TEST_NAMES[k % TEST_NAMES.length],
@@ -59,6 +107,8 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   /** Boats whose profile badge is showing: it appears as they sail in and is gone after a few seconds */
   const [badges, setBadges] = useState<Set<string>>(new Set())
   const [audio, setAudioState] = useState(audioSettings)
+  /** True once the harbor has built and painted: the live connection waits for this, as the build blocks the page and a socket opened during it times out and retries */
+  const [built, setBuilt] = useState(false)
   const lastLaunch = useRef(0)
   const lastGate = useRef<string | null>(null)
   const realIds = useRef<string[]>(initialAttendees)
@@ -85,7 +135,12 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
     (id: string, sail: boolean) => {
       const identity = who.get(id)
       if (!identity || store.boats.has(id)) return false
-      const occupied = [...store.boats.values()].map((o) => ({ x: o.berth.x, z: o.berth.z, boat: o.who.boat, plate: o.plate }))
+      const occupied = [...store.boats.values()].map((o) => ({
+        x: o.berth.x,
+        z: o.berth.z,
+        boat: o.who.boat,
+        plate: o.plate
+      }))
       const berth = chooseBerth(occupied, identity.boat, identity.label)
       if (!berth) return false
       const route = sail ? planRoute(berth, identity.boat, occupied, lastGate.current) : null
@@ -142,12 +197,17 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
     // ?moored=12 ties up twelve more straight away, to judge a busy harbor (development)
     const moored = Number(new URLSearchParams(window.location.search).get('moored')) || 0
     for (const m of members.filter((x) => !store.boats.has(x.id)).slice(0, moored)) addBoat(m.id, false)
-    preloadBoatSamples()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // the recordings are fetched once the player has pressed start: that tap is what lets the browser create the audio context
+  useEffect(() => {
+    if (started) preloadBoatSamples()
+  }, [started])
+
   // live check-ins from members' phones
   useEffect(() => {
+    if (!built) return
     const channel = getPusherClient().subscribe('meeting-attendance')
     const onCheckIn = (data: { userId: string }) => {
       if (store.boats.has(data.userId)) return
@@ -159,7 +219,7 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
       channel.unbind('check-in', onCheckIn)
       releaseChannel('meeting-attendance')
     }
-  }, [addBoat, store])
+  }, [addBoat, store, built])
 
   function simulate(count: number) {
     const free = members.filter((m) => !store.boats.has(m.id))
@@ -194,9 +254,13 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   }, [welcome])
 
   const welcomeWho = welcome ? who.get(welcome.id) : null
+  // kept after it goes, so the panel still has its name while it slides away
+  const lastWho = useRef(welcomeWho)
+  if (welcomeWho) lastWho.current = welcomeWho
+  const shownWho = welcomeWho ?? lastWho.current
 
   return (
-    <div className="fixed inset-0 z-[9999] overflow-hidden bg-[#1a8ea3]">
+    <div className="fixed inset-0 z-9999 overflow-hidden bg-[#1a8ea3]">
       <Canvas
         orthographic
         shadows={{ type: PCFShadowMap }}
@@ -205,7 +269,18 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
         camera={{ zoom: VIEW.zoom, near: 0.5, far: 500, position: [VIEW.target.x + 80, 80, VIEW.target.z + 80] }}
       >
         {/* the diorama's own lighting rig, following the camera's focus; no studio backdrop here */}
-        <StudioLighting focus={[VIEW.target.x, 0, VIEW.target.z]} backdrop={false} shadowRange={40} shadowSoftness={10} />
+        <StudioLighting
+          focus={[VIEW.target.x, 0, VIEW.target.z]}
+          backdrop={false}
+          shadowRange={40}
+          shadowSoftness={10}
+        />
+        <ReadySignal
+          onReady={() => {
+            setBuilt(true)
+            onReady?.()
+          }}
+        />
         <HarborWorld checkInUrl={CHECK_IN_URL} />
         <HarborFleet store={store} ids={ids} />
         <WakeField store={store} />
@@ -238,14 +313,20 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
               }}
               className="absolute left-0 top-0 opacity-0 will-change-transform"
             >
-              <div className={`transition-[opacity,transform] duration-700 ${shown ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}>
+              <div
+                className={`transition-[opacity,transform] duration-700 ${shown ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}
+              >
                 <div
                   className="relative h-[4vw] w-[4vw] overflow-hidden rounded-full"
-                  style={{ border: '0.22vw solid #f6ecd2', boxShadow: `0 0 0 0.2vw ${accent}, 0 0.4vw 1.2vw rgba(10,30,60,0.45)`, background: accent }}
+                  style={{
+                    border: '0.22vw solid #f6ecd2',
+                    boxShadow: `0 0 0 0.2vw ${accent}, 0 0.4vw 1.2vw rgba(10,30,60,0.45)`,
+                    background: accent
+                  }}
                 >
                   {w.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={w.image} alt={w.name} className="h-full w-full object-cover" />
+                    <img src={w.image} alt={w.name} decoding="async" className="h-full w-full object-cover" />
                   ) : (
                     <span className="flex h-full w-full items-center justify-center font-sora text-[1.5vw] font-black text-white">
                       {w.name
@@ -256,25 +337,48 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
                     </span>
                   )}
                 </div>
-                <div data-line className="absolute left-1/2 top-full w-[0.12vw] -translate-x-1/2 bg-[#1d3767]/70" style={{ opacity: shown ? 1 : 0, transition: 'opacity 0.7s' }} />
+                <div
+                  data-line
+                  className="absolute left-1/2 top-full w-[0.12vw] -translate-x-1/2 bg-[#1d3767]/70"
+                  style={{ opacity: shown ? 1 : 0, transition: 'opacity 0.7s' }}
+                />
               </div>
             </div>
           )
         })}
       </div>
 
+      {/* the glass lens the welcome panel's backdrop passes through */}
+      <svg width="0" height="0" className="absolute" aria-hidden>
+        <filter id="cv-glass" x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
+          <feImage href={GLASS_MAP} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
+          <feDisplacementMap in="SourceGraphic" in2="map" scale="46" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
       {/* the welcome: a lower-third for the newest arrival */}
       <div
-        className={`pointer-events-none absolute bottom-[4vh] left-[2.2vw] transition-all duration-700 ${welcomeWho ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}
+        // it slides in and out rather than fading: a faded parent cuts the glass off from the sea behind it (the backdrop
+        // filter only sees what's inside it), so the glass would show clear until the fade ended
+        className={`pointer-events-none absolute bottom-[4vh] left-[2.2vw] transition-transform duration-700 ease-out ${welcomeWho ? 'translate-y-0' : 'translate-y-[200%]'}`}
       >
-        {welcomeWho && (
+        {shownWho && (
           <div
             key={welcome?.key}
-            className="rounded-[1vw] px-[1.6vw] py-[1vw]"
-            style={{ background: 'rgba(246,236,210,0.96)', border: '0.2vw solid #1d3767', boxShadow: '0 0.6vw 1.8vw rgba(10,30,60,0.4)' }}
+            // clear glass: no fill to speak of, bright rims where the edges catch the light, and the sea bent through the rim.
+            // The class is the fallback (a plain light blur); browsers that can bend the backdrop take the inline filter.
+            className="relative overflow-hidden rounded-[2vw] bg-white/[0.04] px-[1.9vw] py-[1.2vw] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.28),inset_0.18vw_0.18vw_0.25vw_-0.1vw_rgba(255,255,255,0.8),inset_-0.18vw_-0.18vw_0.25vw_-0.1vw_rgba(255,255,255,0.5),inset_0_0_1.4vw_rgba(255,255,255,0.1),0_0.8vw_2.4vw_rgba(6,24,44,0.25)] backdrop-blur-[1px]"
+            style={{ backdropFilter: 'url(#cv-glass) blur(0.5px) saturate(1.1) brightness(1.04)' }}
           >
-            <p className="m-0 font-sora text-[0.95vw] font-black uppercase tracking-[0.25em] text-[#2f9e5e]">Welcome aboard</p>
-            <p className="m-0 mt-[0.2vw] font-sora text-[2.6vw] font-black leading-none tracking-[-0.02em] text-[#1d3767]">{welcomeWho.name}</p>
+            {/* a faint specular glint along the top edge and a hairline across the bottom; nothing milky over the middle */}
+            <span className="pointer-events-none absolute inset-x-[6%] top-[3%] h-[22%] rounded-full bg-linear-to-b from-white/30 to-transparent" />
+            <span className="pointer-events-none absolute inset-x-[10%] bottom-0 h-px bg-linear-to-r from-transparent via-white/55 to-transparent" />
+            <p className="relative m-0 font-sora text-[0.95vw] font-black uppercase tracking-[0.25em] text-white/90 drop-shadow-[0_1px_3px_rgba(6,24,44,0.6)]">
+              Welcome
+            </p>
+            <p className="relative m-0 mt-[0.2vw] font-sora text-[2.6vw] font-black leading-none tracking-[-0.02em] text-white drop-shadow-[0_2px_8px_rgba(6,24,44,0.55)]">
+              {shownWho.name}
+            </p>
           </div>
         )}
       </div>

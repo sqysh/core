@@ -39,5 +39,9 @@ export function releaseChannel(channelName: string) {
   if (client.connection.state === 'connected') client.unsubscribe(channelName)
   else client.channels.remove(channelName)
 
-  if (client.allChannels().length === 0) client.disconnect()
+  // Checked a tick later: a component that remounts straight away (Strict Mode in dev, a quick navigation) subscribes
+  // again before then, so the socket isn't closed while it's still connecting
+  setTimeout(() => {
+    if (client.allChannels().length === 0) client.disconnect()
+  }, 0)
 }

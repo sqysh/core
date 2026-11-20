@@ -50,8 +50,8 @@ const CANDIDATES = (() => {
       const az = z - FWD.z * APPROACH
       if (harborShore(ax, az) < 2.2 || pierDistance(ax, az) < 1.8) continue
       const s = toScreen(cam, x, 0.3, z)
-      // the readable band of the harbor: in front of the haze, clear of the frame edges
-      if (s.behind || s.x < 90 || s.x > SCREEN.w - 90 || s.y < 400 || s.y > SCREEN.h - 70) continue
+      // the usable harbor: the whole water in the shot, clear of the frame edges and with room above for the nameplate
+      if (s.behind || s.x < 90 || s.x > SCREEN.w - 90 || s.y < 190 || s.y > SCREEN.h - 70) continue
       // and never under an overlay card
       if (UI_ZONES.some((u) => overlaps({ x0: s.x - 60, x1: s.x + 60, y0: s.y - 30, y1: s.y + 30 }, u))) continue
       out.push({ x, z, sx: s.x, sy: s.y })
