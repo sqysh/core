@@ -5,7 +5,7 @@ import { useRef } from 'react'
 import { Vector3 } from 'three'
 import { damp } from '../../voyage/_lib/fleet'
 import { HarborStore } from '../_lib/store'
-import { BOAT_TOP } from './boats/Boats'
+import { VESSEL_CLASS_SPECS } from '../_lib/vessel/classes'
 
 // Keeps every nameplate (plain DOM, sized for across-the-room reading) pinned above its boat: projects the boat's
 // masthead to the screen each frame, stacks plates that would collide, and eases them so they never jitter. A thin
@@ -32,7 +32,7 @@ export function PlateTracker({ store }: { store: HarborStore }) {
         el.style.opacity = '0'
         continue
       }
-      v.current.set(b.x, b.y + BOAT_TOP[b.who.boat] + 0.12, b.z)
+      v.current.set(b.x, b.y + VESSEL_CLASS_SPECS[b.who.boat].dims.top + 0.12, b.z)
       v.current.project(camera)
       if (v.current.z > 1) {
         el.style.opacity = '0'

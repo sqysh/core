@@ -6,7 +6,6 @@ import { usePdf, usePdfPage } from '@/lib/hooks/usePdf'
 import { PollStage } from './_components/PollStage'
 import { TreasurerStage } from './_components/TreasurerStage'
 import { ActivityStage } from './_components/ActivityStage'
-import { Teleprompter, type TeleprompterHandle } from './_components/Teleprompter'
 import MatchupsStage from './_components/MatchupsStage'
 import {
   Matchup,
@@ -28,17 +27,17 @@ import { ClosingStage } from './_components/ClosingStage'
 import { PresenterSpotlight } from './_components/PresenterSpotlight'
 import { ReactionOverlay } from './_components/ReactionOverlay'
 
-// The TV: Greg's laptop on /attendance. Five states, all driven by the host's
-// remote over Pusher. Nothing on this screen is ever touched directly.
-//   holding   the live check-in board (your existing component, passed in)
-//   script    the opening, scrolled past a reading line, read from 20 feet
+// The TV: Greg's laptop on /attendance. Driven by the host's remote over Pusher;
+// nothing on this screen is ever touched directly.
+//   holding   the live check-in board (your existing component, passed in). It's
+//             also up while the host reads the script: the teleprompter plays on
+//             her phone now (PhonePrompter), so the room keeps the harbor
 //   slides    the presenter's PDF, one page at a time
 //   video     the presenter's MP4
 //   matchups  this week's 1-2-1 pairs
 
 type Mode =
   | 'holding'
-  | 'script'
   | 'slides'
   | 'video'
   | 'spotlight'
@@ -56,7 +55,6 @@ type Mode =
   | 'closing'
 
 export default function StageClient({
-  segments,
   presentation,
   matchups: initialMatchups,
   guidingLight,
@@ -71,7 +69,8 @@ export default function StageClient({
   todayWinner,
   loadMatchups
 }: {
-  segments: Segment[]
+  /** The script; it reads on the host's phone now, so the TV doesn't use it */
+  segments?: Segment[]
   presentation: StagePresentation | null
   matchups: Matchup[]
   guidingLight: StagePerson | null
@@ -100,10 +99,6 @@ export default function StageClient({
   const [presenterName, setPresenterName] = useState<string | null>(null)
   const [spotlightRun, setSpotlightRun] = useState(0)
   const [matchups, setMatchups] = useState(initialMatchups) // from getStageData
-
-  // the teleprompter owns the script scroll, countdown and speaking engine; the
-  // stage drives it through this handle
-  const tpRef = useRef<TeleprompterHandle | null>(null)
 
   // Once the judge picks, the result outlives the carousel: going back to the
   // guiding-light screen shows the winner instead of replaying the intro.
@@ -165,29 +160,15 @@ export default function StageClient({
     channel.bind(STAGE_EVENT, async (cmd: StageCommand) => {
       switch (cmd.type) {
         case 'holding':
-          tpRef.current?.reset()
           setMode('holding')
           break
+        // the script reads on the host's phone; the TV goes back to the harbor while she reads it
         case 'script.play':
-          setMode('script')
-          tpRef.current?.play({ countdown: cmd.countdown })
-          break
-        case 'script.pause':
-          tpRef.current?.pause()
-          break
-        case 'script.speed':
-          tpRef.current?.setSpeed(cmd.value)
-          break
         case 'script.jump':
-          setMode('script')
-          tpRef.current?.jump(cmd.value, { countdown: cmd.countdown, play: cmd.play })
-          break
-        case 'script.rewind':
-          tpRef.current?.rewind()
+          setMode('holding')
           break
         case 'present.start':
           if (!presentation || presentation.id !== cmd.presentationId) return
-          tpRef.current?.pause()
           setPage(1)
           setMode(presentation.kind === 'VIDEO' ? 'video' : 'slides')
           break
@@ -206,15 +187,12 @@ export default function StageClient({
           break
         }
         case 'present.end':
-          tpRef.current?.pause()
           setMode('activity')
           break
         case 'activity.show':
-          tpRef.current?.pause()
           setMode('activity')
           break
         case 'presenter.spotlight':
-          tpRef.current?.pause()
           setPresenterName(cmd.name)
           setSpotlightRun((n) => n + 1)
           setMode('spotlight')
@@ -228,7 +206,6 @@ export default function StageClient({
           }
           break
         case 'poll.show':
-          tpRef.current?.pause()
           if (modeRef.current !== 'poll') prePollModeRef.current = modeRef.current
           setPollId(cmd.pollId)
           setMode('poll')
@@ -238,35 +215,27 @@ export default function StageClient({
           setMode(prePollModeRef.current)
           break
         case 'treasurer.show':
-          tpRef.current?.pause()
           setMode('treasurer')
           break
         case 'co-directors.show':
-          tpRef.current?.pause()
           setMode('co-directors')
           break
         case 'event-coordinator.show':
-          tpRef.current?.pause()
           setMode('event-coordinator')
           break
         case 'membership.show':
-          tpRef.current?.pause()
           setMode('membership')
           break
         case 'guiding-light.show':
-          tpRef.current?.pause()
           setMode('guiding-light')
           break
         case 'sixty.show':
-          tpRef.current?.pause()
           setMode('sixty')
           break
         case 'education.show':
-          tpRef.current?.pause()
           setMode('education')
           break
         case 'closing.show':
-          tpRef.current?.pause()
           setMode('closing')
           break
       }
@@ -282,9 +251,6 @@ export default function StageClient({
     <div className="fixed inset-0 overflow-hidden bg-[#06101b] text-white">
       {/* ── Holding: the check-in board ── */}
       {mode === 'holding' && <div className="absolute inset-0">{board}</div>}
-
-      {/* ── Script (scroll, countdown and speaking engine live in here) ── */}
-      <Teleprompter ref={tpRef} segments={segments} active={mode === 'script'} onEnd={() => setMode('closing')} />
 
       {/* ── Slides ── */}
       {mode === 'slides' && presentation && (

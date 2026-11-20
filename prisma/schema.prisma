@@ -137,6 +137,8 @@ model User {
   pollsCreated         Poll[]                @relation("PollsCreated")
   pollVotes            PollVote[]            @relation("PollVotes")
   presentations        Presentation[]        @relation("Presentations")
+  vessel               MemberVessel?
+  vesselUnlocks        VesselUnlock[]
 
   // DEPRECATED
   secondaryEmail             String? @unique
@@ -646,6 +648,44 @@ model Presentation {
 
   @@unique([chapterId, meetingDate]) // one feature presentation per meeting
   @@index([presenterId])
+}
+
+// A member's boat in the harbor scenes: the class they sail and how it's dressed. One row per member, written the
+// first time they save a customisation; until then they sail a default derived from their id (lib/vessel/catalog.ts),
+// so nobody's boat changes when this table is introduced. Ids (class, pattern, accessories) are stable strings from
+// that catalog rather than enums, so new boats and cosmetics need no migration; the server validates every save.
+model MemberVessel {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vesselClass String // 'runabout' | 'lobster' | 'sloop' | ...
+  hullColor   String // #rrggbb
+  trimColor   String
+  accentColor String
+  sailColor   String
+  sailPattern String   @default("plain")
+  accessories String[] @default([]) // equipped accessory ids; each must be free or unlocked (VesselUnlock)
+  details     Json     @default("{}") // class-specific extras (cabin, roof, bottom paint colours), schema-checked on save
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Cosmetics a member has earned, kept apart from what they have equipped (MemberVessel). One row per item per member,
+// so a reward can never be granted twice; `source` and `sourceRef` record where it came from (a treasure claim, an
+// achievement, an admin grant) for audit. Free cosmetics need no row.
+model VesselUnlock {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String // stable cosmetic id from the catalog, e.g. 'accessory:burgee'
+  source    String // 'treasure' | 'achievement' | 'admin' | ...
+  sourceRef String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemId])
+  @@index([userId])
 }
 
 model ChapterTreasury {

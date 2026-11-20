@@ -38,6 +38,16 @@ export async function checkIn({ date }: { date?: string } = {}): Promise<{
       const isInWindow = totalMinutes >= 7 * 60 && totalMinutes <= 8 * 60 + 30
 
       if (!isThursday || !isInWindow) {
+        // someone already checked in today is still checked in after the window closes (the app holds them on this
+        // screen until the meeting ends, so they come back to it)
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const already = isThursday
+          ? await prisma.attendance.findFirst({
+              where: { userId: user.id, meeting: { chapterId, date: today } },
+              select: { id: true }
+            })
+          : null
+        if (already) return { success: true, alreadyCheckedIn: true }
         return {
           success: false,
           error: 'Check-in is only available on Thursdays between 7:00 AM and 8:30 AM EST.'

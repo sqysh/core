@@ -3,18 +3,30 @@
 import { RoundedBox } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
-import { BufferAttribute, BufferGeometry, CylinderGeometry, Group, Material, TorusGeometry } from 'three'
-import { Palette } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
+import { BoxGeometry, BufferAttribute, BufferGeometry, CapsuleGeometry, CylinderGeometry, ExtrudeGeometry, Group, Material, Shape, TorusGeometry, Vector2 } from 'three'
 import { HullPaint, HullSpec, hullDeck, hullPaintTexture, hullStations, loftedHull } from '../../_lib/hull'
-import { BOAT_DIMS } from '../../_lib/boatDims'
 import { BoatClass } from '../../_lib/identity'
-import { Crew, enamel, Fender, hullEnamel, kit, LifeRing, Porthole, Rail, Rod } from './kit'
+import { Rig } from '../../_lib/store'
+import { SLOOP_MAST, VESSEL_CLASS_SPECS } from '../../_lib/vessel/classes'
+import { VesselLook } from '../../_lib/vessel/look'
+import { submerged, SUBMERGED_ORDER } from '../../_lib/vessel/submerged'
+import { Accessories } from './accessories'
+import { BowRoller, Cleat, Crew, enamel, Fender, hullEnamel, kit, LifeRing, Porthole, Propeller, Rail, Rod, Wet } from './kit'
 
 // Three hand-built miniature boats on the lofted hull — a chrome-trimmed runabout, a Maine lobster boat and a
-// bermuda-rigged sloop — each painted in its member's colours. Bow points along +x, waterline near y = 0.
-// `rig` is the boat's live state from the harbor: sails come down and fenders go out once it's moored.
+// bermuda-rigged sloop — complete below the waterline (keels, skegs, rudders and propellers show through the clear
+// shallows). Geometry is the class's own (vessel/classes.ts); every colour, the sail pattern and the accessories come
+// from the member's look, so customising a boat never touches its model. Bow points along +x, waterline near y = 0.
+// `rig` is the boat's live state from the harbor: sails come down and fenders go out at anchor, the propeller turns
+// with the way it's making.
 
-export type Rig = { hoist: number; moored: boolean }
+/** A thin plate (keel, skeg, rudder) from a side profile of [x, y] points, centred on the hull's centreline */
+function fin(profile: [number, number][], thickness: number) {
+  const shape = new Shape(profile.map(([x, y]) => new Vector2(x, y)))
+  const g = new ExtrudeGeometry(shape, { depth: thickness, bevelEnabled: true, bevelSize: thickness * 0.35, bevelThickness: thickness * 0.35, bevelSegments: 2 })
+  g.translate(0, 0, -thickness / 2)
+  return g
+}
 
 /** Sheer height and half-beam at a point along the hull, for seating fittings on the rail */
 function useStations(spec: HullSpec) {
@@ -42,39 +54,13 @@ function Hull({ spec, paint, rubRail, deck }: { spec: HullSpec; paint: HullPaint
   return (
     <group>
       <mesh geometry={parts.geo} material={parts.mat} castShadow receiveShadow />
+      <mesh geometry={parts.geo} material={submerged(parts.mat)} renderOrder={SUBMERGED_ORDER} />
       {parts.rails.map((pts, i) => (
         <Rail key={i} points={pts.filter((_, k) => k % 2 === 0)} r={0.016} material={rubRail} />
       ))}
       {parts.decks.map((g, i) => (
         <mesh key={i} geometry={g} material={deck[i].material} receiveShadow castShadow={i > 0} />
       ))}
-    </group>
-  )
-}
-
-/** A flag on a staff that streams and flutters */
-function Flag({ at, colour, size = 0.13 }: { at: [number, number, number]; colour: string; size?: number }) {
-  const k = kit()
-  const ref = useRef<Group>(null)
-  const geo = useMemo(() => {
-    const g = new BufferGeometry()
-    const w = size
-    const h = size * 0.62
-    g.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, -h, 0, -w, -h / 2, 0]), 3))
-    g.computeVertexNormals()
-    return g
-  }, [size])
-  useFrame(({ clock }) => {
-    if (ref.current) ref.current.rotation.y = Math.sin(clock.elapsedTime * 7 + at[0] * 3) * 0.28 + 0.1
-  })
-  return (
-    <group position={at}>
-      <mesh material={k.varnish} position={[0, -0.12, 0]}>
-        <cylinderGeometry args={[0.006, 0.008, 0.26, 6]} />
-      </mesh>
-      <group ref={ref}>
-        <mesh geometry={geo} material={k.flag(colour)} />
-      </group>
     </group>
   )
 }
@@ -111,22 +97,12 @@ function Fenders({ rig, spots }: { rig: Rig; spots: [number, number, number][] }
 
 // ─── Runabout ───────────────────────────────────────────────────────────────────
 
-const RUNABOUT: HullSpec = {
-  length: 1.9,
-  beam: 0.76,
-  depth: 0.3,
-  sheer: 0.12,
-  sheerRise: 0.1,
-  transom: 0.86,
-  rake: 0.16,
-  fullness: 0.42,
-  waterline: -0.047
-}
+const RUNABOUT: HullSpec = VESSEL_CLASS_SPECS.runabout.hull
 
-function Runabout({ p, rig }: { p: Palette; rig: Rig }) {
+function Runabout({ p, rig }: { p: VesselLook; rig: Rig }) {
   const k = kit()
   const at = useStations(RUNABOUT)
-  const paint = useMemo<HullPaint>(() => ({ topsides: p.hull, stripe: p.accent, bottom: '#e8e2d6', sheerLine: p.trim }), [p])
+  const paint = useMemo<HullPaint>(() => ({ topsides: p.hull, stripe: p.accent, bottom: p.bottom, sheerLine: p.trim }), [p])
   const fore = enamel(p.hull === '#fbf6ec' ? p.trim : p.hull)
   const cushion = k.cushion(p.cabin)
   const piping = k.cushion(p.accent)
@@ -134,6 +110,10 @@ function Runabout({ p, rig }: { p: Palette; rig: Rig }) {
   const shieldFrame = useMemo(() => new TorusGeometry(0.36, 0.008, 6, 28, 2.1), [])
   const bow = at(0.62)
   const tip = at(0.9)
+  const lower = useMemo(
+    () => ({ leg: new BoxGeometry(0.07, 0.4, 0.035), gearcase: new CapsuleGeometry(0.024, 0.1, 4, 10), skeg: new BoxGeometry(0.06, 0.05, 0.008) }),
+    []
+  )
   return (
     <group>
       <Hull spec={RUNABOUT} paint={paint} rubRail={k.chrome} deck={[{ material: k.teak, from: 0, to: 0.6 }, { material: fore, from: 0.58, to: 0.985 }]} />
@@ -183,20 +163,26 @@ function Runabout({ p, rig }: { p: Palette; rig: Rig }) {
         </group>
       ))}
       <NavLights x={0.62} y={bow.y + 0.01} z={bow.hb - 0.02} />
-      {/* outboard: a glossy cowling with a stripe, the leg and a cavitation plate */}
+      {/* outboard: a glossy cowling with a stripe, the leg down past the hull's bottom, a cavitation plate, the
+          gearcase with its skeg, and the propeller */}
       <group position={[-1.0, 0.12, 0]}>
         <RoundedBox args={[0.18, 0.22, 0.15]} radius={0.05} smoothness={4} material={enamel('#2a2f36')} castShadow />
         <mesh material={enamel(p.accent)} position={[0.005, 0.03, 0]}>
           <boxGeometry args={[0.185, 0.025, 0.155]} />
         </mesh>
-        <mesh material={k.rubber} position={[0.01, -0.22, 0]}>
-          <boxGeometry args={[0.06, 0.26, 0.04]} />
+        <Wet geometry={lower.leg} material={enamel('#2a2f36')} position={[0.01, -0.28, 0]} />
+        <mesh material={k.steel} position={[0.025, -0.41, 0]}>
+          <boxGeometry args={[0.13, 0.008, 0.08]} />
         </mesh>
-        <mesh material={k.steel} position={[0.03, -0.3, 0]}>
-          <boxGeometry args={[0.12, 0.008, 0.08]} />
-        </mesh>
+        <Wet geometry={lower.gearcase} material={enamel('#2a2f36')} position={[0.01, -0.47, 0]} rotation={[0, 0, Math.PI / 2]} />
+        <Wet geometry={lower.skeg} material={enamel('#2a2f36')} position={[0.0, -0.51, 0]} />
+        <Propeller at={[-0.06, -0.47, 0]} r={0.05} spin={rig} />
       </group>
-      <Flag at={[-0.92, 0.42, 0.24]} colour={p.accent} />
+      {/* mooring cleats on the foredeck and either quarter */}
+      <Cleat at={[0.72, at(0.72).y - 0.005, 0]} />
+      {([1, -1] as const).map((side) => (
+        <Cleat key={side} at={[-0.82, at(-0.82).y - 0.012, side * (at(-0.82).hb - 0.07)]} size={0.85} />
+      ))}
       <Crew at={[-0.22, 0.06, -0.13]} turn={0} coat={p.trim === '#fbf6ec' ? '#2c5aa0' : p.trim} hat="cap" hatColor={p.accent} pose="helm" />
       <Fenders rig={rig} spots={[[0.1, 0.1, at(0.1).hb + 0.035], [-0.5, 0.1, at(-0.5).hb + 0.035]]} />
     </group>
@@ -205,17 +191,7 @@ function Runabout({ p, rig }: { p: Palette; rig: Rig }) {
 
 // ─── Lobster boat ───────────────────────────────────────────────────────────────
 
-const LOBSTER: HullSpec = {
-  length: 2.5,
-  beam: 0.94,
-  depth: 0.42,
-  sheer: 0.2,
-  sheerRise: 0.2,
-  transom: 0.84,
-  rake: 0.07,
-  fullness: 0.48,
-  waterline: -0.062
-}
+const LOBSTER: HullSpec = VESSEL_CLASS_SPECS.lobster.hull
 
 /** A wire lobster trap with wooden runners */
 function Trap({ at, turn = 0 }: { at: [number, number, number]; turn?: number }) {
@@ -254,18 +230,31 @@ function Buoy({ at, a, b }: { at: [number, number, number]; a: string; b: string
   )
 }
 
-function Lobster({ p, rig }: { p: Palette; rig: Rig }) {
+function Lobster({ p, rig }: { p: VesselLook; rig: Rig }) {
   const k = kit()
   const at = useStations(LOBSTER)
-  const paint = useMemo<HullPaint>(() => ({ topsides: p.hull, stripe: p.trim, bottom: '#a33c2e', sheerLine: p.trim }), [p])
+  const paint = useMemo<HullPaint>(() => ({ topsides: p.hull, stripe: p.trim, bottom: p.bottom, sheerLine: p.trim }), [p])
   const deckPaint = enamel('#cfc8b6')
   const cabin = enamel(p.cabin)
   const roof = enamel(p.roof)
   const house = { x: 0.32, w: 0.62, d: 0.68, h: 0.52 }
   const deckY = at(house.x).y - 0.02
+  const bottom = enamel(p.bottom)
+  const appendages = useMemo(() => {
+    const st = hullStations(LOBSTER)
+    // the keel's top follows the hull's bottom (a little inside it) from the aperture forward to the forefoot
+    const hullBottom = (x: number) => -st.keel(Math.min(1, Math.max(0, x / LOBSTER.length + 0.5))) + 0.03
+    const top = Array.from({ length: 9 }, (_, i) => -0.95 + (i / 8) * 1.9).map((x) => [x, hullBottom(x)] as [number, number])
+    return {
+      keel: fin([...top, [0.95, hullBottom(0.95) - 0.02], [0.2, -0.58], [-0.95, -0.58]], 0.06),
+      rudder: fin([[-1.12, -0.39], [-1.22, -0.39], [-1.22, -0.555], [-1.12, -0.555]], 0.03),
+      shoe: new BoxGeometry(0.24, 0.022, 0.04)
+    }
+  }, [])
   const riding = useMemo(() => {
     const g = new BufferGeometry()
     g.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0.62, 0, -0.34, 0.04, 0]), 3))
+    g.setAttribute('uv', new BufferAttribute(new Float32Array([1, 0, 1, 1, 0, 0.06]), 2))
     g.computeVertexNormals()
     return g
   }, [])
@@ -337,28 +326,27 @@ function Lobster({ p, rig }: { p: Palette; rig: Rig }) {
       ))}
       {/* steadying sail on a little mizzen at the stern */}
       <Rod a={[-1.05, at(-1.05).y, 0]} b={[-1.05, at(-1.05).y + 0.75, 0]} r={0.012} material={k.varnish} />
-      <mesh geometry={riding} material={k.sail(p.sail)} position={[-1.07, at(-1.05).y + 0.08, 0]} castShadow />
+      <mesh geometry={riding} material={k.sail(p.sail, p.sailPattern, p.accent)} position={[-1.07, at(-1.05).y + 0.08, 0]} castShadow />
       <NavLights x={0.8} y={at(0.8).y + 0.01} z={at(0.8).hb - 0.02} />
-      <Flag at={[-1.05, at(-1.05).y + 0.88, 0]} colour={p.accent} size={0.12} />
       <Crew at={[-0.3, deckY, 0.12]} turn={0.4} coat="#e8b33a" hat="souwester" hatColor="#e8b33a" pose="wave" />
       <Fenders rig={rig} spots={[[0.5, at(0.5).y - 0.06, at(0.5).hb + 0.035], [-0.3, at(-0.3).y - 0.06, at(-0.3).hb + 0.035], [-0.8, at(-0.8).y - 0.06, at(-0.8).hb + 0.035]]} />
+      {/* below the waterline: the long keel, the propeller turning in its aperture, the skeg shoe and the rudder */}
+      <Wet geometry={appendages.keel} material={bottom} />
+      <Rod a={[-0.9, -0.49, 0]} b={[-1.0, -0.49, 0]} r={0.012} material={k.steel} />
+      <Propeller at={[-1.02, -0.49, 0]} r={0.075} blades={4} spin={rig} />
+      <Wet geometry={appendages.shoe} material={bottom} position={[-1.06, -0.565, 0]} />
+      <Wet geometry={appendages.rudder} material={bottom} />
+      <Cleat at={[0.95, at(0.95).y - 0.01, 0]} size={1.2} />
+      {([1, -1] as const).map((side) => (
+        <Cleat key={side} at={[-1.0, at(-1.0).y - 0.02, side * (at(-1.0).hb - 0.08)]} size={1.1} />
+      ))}
     </group>
   )
 }
 
 // ─── Sloop ──────────────────────────────────────────────────────────────────────
 
-const SLOOP: HullSpec = {
-  length: 2.25,
-  beam: 0.8,
-  depth: 0.36,
-  sheer: 0.14,
-  sheerRise: 0.09,
-  transom: 0.68,
-  rake: 0.18,
-  fullness: 0.58,
-  waterline: -0.057
-}
+const SLOOP: HullSpec = VESSEL_CLASS_SPECS.sloop.hull
 
 /**
  * A triangular sail built with its luff on the local y axis (tack at the origin, head at `luff` up) and the clew
@@ -392,12 +380,12 @@ function sailGeometry(luff: number, clewX: number, clewY: number, belly: number)
   return g
 }
 
-function Sloop({ p, rig }: { p: Palette; rig: Rig }) {
+function Sloop({ p, rig }: { p: VesselLook; rig: Rig }) {
   const k = kit()
   const at = useStations(SLOOP)
-  const paint = useMemo<HullPaint>(() => ({ topsides: p.hull, stripe: p.accent, bottom: '#2a3646', sheerLine: p.trim }), [p])
-  const MAST_X = 0.3
-  const MAST_H = 3.05
+  const paint = useMemo<HullPaint>(() => ({ topsides: p.hull, stripe: p.accent, bottom: p.bottom, sheerLine: p.trim }), [p])
+  const MAST_X = SLOOP_MAST.x
+  const MAST_H = SLOOP_MAST.h
   const BOOM_Y = 0.48
   const deck = at(MAST_X).y - 0.02
   const bowX = 1.08
@@ -420,6 +408,15 @@ function Sloop({ p, rig }: { p: Palette; rig: Rig }) {
   })
   const cabinMat = enamel(p.cabin)
   const stanchions = [-0.85, -0.45, 0.05, 0.5]
+  const bottom = enamel(p.bottom)
+  const appendages = useMemo(
+    () => ({
+      keel: fin([[-0.08, -0.33], [0.42, -0.33], [0.12, -0.86], [-0.18, -0.86]], 0.05),
+      rudder: fin([[-0.78, -0.33], [-0.92, -0.33], [-0.93, -0.68], [-0.85, -0.69]], 0.03),
+      bulb: new CapsuleGeometry(0.048, 0.3, 6, 12)
+    }),
+    []
+  )
   return (
     <group>
       <Hull spec={SLOOP} paint={paint} rubRail={k.varnish} deck={[{ material: k.teak }]} />
@@ -465,7 +462,7 @@ function Sloop({ p, rig }: { p: Palette; rig: Rig }) {
           <cylinderGeometry args={[0.018, 0.016, 1.12, 8]} />
         </mesh>
         <group ref={mainRef} position={[-0.02, 0.03, 0]}>
-          <mesh geometry={main} material={k.sail(p.sail)} castShadow />
+          <mesh geometry={main} material={k.sail(p.sail, p.sailPattern, p.accent)} castShadow />
         </group>
         <group ref={coverRef} visible={false}>
           <mesh material={k.cushion(p.accent)} position={[-0.5, 0.05, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
@@ -476,7 +473,7 @@ function Sloop({ p, rig }: { p: Palette; rig: Rig }) {
       {/* jib on the forestay, furling to it */}
       <group position={forestay.a} rotation={[0, 0, jibAngle]}>
         <group ref={jibRef}>
-          <mesh geometry={jib} material={k.sail(p.sail)} position={[-0.01, 0.04, 0]} castShadow />
+          <mesh geometry={jib} material={k.sail(p.sail, p.sailPattern, p.accent)} position={[-0.01, 0.04, 0]} castShadow />
         </group>
       </group>
       <mesh material={k.cushion(p.accent)} position={[(forestay.a[0] + forestay.b[0]) / 2, (forestay.a[1] + forestay.b[1]) / 2, 0]} rotation={[0, 0, jibAngle]}>
@@ -493,40 +490,42 @@ function Sloop({ p, rig }: { p: Palette; rig: Rig }) {
         </group>
       ))}
       <NavLights x={0.92} y={at(0.92).y + 0.01} z={at(0.92).hb - 0.02} />
-      <Flag at={[-1.12, at(-1.12).y + 0.3, 0.1]} colour={p.accent} size={0.12} />
       <Crew at={[-0.82, deck - 0.02, 0.1]} turn={0.3} coat={p.trim === '#fbf6ec' ? '#26385f' : p.trim} hat="sunhat" hatColor="#f1e3c2" />
       <Fenders rig={rig} spots={[[0.4, at(0.4).y - 0.04, at(0.4).hb + 0.035], [-0.4, at(-0.4).y - 0.04, at(-0.4).hb + 0.035]]} />
+      {/* sheet winches on the coamings, and cleats fore and aft */}
+      {([1, -1] as const).map((side) => (
+        <group key={side} position={[-0.42, deck + 0.09, side * (at(-0.42).hb - 0.09)]}>
+          <mesh material={k.chrome} position={[0, 0.02, 0]} castShadow>
+            <cylinderGeometry args={[0.022, 0.028, 0.04, 14]} />
+          </mesh>
+          <mesh material={k.rubber} position={[0, 0.045, 0]}>
+            <cylinderGeometry args={[0.012, 0.012, 0.012, 10]} />
+          </mesh>
+        </group>
+      ))}
+      <Cleat at={[0.85, at(0.85).y - 0.01, 0]} />
+      {([1, -1] as const).map((side) => (
+        <Cleat key={side} at={[-0.98, at(-0.98).y - 0.01, side * (at(-0.98).hb - 0.06)]} size={0.85} />
+      ))}
+      {/* below the waterline: the fin keel and its lead bulb, the spade rudder, and the auxiliary's prop on its strut */}
+      <Wet geometry={appendages.keel} material={bottom} />
+      <Wet geometry={appendages.bulb} material={k.rubber} position={[-0.03, -0.87, 0]} rotation={[0, 0, Math.PI / 2]} />
+      <Wet geometry={appendages.rudder} material={bottom} />
+      <Rod a={[-0.42, -0.33, 0]} b={[-0.52, -0.42, 0]} r={0.008} material={k.steel} />
+      <Propeller at={[-0.55, -0.42, 0]} r={0.05} blades={2} spin={rig} />
     </group>
   )
 }
 
-/** Mast-top height above the waterline, where each class's nameplate line ties on */
-export const BOAT_TOP: Record<BoatClass, number> = {
-  runabout: BOAT_DIMS.runabout.top,
-  lobster: BOAT_DIMS.lobster.top,
-  sloop: BOAT_DIMS.sloop.top
-}
-/** Hull length, for wakes and berths */
-export const BOAT_LENGTH: Record<BoatClass, number> = {
-  runabout: BOAT_DIMS.runabout.length,
-  lobster: BOAT_DIMS.lobster.length,
-  sloop: BOAT_DIMS.sloop.length
-}
-
-/**
- * How high each class rides: enough that the boot stripe sits right on the water with a sliver of bottom paint
- * showing as it rocks, so the hull reads as a whole boat floating, not a shape sliced off at the surface.
- * Each hull's painted waterline sits just under -LIFT. Raised so a clear band of bottom paint shows above the water
- * from the viewing angle (the sea is solid blue now, so a sliver wasn't enough to read the hull's underside).
- */
-export const LIFT: Record<BoatClass, number> = { runabout: 0.08, lobster: 0.095, sloop: 0.09 }
-
-export function Boat({ kind, palette, rig }: { kind: BoatClass; palette: Palette; rig: Rig }) {
+export function Boat({ kind, look, rig }: { kind: BoatClass; look: VesselLook; rig: Rig }) {
+  const spec = VESSEL_CLASS_SPECS[kind]
   return (
-    <group position={[0, LIFT[kind], 0]}>
-      {kind === 'runabout' && <Runabout p={palette} rig={rig} />}
-      {kind === 'lobster' && <Lobster p={palette} rig={rig} />}
-      {kind === 'sloop' && <Sloop p={palette} rig={rig} />}
+    <group position={[0, spec.lift, 0]}>
+      {kind === 'runabout' && <Runabout p={look} rig={rig} />}
+      {kind === 'lobster' && <Lobster p={look} rig={rig} />}
+      {kind === 'sloop' && <Sloop p={look} rig={rig} />}
+      <BowRoller at={spec.mounts.roller} />
+      <Accessories kind={kind} look={look} />
     </group>
   )
 }

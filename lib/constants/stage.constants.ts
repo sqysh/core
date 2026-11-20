@@ -212,7 +212,7 @@ export const STAGE_CHANNEL = 'stage'
 export const STAGE_EVENT = 'command'
 
 export type StageCommand =
-  // script; countdown shows a big 3-2-1 on the TV before the reading starts
+  // script (read on the host's phone, see PhonePrompter); countdown shows a big 3-2-1 before the reading starts
   | { type: 'script.play'; countdown?: boolean }
   | { type: 'script.pause' }
   | { type: 'script.speed'; value: number }
@@ -329,7 +329,7 @@ export const RUN_OF_SHOW: Step[] = [
   {
     id: 'open',
     title: 'Open the meeting',
-    help: () => 'The TV counts down 3-2-1, then the opening script. Read it down. Next up is the Guiding Light.',
+    help: () => 'Your phone counts down 3-2-1, then the opening script plays on it. Read it down. Next up is the Guiding Light.',
     guide: () => 'Read the welcome down from the TV, line by line. The Guiding Light comes right after.',
     button: 'Open the meeting, then the Guiding Light'
   },

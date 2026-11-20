@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from './lib/auth/auth'
+import { easternToday, MEETING_HOLD_ALLOWED, MEETING_HOLD_COOKIE } from './lib/constants/meeting-hold.constants'
 
 const publicRoutes = ['/login', '/visitor', '/visitor-day', '/attendance']
 const protectedAPIRoutes = ['/api/pdf/member-directory', '/billing']
@@ -21,6 +22,18 @@ export async function proxy(req: NextRequest) {
 
   const session = await auth()
   const isLoggedIn = !!session?.user
+
+  // ── Checked in to today's meeting → held on the check-in screen until it ends ──
+  // (the cookie is set once their boat is in the harbor and expires when the meeting does; super users are never held)
+  const hold = req.cookies.get(MEETING_HOLD_COOKIE)?.value
+  if (
+    isLoggedIn &&
+    hold === easternToday() &&
+    session.user.role !== 'SUPER_USER' &&
+    !MEETING_HOLD_ALLOWED.some((p) => nextUrl.pathname === p || nextUrl.pathname.startsWith(`${p}/`))
+  ) {
+    return NextResponse.redirect(new URL('/check-in', nextUrl))
+  }
 
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
   const isProtectedPage =

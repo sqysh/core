@@ -1,20 +1,30 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { useMemo, useRef } from 'react'
 import {
+  BoxGeometry,
+  BufferGeometry,
   CanvasTexture,
+  CapsuleGeometry,
+  ConeGeometry,
   CatmullRomCurve3,
   Color,
   DoubleSide,
+  Mesh,
   Material,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
   Quaternion,
   RepeatWrapping,
+  SphereGeometry,
   SRGBColorSpace,
   TubeGeometry,
   Vector3
 } from 'three'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+import { SailPattern } from '@/lib/vessel/catalog'
+import { submerged, SUBMERGED_ORDER } from '../../_lib/vessel/submerged'
 import { grainBump } from '../../../lighthouse/_lib/textures'
 import { rng } from '../../../lighthouse/_lib/noise'
 
@@ -76,12 +86,26 @@ function teak() {
   }))
 }
 
-let sailTex: CanvasTexture | null = null
-/** Sailcloth: horizontal panel seams, a hint of weave and darker batten pockets */
-function sailcloth() {
-  return (sailTex ??= canvasTex(256, 256, (g) => {
-    g.fillStyle = '#ffffff'
+const sailTex = new Map<string, CanvasTexture>()
+/**
+ * Sailcloth in a member's colours: the sail colour, its pattern in the accent colour, then horizontal panel seams, a
+ * hint of weave and darker batten pockets over the top. The sail's uv runs v = 0 at the foot to 1 at the head.
+ */
+function sailcloth(colour: string, pattern: SailPattern, accent: string) {
+  const key = `${colour}|${pattern}|${accent}`
+  const hit = sailTex.get(key)
+  if (hit) return hit
+  const tex = canvasTex(256, 256, (g) => {
+    g.fillStyle = harmonize(colour, 0.05)
     g.fillRect(0, 0, 256, 256)
+    // canvas y runs down from the head; v measured up from the foot
+    const band = (v0: number, v1: number) => g.fillRect(0, 256 * (1 - v1), 256, 256 * (v1 - v0))
+    g.fillStyle = harmonize(accent, 0.08)
+    if (pattern === 'band') band(0.1, 0.26)
+    if (pattern === 'stripes') {
+      band(0.14, 0.19)
+      band(0.24, 0.29)
+    }
     const r = rng(5)
     for (let i = 0; i < 2500; i++) {
       g.fillStyle = `rgba(150,140,120,${r() * 0.06})`
@@ -103,7 +127,9 @@ function sailcloth() {
       g.lineTo(150, y + 10)
       g.stroke()
     }
-  }, false))
+  }, false)
+  sailTex.set(key, tex)
+  return tex
 }
 
 export const kit = () => ({
@@ -122,8 +148,12 @@ export const kit = () => ({
   darkRope: cached('darkRope', () => new MeshStandardMaterial({ color: '#4b3d2e', roughness: 0.95 })),
   white: cached('white', () => new MeshPhysicalMaterial({ color: '#f5f1e8', roughness: 0.35, clearcoat: 0.6 })),
   cushion: (hex: string) => cached(`cushion:${hex}`, () => new MeshStandardMaterial({ color: harmonize(hex, 0.2), roughness: 0.75 })),
-  sail: (hex: string) =>
-    cached(`sail:${hex}`, () => new MeshStandardMaterial({ map: sailcloth(), color: harmonize(hex, 0.05), roughness: 0.9, side: DoubleSide })),
+  sail: (hex: string, pattern: SailPattern = 'plain', accent = '#ffffff') =>
+    cached(`sail:${hex}|${pattern}|${accent}`, () => new MeshStandardMaterial({ map: sailcloth(hex, pattern, accent), roughness: 0.9, side: DoubleSide })),
+  /** Below the waterline: bronze propellers, galvanised ground tackle and its chain */
+  bronze: cached('bronze', () => new MeshStandardMaterial({ color: '#b98a4e', metalness: 0.85, roughness: 0.32 })),
+  galvanised: cached('galvanised', () => new MeshStandardMaterial({ color: '#a3aaae', metalness: 0.75, roughness: 0.42 })),
+  chain: cached('chain', () => new MeshStandardMaterial({ color: '#5f666b', metalness: 0.6, roughness: 0.55 })),
   flag: (hex: string) => cached(`flag:${hex}`, () => new MeshStandardMaterial({ color: harmonize(hex, 0.05), roughness: 0.8, side: DoubleSide })),
   skin: cached('skin', () => new MeshStandardMaterial({ color: '#e7b48f', roughness: 0.65 })),
   navLightRed: cached('navR', () => new MeshStandardMaterial({ color: '#ff4a3d', emissive: new Color('#ff3020'), emissiveIntensity: 2.2 })),
@@ -171,6 +201,101 @@ export function Fender({ at, material }: { at: [number, number, number]; materia
       <mesh material={k.rope} position={[0, 0, 0]}>
         <cylinderGeometry args={[0.004, 0.004, 0.06, 4]} />
       </mesh>
+    </group>
+  )
+}
+
+// The small fittings each build one merged geometry per material, cached by size, so a 30-boat harbor pays one draw
+// per fitting rather than one per part.
+const geoCache = new Map<string, BufferGeometry>()
+function merged(key: string, parts: () => BufferGeometry[]) {
+  const hit = geoCache.get(key)
+  if (hit) return hit
+  const g = mergeGeometries(parts().map((p) => (p.deleteAttribute('uv'), p.index ? p.toNonIndexed() : p)))!
+  geoCache.set(key, g)
+  return g
+}
+
+/** A deck cleat: two horns on a low base, lying fore and aft */
+export function Cleat({ at, size = 1 }: { at: [number, number, number]; size?: number }) {
+  const geo = merged('cleat', () => {
+    const base = new BoxGeometry(0.03, 0.016, 0.018)
+    base.translate(0, 0.008, 0)
+    const horns = new CapsuleGeometry(0.007, 0.06, 4, 8)
+    horns.rotateZ(Math.PI / 2)
+    horns.translate(0, 0.02, 0)
+    return [base, horns]
+  })
+  return <mesh geometry={geo} material={kit().chrome} position={at} scale={size} />
+}
+
+/** The stainless bow roller the anchor stows in: two cheek plates and a roller, pointing out over the stem */
+export function BowRoller({ at }: { at: [number, number, number] }) {
+  const k = kit()
+  const cheeks = merged('roller-cheeks', () =>
+    [-1, 1].map((side) => {
+      const g = new BoxGeometry(0.14, 0.03, 0.006)
+      g.translate(-0.02, -0.004, side * 0.024)
+      return g
+    })
+  )
+  return (
+    <group position={at}>
+      <mesh geometry={cheeks} material={k.chrome} castShadow />
+      <mesh material={k.rubber} position={[0.04, -0.004, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.011, 0.011, 0.04, 10]} />
+      </mesh>
+    </group>
+  )
+}
+
+/**
+ * A propeller of `blades` pitched blades on a hub, turning about the x axis. `spin` is a live value (the rig's prop,
+ * roughly -1..1) so it turns with the way the boat is making and stops at anchor.
+ */
+export function Propeller({ at, r, blades = 3, spin }: { at: [number, number, number]; r: number; blades?: number; spin: { prop: number } }) {
+  const ref = useRef<Mesh>(null)
+  const geo = merged(`prop:${r}:${blades}`, () => {
+    const hub = new ConeGeometry(r * 0.28, r * 0.7, 10)
+    hub.rotateZ(Math.PI / 2)
+    const parts: BufferGeometry[] = [hub]
+    for (let i = 0; i < blades; i++) {
+      const blade = new SphereGeometry(r * 0.48, 10, 6)
+      blade.scale(1, 1, 0.22)
+      blade.rotateX(0.55)
+      blade.translate(0, r * 0.55, 0)
+      blade.rotateX((i / blades) * Math.PI * 2)
+      parts.push(blade)
+    }
+    return parts
+  })
+  useFrame((_, dt) => {
+    if (ref.current) ref.current.rotation.x += spin.prop * 28 * Math.min(dt, 0.05)
+  })
+  const bronze = kit().bronze
+  return (
+    <mesh ref={ref} geometry={geo} material={bronze} position={at}>
+      <mesh geometry={geo} material={submerged(bronze)} renderOrder={SUBMERGED_ORDER} />
+    </mesh>
+  )
+}
+
+/** A part that sits below the waterline: drawn as usual, and again over the water so it shows down through it */
+export function Wet({
+  geometry,
+  material,
+  position,
+  rotation
+}: {
+  geometry: BufferGeometry
+  material: MeshStandardMaterial
+  position?: [number, number, number]
+  rotation?: [number, number, number]
+}) {
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh geometry={geometry} material={material} />
+      <mesh geometry={geometry} material={submerged(material)} renderOrder={SUBMERGED_ORDER} />
     </group>
   )
 }

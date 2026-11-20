@@ -1,10 +1,11 @@
 'use client'
 
 // app/(authenticated)/(active)/stage/_components/Teleprompter.tsx
-// The scrolling script on the TV: the speaking engine (a cursor that moves
-// through reading "cost", lighting letters and easing the scroll), the 3-2-1
-// countdown before a read, and the stop-at-section-end behavior. The stage
-// drives it through the ref handle below instead of reaching into its internals.
+// The scrolling script: the speaking engine (a cursor that moves through reading
+// "cost", lighting letters and easing the scroll), the 3-2-1 countdown before a
+// read, and the stop-at-section-end behavior. It lives on the host's phone (see
+// PhonePrompter), driven through the ref handle below; `size` sets it for a phone
+// in the hand or a TV across the room.
 
 import { forwardRef, Fragment, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { Segment, Speaker, SPEAKER_LABEL, SPEED_DEFAULT } from '@/lib/constants/stage.constants'
@@ -37,6 +38,40 @@ const SPEAKER_STYLE: Record<Speaker, { badge: string; rule: string }> = {
 
 const READ_LINE = 0.34
 
+// Type and spacing for reading at arm's length on a phone, or from 20 feet on a TV. Full literal strings so Tailwind
+// can see them at build time.
+const SIZES = {
+  tv: {
+    track: 'max-w-375 px-24',
+    section: 'pb-40',
+    head: 'mb-10 gap-6',
+    badge: 'px-6 py-2 text-[30px]',
+    label: 'text-[30px]',
+    card: 'mb-12 text-[150px]',
+    line: 'mb-16 text-[112px] leading-[1.4]',
+    handoff: 'mt-6 border-l-14 pl-10',
+    handoffName: 'text-[88px]',
+    handoffNote: 'text-[48px]',
+    pointer: 'ml-10 border-y-18 border-l-26',
+    rule: 'ml-6'
+  },
+  phone: {
+    track:
+      'px-[max(22px,env(safe-area-inset-left))] landscape:pl-[max(32px,env(safe-area-inset-left))] landscape:pr-[124px]',
+    section: 'pb-14',
+    head: 'mb-4 gap-3',
+    badge: 'px-2.5 py-1 text-[11px]',
+    label: 'text-[11px]',
+    card: 'mb-6 text-[44px]',
+    line: 'mb-6 text-[30px] leading-[1.38]',
+    handoff: 'mt-3 border-l-4 pl-4',
+    handoffName: 'text-[28px]',
+    handoffNote: 'text-[17px]',
+    pointer: 'ml-1.5 border-y-8 border-l-12',
+    rule: 'ml-2'
+  }
+}
+
 export interface TeleprompterHandle {
   /** start reading; with { countdown: true } a 3-2-1 plays first */
   play: (opts?: { countdown?: boolean }) => void
@@ -51,9 +86,22 @@ export interface TeleprompterHandle {
 
 export const Teleprompter = forwardRef<
   TeleprompterHandle,
-  { segments: Segment[]; active: boolean; onEnd?: () => void }
->(function Teleprompter({ segments, active, onEnd }, ref) {
+  {
+    segments: Segment[]
+    active: boolean
+    onEnd?: () => void
+    /** reading, or stopped (at the end of a section, or paused) */
+    onPlaying?: (playing: boolean) => void
+    size?: keyof typeof SIZES
+  }
+>(function Teleprompter({ segments, active, onEnd, onPlaying, size = 'tv' }, ref) {
+  const z = SIZES[size]
   const [playing, setPlaying] = useState(false)
+  const onPlayingRef = useRef(onPlaying)
+  onPlayingRef.current = onPlaying
+  useEffect(() => {
+    onPlayingRef.current?.(playing)
+  }, [playing])
   const [speed, setSpeedState] = useState(SPEED_DEFAULT)
   // the big 3-2-1 before a read starts
   const [countdown, setCountdown] = useState<number | null>(null)
@@ -342,8 +390,8 @@ export const Teleprompter = forwardRef<
           style={{ top: `${READ_LINE * 100}vh` }}
           aria-hidden="true"
         >
-          <span className="ml-10 h-0 w-0 border-y-18 border-l-26 border-y-transparent border-l-primary-dark" />
-          <span className="ml-6 h-px flex-1 bg-white/15" />
+          <span className={`h-0 w-0 border-y-transparent border-l-primary-dark ${z.pointer}`} />
+          <span className={`h-px flex-1 bg-white/15 ${z.rule}`} />
         </div>
         <div
           className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[22vh] bg-linear-to-b from-[#06101b] to-transparent"
@@ -356,31 +404,28 @@ export const Teleprompter = forwardRef<
 
         <div
           ref={trackRef}
-          className="mx-auto w-full max-w-375 px-24 will-change-transform"
+          className={`mx-auto w-full will-change-transform ${z.track}`}
           style={{ paddingTop: `${READ_LINE * 100}vh` }}
         >
           {segments.map((seg) => {
             const s = SPEAKER_STYLE[seg.speaker]
             return (
-              <section key={seg.id} id={`seg-${seg.id}`} className="pb-40">
-                <div className="mb-10 flex items-center gap-6">
-                  <span className={`px-6 py-2 font-mono text-[30px] tracking-[0.2em] uppercase ${s.badge}`}>
+              <section key={seg.id} id={`seg-${seg.id}`} className={z.section}>
+                <div className={`flex items-center ${z.head}`}>
+                  <span className={`font-mono tracking-[0.2em] uppercase ${z.badge} ${s.badge}`}>
                     {SPEAKER_LABEL[seg.speaker]}
                   </span>
-                  <span className="font-mono text-[30px] tracking-[0.2em] uppercase text-white/45">{seg.title}</span>
+                  <span className={`font-mono tracking-[0.2em] uppercase text-white/45 ${z.label}`}>{seg.title}</span>
                 </div>
                 {seg.lines.length === 0 && (
-                  <p className="mb-12 font-sora text-[150px] font-black leading-[1.02] tracking-[-0.04em] text-balance">
+                  <p className={`font-sora font-black leading-[1.02] tracking-[-0.04em] text-balance ${z.card}`}>
                     {seg.title}
                   </p>
                 )}
                 {seg.lines.map((line, i) => {
                   const ws = line.split(' ')
                   return (
-                    <p
-                      key={i}
-                      className="mb-16 font-sora text-[112px] font-bold leading-[1.4] tracking-[-0.02em] text-balance"
-                    >
+                    <p key={i} className={`font-sora font-bold tracking-[-0.02em] text-balance ${z.line}`}>
                       {ws.map((word, wi) => (
                         <Fragment key={wi}>
                           <span className="inline-block whitespace-nowrap">
@@ -401,13 +446,13 @@ export const Teleprompter = forwardRef<
                   )
                 })}
                 {seg.handoff && (
-                  <div className={`mt-6 border-l-14 pl-10 ${s.rule}`}>
-                    <p className="font-mono text-[30px] tracking-[0.2em] uppercase text-white/50">Hand off to</p>
-                    <p className="mt-2 font-sora text-[88px] font-black leading-none tracking-[-0.03em]">
+                  <div className={`${z.handoff} ${s.rule}`}>
+                    <p className={`font-mono tracking-[0.2em] uppercase text-white/50 ${z.label}`}>Hand off to</p>
+                    <p className={`mt-2 font-sora font-black leading-none tracking-[-0.03em] ${z.handoffName}`}>
                       {seg.handoff.name}
                     </p>
                     {seg.handoff.note && (
-                      <p className="mt-4 font-nunito text-[48px] text-white/65">{seg.handoff.note}</p>
+                      <p className={`mt-4 font-nunito text-white/65 ${z.handoffNote}`}>{seg.handoff.note}</p>
                     )}
                   </div>
                 )}
@@ -419,7 +464,7 @@ export const Teleprompter = forwardRef<
       </div>
 
       {/* ── Transport readout ── */}
-      {active && (
+      {active && size === 'tv' && (
         <p className="absolute right-10 bottom-8 z-30 font-mono text-[26px] tabular-nums text-white/30">
           {playing ? 'playing' : 'paused'} &middot; {speed}
         </p>

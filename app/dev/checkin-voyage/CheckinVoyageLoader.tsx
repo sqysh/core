@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { getAudioContext } from '@/lib/audio/audioContext'
+import { VesselConfig } from '@/lib/vessel/catalog'
 import { Member } from '@/types/attendance.types'
 
 // react-three-fiber (still the latest release) builds a THREE.Clock, which three now warns about on every canvas; the
@@ -108,7 +109,12 @@ function TitleCard({ ready, onStart }: { ready: boolean; onStart: () => void }) 
   )
 }
 
-export default function CheckinVoyageLoader(props: { members: Member[]; initialAttendees: string[]; todayISO: string }) {
+export default function CheckinVoyageLoader(props: {
+  members: Member[]
+  initialAttendees: string[]
+  todayISO: string
+  vessels: Record<string, VesselConfig>
+}) {
   const [ready, setReady] = useState(false)
   const [started, setStarted] = useState(false)
   return (

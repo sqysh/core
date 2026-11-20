@@ -1,23 +1,21 @@
 'use client'
 
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PCFShadowMap } from 'three'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
+import { VesselConfig } from '@/lib/vessel/catalog'
 import { Member } from '@/types/attendance.types'
-import { HarborFleet } from './_components/HarborFleet'
-import { StudioLighting } from '../lighthouse/_components/StudioLighting'
-import { HarborWorld } from './_components/HarborWorld'
+import { HarborStage } from './_components/HarborStage'
 import { MeetingCamera } from './_components/MeetingCamera'
 import { PlateTracker } from './_components/PlateTracker'
-import { WakeField } from './_components/WakeField'
+import { DevHelm } from './_components/DevHelm'
 import { audioSettings, preloadBoatSamples, setAudio } from './_lib/boatAudio'
-import { chooseBerth, planRoute } from './_lib/berths'
-import { MOOR_HEADING } from './_lib/harbor'
+import { berthBoat, createLaunches } from './_lib/fleetOps'
 import { identities } from './_lib/identity'
-import { BoatRuntime, createStore } from './_lib/store'
+import { createStore } from './_lib/store'
 import { VIEW } from './_lib/view'
 import { SeaTuningPanel } from './_components/SeaTuningPanel'
 
@@ -25,9 +23,6 @@ import { SeaTuningPanel } from './_components/SeaTuningPanel'
 // a real check-in (the same Pusher event the TV board listens for) sails that member's boat in, and the temporary
 // controls simulate arrivals locally — simulated check-ins are kept in this browser only and never written.
 
-const CHECK_IN_URL = 'https://coastalreferralxchange.com/check-in'
-/** Simultaneous check-ins launch this far apart, so each boat still appears within about a second of its turn */
-const LAUNCH_GAP_MS = 850
 /** How long a new arrival's profile badge stays up */
 const BADGE_MS = 6000
 
@@ -77,18 +72,17 @@ const GLASS_MAP = `data:image/svg+xml,${encodeURIComponent(
     `<rect width='100' height='100' fill='url(#x)'/><rect width='100' height='100' fill='url(#y)' style='mix-blend-mode:multiply'/></svg>`
 )}`
 
-type Props = { members: Member[]; initialAttendees: string[]; todayISO: string; onReady?: () => void; started?: boolean }
-
-/** Reports once the harbor has painted a few frames, i.e. after the scene is built and its shaders are compiled */
-function ReadySignal({ onReady }: { onReady?: () => void }) {
-  const frames = useRef(0)
-  useFrame(() => {
-    if (++frames.current === 4) onReady?.()
-  })
-  return null
+type Props = {
+  members: Member[]
+  initialAttendees: string[]
+  todayISO: string
+  /** Members' saved boats by id; anyone missing sails their default */
+  vessels?: Record<string, VesselConfig>
+  onReady?: () => void
+  started?: boolean
 }
 
-export default function CheckinVoyage({ members: realMembers, initialAttendees, todayISO, onReady, started }: Props) {
+export default function CheckinVoyage({ members: realMembers, initialAttendees, todayISO, vessels, onReady, started }: Props) {
   // ?fleet=30 pads the roster with stand-ins so the harbor can be tried at full size (development only)
   const [members] = useState<Member[]>(() => {
     const want =
@@ -100,8 +94,10 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
     }))
     return [...realMembers, ...extra]
   })
-  const who = useMemo(() => identities(members), [members])
+  const who = useMemo(() => identities(members, vessels), [members, vessels])
   const store = useMemo(() => createStore(), [])
+  // ?drive: steer a boat from the keyboard (development; see DevHelm)
+  const [drive] = useState(() => typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('drive'))
   const [ids, setIds] = useState<string[]>([])
   const [welcome, setWelcome] = useState<{ id: string; key: number } | null>(null)
   /** Boats whose profile badge is showing: it appears as they sail in and is gone after a few seconds */
@@ -109,8 +105,7 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   const [audio, setAudioState] = useState(audioSettings)
   /** True once the harbor has built and painted: the live connection waits for this, as the build blocks the page and a socket opened during it times out and retries */
   const [built, setBuilt] = useState(false)
-  const lastLaunch = useRef(0)
-  const lastGate = useRef<string | null>(null)
+  const launches = useRef(createLaunches())
   const realIds = useRef<string[]>(initialAttendees)
   const simKey = `checkin-voyage:sim:${todayISO}`
 
@@ -134,44 +129,11 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   const addBoat = useCallback(
     (id: string, sail: boolean) => {
       const identity = who.get(id)
-      if (!identity || store.boats.has(id)) return false
-      const occupied = [...store.boats.values()].map((o) => ({
-        x: o.berth.x,
-        z: o.berth.z,
-        boat: o.who.boat,
-        plate: o.plate
-      }))
-      const berth = chooseBerth(occupied, identity.boat, identity.label)
-      if (!berth) return false
-      const route = sail ? planRoute(berth, identity.boat, occupied, lastGate.current) : null
-      if (route) lastGate.current = route.gate
-      const start = route?.path.samples[0]
+      if (!identity) return false
+      const b = berthBoat(store, identity, sail, launches.current)
+      if (!b) return false
       const now = performance.now()
-      const launchAt = sail ? Math.max(now, lastLaunch.current + LAUNCH_GAP_MS) : 0
-      if (sail) lastLaunch.current = launchAt
-      const b: BoatRuntime = {
-        id,
-        who: identity,
-        berth: { x: berth.x, z: berth.z },
-        plate: berth.plate,
-        path: route?.path ?? null,
-        gate: route?.gate ?? null,
-        launchAt,
-        phase: sail ? 'waiting' : 'moored',
-        s: 0,
-        speed: 0,
-        settled: 0,
-        x: start?.x ?? berth.x,
-        y: 0,
-        z: start?.z ?? berth.z,
-        heading: start?.heading ?? MOOR_HEADING,
-        turnRate: 0,
-        roll: 0,
-        pitch: 0,
-        rig: { hoist: sail ? 1 : 0, moored: !sail },
-        age: sail ? 0 : 99
-      }
-      store.boats.set(id, b)
+      const launchAt = b.launchAt
       setIds((prev) => [...prev, id])
       if (sail) {
         window.setTimeout(() => setWelcome({ id, key: launchAt }), Math.max(0, launchAt - now))
@@ -233,8 +195,7 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
 
   function reset() {
     store.boats.clear()
-    lastLaunch.current = 0
-    lastGate.current = null
+    launches.current = createLaunches()
     writeSim([])
     setIds([])
     setWelcome(null)
@@ -268,22 +229,15 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
         gl={{ antialias: false, powerPreference: 'high-performance', stencil: false }}
         camera={{ zoom: VIEW.zoom, near: 0.5, far: 500, position: [VIEW.target.x + 80, 80, VIEW.target.z + 80] }}
       >
-        {/* the diorama's own lighting rig, following the camera's focus; no studio backdrop here */}
-        <StudioLighting
-          focus={[VIEW.target.x, 0, VIEW.target.z]}
-          backdrop={false}
-          shadowRange={40}
-          shadowSoftness={10}
-        />
-        <ReadySignal
+        <HarborStage
+          store={store}
+          ids={ids}
           onReady={() => {
             setBuilt(true)
             onReady?.()
           }}
         />
-        <HarborWorld checkInUrl={CHECK_IN_URL} />
-        <HarborFleet store={store} ids={ids} />
-        <WakeField store={store} />
+        {drive && <DevHelm store={store} />}
         <MeetingCamera store={store} />
         <PlateTracker store={store} />
         <EffectComposer multisampling={0} enableNormalPass={false}>
@@ -303,7 +257,7 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
           const w = who.get(id)
           if (!w) return null
           const shown = badges.has(id)
-          const accent = w.palette.hull === '#fbf6ec' ? w.palette.trim : w.palette.hull
+          const accent = w.look.hull === '#fbf6ec' ? w.look.trim : w.look.hull
           return (
             <div
               key={id}

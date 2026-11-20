@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { loadHarbor } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
 import { auth } from '@/lib/auth/auth'
 import { getStageData } from '@/lib/actions/stage/getStageData'
 import { HostRemoteClient } from './HostRemoteClient'
@@ -50,8 +51,15 @@ export default async function StageRemotePage() {
     return generateWeeklyMatches()
   }
 
+  // the harbor at the top of the remote, on their own boat
+  const harbor = await loadHarbor()
+  if (!harbor.members.some((m) => m.id === session.user.id))
+    harbor.members.push({ id: session.user.id, name: session.user.name ?? '', company: '', profileImage: null })
+
   return (
     <HostRemoteClient
+      harbor={harbor}
+      me={session.user.id}
       segments={res.data.segments}
       presentation={res.data.presentation}
       names={res.data.names}

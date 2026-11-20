@@ -6,7 +6,10 @@ import { getPresenterSchedule } from '@/lib/actions/presenter-queue/getPresenter
 import { getAttendanceHistory } from '@/lib/actions/attendance/getAttendanceHistory'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { SQYSH_UPDATES } from '@/lib/constants/member/sqysh-updates.constants'
+import { loadHarbor } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
 import CheckInClient from './CheckInClient'
+import { BoatArrival } from './_components/BoatArrival'
+import { REMOTE_HREF, SUPER_HREF } from './_lib/roles'
 import prisma from '@/prisma/client'
 
 const PREVIEW: Record<string, { success: boolean; alreadyCheckedIn?: boolean; error?: string }> = {
@@ -44,10 +47,8 @@ export default async function CheckInPage({
   }).format(new Date())
   const todayStart = new Date(`${todayISO}T00:00:00Z`)
 
-  const [attendanceRes, scheduleRes, historyRes, todayRound, lastRound, hostTerm, treasurerTerm] = await Promise.all([
-    getUserAttendance(),
-    getPresenterSchedule(),
-    getAttendanceHistory(),
+  // who has a job today decides the screen: anyone with one keeps the full check-in screen and its tools
+  const [todayRound, lastRound, hostTerm, treasurerTerm] = await Promise.all([
     prisma.guidingLight.findFirst({
       where: { chapterId, meetingDate: { gte: todayStart } },
       select: { judgedById: true }
@@ -65,6 +66,45 @@ export default async function CheckInPage({
       where: { chapterId, isActive: true, position: 'TREASURER' },
       select: { holderId: true }
     })
+  ])
+
+  // Today's judge: set on today's row once it exists, otherwise last round's winner
+  const isGuidingLight = (todayRound?.judgedById ?? lastRound?.winnerId) === userId
+  const isHost = hostTerm?.holderId === session.user.id
+  const isTreasurer = treasurerTerm?.holderId === session.user.id
+
+  // Everyone who checked in gets their boat: thanks, turn the phone, and it's there on a small copy of the TV harbor.
+  // The host and super users get it too, with their controls (the host remote, the command deck) on top. Only the
+  // Guiding Light judge and the treasurer keep the full check-in screen: the judge's shortlist is pushed to it, and
+  // the treasurer's report starts from it.
+  const isJudge = isGuidingLight || (!!fake && gl === '1')
+  const keepsScreen = isJudge || (isTreasurer && !isHost && !isSuper)
+  if (result.success && !keepsScreen) {
+    const controls = [
+      ...(isHost ? [{ href: REMOTE_HREF, label: 'Host remote' }] : []),
+      ...(isSuper ? [{ href: SUPER_HREF, label: 'Command deck' }] : [])
+    ]
+    const harbor = await loadHarbor()
+    // a previewed check-in isn't recorded, and a member who isn't on the active roster still has a boat
+    if (!harbor.members.some((m) => m.id === userId))
+      harbor.members.push({ id: userId, name: session.user.name ?? '', company: '', profileImage: null })
+    if (!harbor.initialAttendees.includes(userId)) harbor.initialAttendees.push(userId)
+    return (
+      <BoatArrival
+        firstName={(session.user.name ?? '').split(' ')[0]}
+        fresh={!result.alreadyCheckedIn}
+        harbor={harbor}
+        me={userId}
+        controls={controls}
+        hold={!fake && !isSuper}
+      />
+    )
+  }
+
+  const [attendanceRes, scheduleRes, historyRes] = await Promise.all([
+    getUserAttendance(),
+    getPresenterSchedule(),
+    getAttendanceHistory()
   ])
 
   const presenterName =
@@ -86,11 +126,6 @@ export default async function CheckInPage({
         .slice(0, 3)
         .map((r) => ({ meetingId: r.id, date: r.date }))
     : []
-
-  // Today's judge: set on today's row once it exists, otherwise last round's winner
-  const isGuidingLight = (todayRound?.judgedById ?? lastRound?.winnerId) === userId
-  const isHost = hostTerm?.holderId === session.user.id
-  const isTreasurer = treasurerTerm?.holderId === session.user.id
 
   return (
     <CheckInClient

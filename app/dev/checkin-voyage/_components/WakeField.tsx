@@ -6,10 +6,11 @@ import { AdditiveBlending, Color, InstancedMesh, MeshBasicMaterial, Object3D, Pl
 import { foamTexture } from '../../voyage/_components/Wakes'
 import { HarborStore } from '../_lib/store'
 import { seaAt, swellMask } from '../_lib/waves'
-import { BOAT_LENGTH } from './boats/Boats'
+import { VESSEL_CLASS_SPECS } from '../_lib/vessel/classes'
 
-// Readable wakes for arriving boats, in one instanced draw: a spreading V of foam from the stern, a churn of prop
-// wash, and bow waves peeling off both sides. Puffs ride the swell and are tinted toward the sea's own aqua, so the
+// Readable wakes for every boat making way (an arrival, or a player at the helm), in one instanced draw: a spreading
+// V of foam from the stern, a churn of prop wash, and bow waves peeling off both sides, plus a ring of spray wherever
+// an anchor goes in or comes out. Puffs ride the swell and are tinted toward the sea's own aqua, so the
 // wake melts into the water instead of sitting on it as white patches. Everything scales with speed.
 
 const MAX = 900
@@ -40,9 +41,21 @@ export function WakeField({ store }: { store: HarborStore }) {
     const t = clock.elapsedTime
     const list = puffs.current
 
+    // splashes: a burst of spray thrown outward in a ring, and a churn where it went in
+    for (const e of store.events.splice(0)) {
+      if (e.kind !== 'splash') continue
+      const mask = swellMask(e.x, e.z)
+      for (let i = 0; i < 10; i++) {
+        const a = (i / 10) * Math.PI * 2 + Math.random() * 0.4
+        const v = (0.35 + Math.random() * 0.3) * e.size * 2.2
+        list.push({ x: e.x, z: e.z, vx: Math.cos(a) * v, vz: Math.sin(a) * v, age: 0, life: 1.1 + Math.random() * 0.5, s0: e.size * 0.25, s1: e.size * 0.8, a: 0.5, rot: Math.random() * 6.28, m: mask })
+      }
+      list.push({ x: e.x, z: e.z, vx: 0, vz: 0, age: 0, life: 1.8, s0: e.size * 0.4, s1: e.size * 1.6, a: 0.55, rot: Math.random() * 6.28, m: mask })
+    }
+
     for (const b of store.boats.values()) {
-      if (b.phase !== 'arriving') continue
-      const len = BOAT_LENGTH[b.who.boat]
+      if (b.phase !== 'arriving' && b.phase !== 'underway') continue
+      const len = VESSEL_CLASS_SPECS[b.who.boat].dims.length
       const fx = Math.sin(b.heading)
       const fz = Math.cos(b.heading)
       const rx = -fz
@@ -54,7 +67,7 @@ export function WakeField({ store }: { store: HarborStore }) {
       tr.x = sx
       tr.z = sz
       travelled.current.set(b.id, tr)
-      const k = Math.min(1, b.speed / 2.8)
+      const k = Math.min(1, Math.abs(b.speed) / 2.8)
       // how much swell is here, once per boat per frame (puffs keep it as they drift)
       const mask = swellMask(b.x, b.z)
       while (tr.d > STEP && k > 0.04) {
@@ -108,7 +121,7 @@ export function WakeField({ store }: { store: HarborStore }) {
     }
     for (const id of travelled.current.keys()) {
       const b = store.boats.get(id)
-      if (!b || b.phase !== 'arriving') travelled.current.delete(id)
+      if (!b || (b.phase !== 'arriving' && b.phase !== 'underway')) travelled.current.delete(id)
     }
 
     let n = 0

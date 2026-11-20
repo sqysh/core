@@ -13,13 +13,16 @@ export function StudioLighting({
   focus = [0, 0, 0],
   backdrop = true,
   shadowRange = 15,
-  shadowSoftness = 5
+  shadowSoftness = 5,
+  shadowMapSize = 4096
 }: {
   focus?: [number, number, number]
   /** Half-width of the shadow box round the focus (the diorama tile needs 15; a wider scene more) */
   shadowRange?: number
   /** Shadow edge blur (the diorama uses 5; a wider scene reads better softer) */
   shadowSoftness?: number
+  /** Shadow map resolution (a phone gets by with far less than the TV) */
+  shadowMapSize?: number
   /** The charcoal studio backdrop; scenes with their own sky or haze turn it off */
   backdrop?: boolean
 }) {
@@ -45,7 +48,7 @@ export function StudioLighting({
         intensity={3.7}
         position={[fx - 14 * (shadowRange / 15), fy + 24 * (shadowRange / 15), fz + 15 * (shadowRange / 15)]}
         target={target}
-        shadow-mapSize={[4096, 4096]}
+        shadow-mapSize={[shadowMapSize, shadowMapSize]}
         shadow-camera-left={-shadowRange}
         shadow-camera-right={shadowRange}
         shadow-camera-top={shadowRange}

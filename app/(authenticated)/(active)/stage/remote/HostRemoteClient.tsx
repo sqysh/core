@@ -43,6 +43,10 @@ import {
 } from '@/lib/constants/stage.constants'
 import { DeckControls } from '@/app/(authenticated)/(active)/stage/_components/controls/DeckControls'
 import { PollPicker } from '@/app/(authenticated)/(active)/stage/_components/controls/PollPicker'
+import { PhonePrompter } from '@/app/(authenticated)/(active)/stage/_components/PhonePrompter'
+import { RemoteHarbor } from '@/app/(authenticated)/(active)/stage/_components/RemoteHarbor'
+import { GlassMenu } from '@/app/(authenticated)/(active)/stage/_components/GlassMenu'
+import type { HarborData } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
 
 // Each run-of-show step maps to the ONE screen command that should land on the TV
 // for that step. This is what the Jump menu uses, so "jump to Treasurer" actually
@@ -86,6 +90,13 @@ function screenCommandFor(
   }
 }
 
+/**
+ * One glass panel of controls over the harbor: stacked in portrait, side by side (each scrolling on its own) held
+ * sideways. Frosted white in light mode, smoked in dark, so the remote's own colours read either way.
+ */
+const COLUMN =
+  'flex flex-col gap-4 rounded-2xl border border-white/50 bg-white/45 p-3 shadow-[inset_0_1px_1px_rgba(255,255,255,0.6),0_10px_30px_rgba(6,24,44,0.25)] backdrop-blur-xl landscape:min-h-0 landscape:gap-3 landscape:overflow-y-auto landscape:overscroll-contain dark:border-white/15 dark:bg-[#06101b]/55 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.35)]'
+
 // the light sweeps and the breathing glow; both sit out under reduced motion
 const CONSOLE_CSS = `
   .hr-sheen { animation: hrSheen 6s ease-in-out infinite }
@@ -96,6 +107,9 @@ const CONSOLE_CSS = `
 `
 
 export function HostRemoteClient({
+  harbor,
+  me,
+  segments,
   presentation,
   names,
   onOpenRound,
@@ -107,6 +121,9 @@ export function HostRemoteClient({
   deferral,
   glRevealed: glRevealedInit = false
 }: {
+  /** Today's harbor, for the host's own boat at the top of the remote */
+  harbor?: HarborData
+  me?: string
   segments: Segment[]
   presentation: StagePresentation | null
   names: ScriptNames
@@ -223,7 +240,7 @@ export function HostRemoteClient({
   // Follow the stage: when the presenter taps Done on their phone, move on here too
   useEffect(() => {
     const channel = getPusherClient().subscribe(STAGE_CHANNEL)
-    channel.bind(STAGE_EVENT, (cmd: StageCommand) => {
+    const onStage = (cmd: StageCommand) => {
       if (cmd.type === 'present.end') {
         setPresenting(false)
         const activityIdx = RUN_OF_SHOW.findIndex((s) => s.id === 'activity')
@@ -236,14 +253,16 @@ export function HostRemoteClient({
         setStepIdx((i) => Math.max(i, activityIdx))
       }
       if (cmd.type === 'present.start') setPresenting(true)
-    })
+    }
+    channel.bind(STAGE_EVENT, onStage)
     // the judge's pick lands on its own channel; once it does, the Guiding Light
     // step shows the winner instead of the intro
     const gl = getPusherClient().subscribe('guiding-light')
     const onWinner = () => setGlRevealed(true)
     gl.bind('winner-selected', onWinner)
     return () => {
-      channel.unbind_all()
+      // only this listener: the phone teleprompter listens on the same channel
+      channel.unbind(STAGE_EVENT, onStage)
       releaseChannel(STAGE_CHANNEL)
       gl.unbind('winner-selected', onWinner)
     }
@@ -541,395 +560,407 @@ export function HostRemoteClient({
   const pct = Math.round(((speed - SPEED_MIN) / (SPEED_MAX - SPEED_MIN)) * 100)
   const speedPips = Math.max(1, Math.round((pct / 100) * 7))
 
-  // flat console key: square, hairline border, primary tint on press
+  // glass console key: a lighter pane on the panel, a bright top edge, primary tint on press
   const KEY =
-    'relative flex items-center justify-center gap-2 border border-border-light bg-black/5 font-sora font-bold text-text-light transition-colors duration-100 active:border-primary-light/50 active:bg-primary-light/15 disabled:opacity-35 dark:border-white/10 dark:bg-white/5 dark:text-text-dark dark:active:border-primary-dark/50 dark:active:bg-primary-dark/15'
+    'relative flex items-center justify-center gap-2 rounded-xl border border-white/60 bg-white/35 font-sora font-bold text-text-light shadow-[inset_0_1px_1px_rgba(255,255,255,0.7)] backdrop-blur-md transition-colors duration-100 active:border-primary-light/50 active:bg-primary-light/15 disabled:opacity-35 dark:border-white/15 dark:bg-white/8 dark:text-text-dark dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.18)] dark:active:border-primary-dark/50 dark:active:bg-primary-dark/15'
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-bg-light pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] dark:bg-bg-dark">
+    <div className="fixed inset-0 overflow-hidden bg-[#0a1929]">
       <style>{CONSOLE_CSS}</style>
 
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="mx-auto flex w-full max-w-140 flex-1 flex-col gap-4 px-5"
-      >
-        {/* status bar */}
-        <div>
-          <div className="flex items-center justify-between px-1 pb-3 pt-1">
-            <div className="flex items-center gap-2">
-              <span
-                className="h-2 w-2 bg-primary-light shadow-[0_0_10px] shadow-primary-light dark:bg-primary-dark dark:shadow-primary-dark"
+      {/* her boat on the water, like every member's; the remote is a full-screen glass menu from the corner */}
+      {harbor && me && <RemoteHarbor harbor={harbor} me={me} />}
+
+      <GlassMenu label="Remote" defaultOpen={!harbor}>
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="mx-auto flex w-full max-w-140 flex-col gap-3 px-4 landscape:grid landscape:min-h-0 landscape:flex-1 landscape:max-w-none landscape:grid-cols-2 landscape:gap-3 landscape:pl-[max(1rem,env(safe-area-inset-left))] landscape:pr-[max(7rem,calc(env(safe-area-inset-right)+6rem))]"
+        >
+          {/* upright the panels stack; held sideways, two side by side: what's on and the big button, and the rest */}
+          <div className={COLUMN}>
+            {/* status bar */}
+            <div>
+              <div className="flex items-center justify-between px-1 pb-3 pt-1">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-2 w-2 bg-primary-light shadow-[0_0_10px] shadow-primary-light dark:bg-primary-dark dark:shadow-primary-dark"
+                    aria-hidden="true"
+                  />
+                  <span className="font-mono text-[11px] tracking-[0.34em] text-primary-light [text-shadow:0_0_10px_rgba(96,165,250,0.35)] dark:text-primary-dark dark:[text-shadow:0_0_12px_rgba(96,165,250,0.55)]">
+                    CORE
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`h-2 w-2 ${ok ? 'animate-pulse bg-emerald-500 shadow-[0_0_8px] shadow-emerald-500 dark:bg-emerald-400 dark:shadow-emerald-400' : 'bg-red-500 shadow-[0_0_8px] shadow-red-500'}`}
+                    aria-hidden="true"
+                  />
+                  <span className="font-mono text-[9px] tracking-widest text-text-light/40 dark:text-text-dark/40">
+                    {ok ? 'LINK' : 'NO TV'}
+                  </span>
+                </div>
+              </div>
+              <div
+                className="h-px w-full bg-linear-to-r from-transparent via-primary-light/50 to-transparent dark:via-primary-dark/60"
                 aria-hidden="true"
               />
-              <span className="font-mono text-[11px] tracking-[0.34em] text-primary-light [text-shadow:0_0_10px_rgba(96,165,250,0.35)] dark:text-primary-dark dark:[text-shadow:0_0_12px_rgba(96,165,250,0.55)]">
-                CORE
-              </span>
             </div>
-            <div className="flex items-center gap-1.5">
+
+            {/* readout: scanlines, a periodic light sweep, content slides in per step */}
+            <div className="relative overflow-hidden rounded-xl border border-white/50 bg-white/30 dark:border-white/10 dark:bg-black/25">
               <span
-                className={`h-2 w-2 ${ok ? 'animate-pulse bg-emerald-500 shadow-[0_0_8px] shadow-emerald-500 dark:bg-emerald-400 dark:shadow-emerald-400' : 'bg-red-500 shadow-[0_0_8px] shadow-red-500'}`}
+                className="pointer-events-none absolute inset-0 opacity-5 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(147,197,253,0.7)_3px)]"
                 aria-hidden="true"
               />
-              <span className="font-mono text-[9px] tracking-widest text-text-light/40 dark:text-text-dark/40">
-                {ok ? 'LINK' : 'NO TV'}
-              </span>
-            </div>
-          </div>
-          <div
-            className="h-px w-full bg-linear-to-r from-transparent via-primary-light/50 to-transparent dark:via-primary-dark/60"
-            aria-hidden="true"
-          />
-        </div>
-
-        {/* readout: scanlines, a periodic light sweep, content slides in per step */}
-        <div className="relative overflow-hidden border border-border-light bg-black/3 dark:border-white/10 dark:bg-black/30">
-          <span
-            className="pointer-events-none absolute inset-0 opacity-5 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(147,197,253,0.7)_3px)]"
-            aria-hidden="true"
-          />
-          <span
-            className="hr-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-black/4 to-transparent dark:via-white/6"
-            aria-hidden="true"
-          />
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={lcdKey}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8, transition: { duration: 0.12 } }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              className="relative px-5 py-5"
-            >
-              {done ? (
-                <>
-                  <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-light/90 dark:text-primary-dark/80">
-                    Done
-                  </p>
-                  <p className="mt-1.5 font-sora text-[24px] font-black text-text-light dark:text-text-dark">
-                    That&rsquo;s the meeting.
-                  </p>
-                </>
-              ) : presenting && presentation ? (
-                <>
-                  <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-light/90 dark:text-primary-dark/80">
-                    On the TV now
-                  </p>
-                  <p className="mt-1.5 font-sora text-[22px] font-black text-text-light dark:text-text-dark">
-                    {presentation.presenter.name}&rsquo;s presentation
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-light/90 dark:text-primary-dark/80">
-                      {live ? 'On the TV now' : 'Up next'} &middot; {shownIdx + 1} of {RUN_OF_SHOW.length}
-                    </span>
-                    <div className="flex gap-1" aria-hidden="true">
-                      {RUN_OF_SHOW.map((s, i) => (
-                        <span
-                          key={s.id}
-                          className={`h-1 w-3 ${
-                            skipped.has(i)
-                              ? 'bg-amber-500/50'
-                              : i <= liveIdx
-                                ? 'bg-primary-light shadow-[0_0_6px] shadow-primary-light/60 dark:bg-primary-dark dark:shadow-primary-dark/60'
-                                : i === stepIdx
-                                  ? 'animate-pulse bg-primary-light/60 dark:bg-primary-dark/60'
-                                  : 'bg-black/10 dark:bg-white/10'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="mt-2 font-sora text-[26px] font-black leading-tight text-text-light dark:text-text-dark">
-                    {shown.title}
-                  </p>
-                  {notice && (
-                    <p
-                      className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400"
-                      role="status"
-                    >
-                      {notice}
-                    </p>
-                  )}
-                  {live && nextStep && (
-                    <p className="mt-2 font-mono text-[11px] tracking-wide text-text-light/50 dark:text-text-dark/50">
-                      Up next &middot; {nextStep.title}
-                    </p>
-                  )}
-                  {nextStep?.id === 'presentation' && !presentation && !spotlight && (
-                    <p className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400/80">
-                      Nothing uploaded. The TV shows their name and the clock instead.
-                    </p>
-                  )}
-                  {nextStep?.id === 'sixty' && deferral && (
-                    <p className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400/80">
-                      {deferral.today ? 'Deferred to next week.' : `Deferred from ${fmtDate(deferral.meetingDate)}.`}
-                      {deferral.judge ? ` ${deferral.judge.name.split(' ')[0]} is still the judge.` : ''}
-                    </p>
-                  )}
-                  {err && (
-                    <p className="mt-2 font-mono text-[11px] text-red-500 dark:text-red-400" role="alert">
-                      {err}
-                    </p>
-                  )}
-                </>
-              )}
-            </motion.div>
-          </AnimatePresence>
-
-          {/* sqyshvertex: Sqysh coaches the host, one sentence per step */}
-          <div className="relative flex items-center gap-3 border-t border-border-light px-5 py-3 [--key:var(--color-primary-light)] dark:border-white/10 dark:[--key:var(--color-primary-dark)]">
-            <div className="h-14 shrink-0 drop-shadow-[0_0_14px_rgba(168,85,247,0.4)]" aria-hidden="true">
-              <SqyshVector mode={mode} reduce={reduce} id="sq-skin-host" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-primary-light/70 dark:text-primary-dark/70">
-                sqyshvertex
-              </p>
-              <p className="mt-0.5 font-nunito text-[14px] leading-snug text-text-light/70 dark:text-text-dark/70">
-                <TypeText key={guideLine} text={guideLine} startAt={0.1} reduce={reduce} />
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* primary action — the one thing Eileen taps to move the meeting forward */}
-        {done ? (
-          <button
-            type="button"
-            onClick={() => {
-              play('ui-tap')
-              setStepIdx(0)
-              setLiveIdx(-1)
-              setSkipped(new Set())
-              setJudgingSelf(false)
-              setTreasurerBoard(false)
-              setSpotlight(false)
-            }}
-            className={`${KEY} h-18 w-full text-[17px] ${FOCUS}`}
-          >
-            <RotateCcw size={20} aria-hidden="true" /> <span>Start over</span>
-          </button>
-        ) : presenting && presentation ? (
-          <button type="button" onClick={endPresentation} className={`${KEY} h-18 w-full text-[16px] ${FOCUS}`}>
-            <Square size={18} aria-hidden="true" /> <span>End the presentation</span>
-          </button>
-        ) : (
-          <div className="relative">
-            <span
-              className="hr-breathe pointer-events-none absolute -inset-1 bg-primary-light/30 blur-lg dark:bg-primary-dark/35"
-              aria-hidden="true"
-            />
-            <button
-              type="button"
-              onClick={() => next()}
-              disabled={busy}
-              className={`relative flex min-h-26 w-full flex-col items-center justify-center gap-1 overflow-hidden border border-primary-light/60 bg-primary-light px-4 text-center font-sora text-[22px] font-black text-white transition-[filter,transform] duration-75 active:translate-y-px active:brightness-110 disabled:opacity-60 dark:border-primary-dark/60 dark:bg-primary-dark ${FOCUS}`}
-            >
               <span
-                className="hr-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-white/15 to-transparent"
+                className="hr-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-black/4 to-transparent dark:via-white/6"
                 aria-hidden="true"
               />
-              <span className="font-mono text-[10px] font-bold tracking-[0.3em] text-white/60 uppercase">
-                {live ? 'Up next — tap' : 'Tap to begin'}
-              </span>
-              <ActionBody
-                pending={busy}
-                label={
-                  nextStep?.id === 'presentation' && !presentation && spotlight
-                    ? 'End the presentation'
-                    : nextStep?.id === 'treasurer' && treasurerBoard
-                      ? 'Show the treasurer board'
-                      : nextStep?.id === 'guiding-light' && glRevealed
-                        ? 'Show the winner'
-                        : nextStep?.id === 'guiding-light' && glIntro
-                          ? 'Show the Guiding Light'
-                          : nextStep?.button
-                }
-                icon={<ChevronRight size={24} aria-hidden="true" />}
-                iconAfter
-              />
-            </button>
-          </div>
-        )}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={lcdKey}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8, transition: { duration: 0.12 } }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="relative px-5 py-5"
+                >
+                  {done ? (
+                    <>
+                      <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-light/90 dark:text-primary-dark/80">
+                        Done
+                      </p>
+                      <p className="mt-1.5 font-sora text-[24px] font-black text-text-light dark:text-text-dark">
+                        That&rsquo;s the meeting.
+                      </p>
+                    </>
+                  ) : presenting && presentation ? (
+                    <>
+                      <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-light/90 dark:text-primary-dark/80">
+                        On the TV now
+                      </p>
+                      <p className="mt-1.5 font-sora text-[22px] font-black text-text-light dark:text-text-dark">
+                        {presentation.presenter.name}&rsquo;s presentation
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary-light/90 dark:text-primary-dark/80">
+                          {live ? 'On the TV now' : 'Up next'} &middot; {shownIdx + 1} of {RUN_OF_SHOW.length}
+                        </span>
+                        <div className="flex gap-1" aria-hidden="true">
+                          {RUN_OF_SHOW.map((s, i) => (
+                            <span
+                              key={s.id}
+                              className={`h-1 w-3 ${
+                                skipped.has(i)
+                                  ? 'bg-amber-500/50'
+                                  : i <= liveIdx
+                                    ? 'bg-primary-light shadow-[0_0_6px] shadow-primary-light/60 dark:bg-primary-dark dark:shadow-primary-dark/60'
+                                    : i === stepIdx
+                                      ? 'animate-pulse bg-primary-light/60 dark:bg-primary-dark/60'
+                                      : 'bg-black/10 dark:bg-white/10'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="mt-2 font-sora text-[26px] font-black leading-tight text-text-light dark:text-text-dark">
+                        {shown.title}
+                      </p>
+                      {notice && (
+                        <p
+                          className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400"
+                          role="status"
+                        >
+                          {notice}
+                        </p>
+                      )}
+                      {live && nextStep && (
+                        <p className="mt-2 font-mono text-[11px] tracking-wide text-text-light/50 dark:text-text-dark/50">
+                          Up next &middot; {nextStep.title}
+                        </p>
+                      )}
+                      {nextStep?.id === 'presentation' && !presentation && !spotlight && (
+                        <p className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400/80">
+                          Nothing uploaded. The TV shows their name and the clock instead.
+                        </p>
+                      )}
+                      {nextStep?.id === 'sixty' && deferral && (
+                        <p className="mt-2 font-mono text-[11px] tracking-wide text-amber-600 dark:text-amber-400/80">
+                          {deferral.today
+                            ? 'Deferred to next week.'
+                            : `Deferred from ${fmtDate(deferral.meetingDate)}.`}
+                          {deferral.judge ? ` ${deferral.judge.name.split(' ')[0]} is still the judge.` : ''}
+                        </p>
+                      )}
+                      {err && (
+                        <p className="mt-2 font-mono text-[11px] text-red-500 dark:text-red-400" role="alert">
+                          {err}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
 
-        {/* the 60 seconds: pick the Guiding Light yourself, or defer it to next week */}
-        {nextStep?.id === 'sixty' && !judgingSelf && !done && !presenting && (
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={deferRound}
-              disabled={busy || !onDeferRound}
-              className={`${KEY} h-14 text-[13px] ${FOCUS}`}
-            >
-              Defer to next week
-            </button>
-            <button
-              type="button"
-              onClick={pickMyself}
-              disabled={busy || !onChooseSelf}
-              className={`${KEY} h-14 text-[13px] ${FOCUS}`}
-            >
-              I&rsquo;ll pick today
-            </button>
-          </div>
-        )}
+              {/* sqyshvertex: Sqysh coaches the host, one sentence per step */}
+              <div className="relative flex items-center gap-3 border-t border-border-light px-5 py-3 [--key:var(--color-primary-light)] dark:border-white/10 dark:[--key:var(--color-primary-dark)]">
+                <div className="h-14 shrink-0 drop-shadow-[0_0_14px_rgba(168,85,247,0.4)]" aria-hidden="true">
+                  <SqyshVector mode={mode} reduce={reduce} id="sq-skin-host" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-mono text-[9px] tracking-[0.3em] text-primary-light/70 dark:text-primary-dark/70">
+                    sqyshvertex
+                  </p>
+                  <p className="mt-0.5 font-nunito text-[14px] leading-snug text-text-light/70 dark:text-text-dark/70">
+                    <TypeText key={guideLine} text={guideLine} startAt={0.1} reduce={reduce} />
+                  </p>
+                </div>
+              </div>
+            </div>
 
-        {/* host is the judge: choose the winner right here */}
-        {judgingSelf && !glRevealed && (
-          <button
-            type="button"
-            onClick={() => setPickerOpen(true)}
-            className={`${KEY} h-16 w-full border-primary-light/60 text-[16px] ${FOCUS}`}
-          >
-            Pick the Guiding Light
-          </button>
-        )}
-
-        {/* back / skip: the host runs the meeting her way, no fixed order */}
-        {!(presenting && presentation) && (
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={() => prevStep && jumpTo(prevIdx)}
-              disabled={busy || !prevStep}
-              className={`${KEY} h-16 flex-col gap-0 px-3 text-[13px] ${FOCUS}`}
-            >
-              <span className="flex items-center gap-1 font-mono text-[9px] tracking-[0.25em] uppercase opacity-60">
-                <ChevronLeft size={12} aria-hidden="true" /> Back
-              </span>
-              <span className="max-w-full truncate">{prevStep?.title ?? 'Nothing before'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={skip}
-              disabled={busy || !nextStep}
-              className={`${KEY} h-16 flex-col gap-0 px-3 text-[13px] ${FOCUS}`}
-            >
-              <span className="flex items-center gap-1 font-mono text-[9px] tracking-[0.25em] uppercase opacity-60">
-                Skip <SkipForward size={12} aria-hidden="true" />
-              </span>
-              <span className="max-w-full truncate">{nextStep?.title ?? 'End of meeting'}</span>
-            </button>
-          </div>
-        )}
-
-        {/* presenter deck controls while presenting */}
-        {presenting && presentation && (
-          <DeckControls presentation={presentation} page={page} setPage={setPage} send={send} showTimer />
-        )}
-
-        {/* transport — only while the script is on the TV */}
-        {scriptUp && (
-          <div className="border border-border-light bg-black/3 px-4 py-4 dark:border-white/10 dark:bg-black/20">
-            <p className="mb-3 text-center font-mono text-[9px] tracking-[0.3em] text-primary-light/70 uppercase dark:text-primary-dark/60">
-              Teleprompter
-            </p>
-            <div className="grid grid-cols-3 gap-2.5">
+            {/* primary action — the one thing Eileen taps to move the meeting forward */}
+            {done ? (
               <button
                 type="button"
                 onClick={() => {
-                  play('ui-tick')
-                  send({ type: 'script.rewind' })
+                  play('ui-tap')
+                  setStepIdx(0)
+                  setLiveIdx(-1)
+                  setSkipped(new Set())
+                  setJudgingSelf(false)
+                  setTreasurerBoard(false)
+                  setSpotlight(false)
                 }}
-                className={`${KEY} h-20 flex-col ${FOCUS}`}
+                className={`${KEY} h-18 w-full text-[17px] ${FOCUS}`}
               >
-                <SkipBack size={22} aria-hidden="true" />
-                <span className="text-[12px] font-semibold">Rewind</span>
+                <RotateCcw size={20} aria-hidden="true" /> <span>Start over</span>
+              </button>
+            ) : presenting && presentation ? (
+              <button type="button" onClick={endPresentation} className={`${KEY} h-18 w-full text-[16px] ${FOCUS}`}>
+                <Square size={18} aria-hidden="true" /> <span>End the presentation</span>
+              </button>
+            ) : (
+              <div className="relative">
+                <span
+                  className="hr-breathe pointer-events-none absolute -inset-1 bg-primary-light/30 blur-lg dark:bg-primary-dark/35"
+                  aria-hidden="true"
+                />
+                <button
+                  type="button"
+                  onClick={() => next()}
+                  disabled={busy}
+                  className={`relative flex min-h-26 w-full flex-col landscape:min-h-20 items-center justify-center gap-1 overflow-hidden border border-primary-light/60 bg-primary-light px-4 text-center font-sora text-[22px] font-black text-white transition-[filter,transform] duration-75 active:translate-y-px active:brightness-110 disabled:opacity-60 dark:border-primary-dark/60 dark:bg-primary-dark ${FOCUS}`}
+                >
+                  <span
+                    className="hr-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-white/15 to-transparent"
+                    aria-hidden="true"
+                  />
+                  <span className="font-mono text-[10px] font-bold tracking-[0.3em] text-white/60 uppercase">
+                    {live ? 'Up next — tap' : 'Tap to begin'}
+                  </span>
+                  <ActionBody
+                    pending={busy}
+                    label={
+                      nextStep?.id === 'presentation' && !presentation && spotlight
+                        ? 'End the presentation'
+                        : nextStep?.id === 'treasurer' && treasurerBoard
+                          ? 'Show the treasurer board'
+                          : nextStep?.id === 'guiding-light' && glRevealed
+                            ? 'Show the winner'
+                            : nextStep?.id === 'guiding-light' && glIntro
+                              ? 'Show the Guiding Light'
+                              : nextStep?.button
+                    }
+                    icon={<ChevronRight size={24} aria-hidden="true" />}
+                    iconAfter
+                  />
+                </button>
+              </div>
+            )}
+
+            {/* the 60 seconds: pick the Guiding Light yourself, or defer it to next week */}
+            {nextStep?.id === 'sixty' && !judgingSelf && !done && !presenting && (
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={deferRound}
+                  disabled={busy || !onDeferRound}
+                  className={`${KEY} h-14 text-[13px] ${FOCUS}`}
+                >
+                  Defer to next week
+                </button>
+                <button
+                  type="button"
+                  onClick={pickMyself}
+                  disabled={busy || !onChooseSelf}
+                  className={`${KEY} h-14 text-[13px] ${FOCUS}`}
+                >
+                  I&rsquo;ll pick today
+                </button>
+              </div>
+            )}
+
+            {/* host is the judge: choose the winner right here */}
+            {judgingSelf && !glRevealed && (
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                className={`${KEY} h-16 w-full border-primary-light/60 text-[16px] ${FOCUS}`}
+              >
+                Pick the Guiding Light
+              </button>
+            )}
+
+            {/* back / skip: the host runs the meeting her way, no fixed order */}
+            {!(presenting && presentation) && (
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => prevStep && jumpTo(prevIdx)}
+                  disabled={busy || !prevStep}
+                  className={`${KEY} h-16 flex-col gap-0 px-3 text-[13px] ${FOCUS}`}
+                >
+                  <span className="flex items-center gap-1 font-mono text-[9px] tracking-[0.25em] uppercase opacity-60">
+                    <ChevronLeft size={12} aria-hidden="true" /> Back
+                  </span>
+                  <span className="max-w-full truncate">{prevStep?.title ?? 'Nothing before'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={skip}
+                  disabled={busy || !nextStep}
+                  className={`${KEY} h-16 flex-col gap-0 px-3 text-[13px] ${FOCUS}`}
+                >
+                  <span className="flex items-center gap-1 font-mono text-[9px] tracking-[0.25em] uppercase opacity-60">
+                    Skip <SkipForward size={12} aria-hidden="true" />
+                  </span>
+                  <span className="max-w-full truncate">{nextStep?.title ?? 'End of meeting'}</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className={COLUMN}>
+            {/* presenter deck controls while presenting */}
+            {presenting && presentation && (
+              <DeckControls presentation={presentation} page={page} setPage={setPage} send={send} showTimer />
+            )}
+
+            {/* transport — the script plays on this phone (PhonePrompter); these drive it from here too */}
+            {scriptUp && (
+              <div className="rounded-xl border border-white/50 bg-white/30 px-4 py-4 dark:border-white/10 dark:bg-black/20">
+                <p className="mb-3 text-center font-mono text-[9px] tracking-[0.3em] text-primary-light/70 uppercase dark:text-primary-dark/60">
+                  Teleprompter
+                </p>
+                <div className="grid grid-cols-3 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      play('ui-tick')
+                      send({ type: 'script.rewind' })
+                    }}
+                    className={`${KEY} h-20 flex-col ${FOCUS}`}
+                  >
+                    <SkipBack size={22} aria-hidden="true" />
+                    <span className="text-[12px] font-semibold">Rewind</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    aria-pressed={playing}
+                    className={`${KEY} h-20 flex-col ${playing ? 'border-primary-light/50 text-primary-light dark:border-primary-dark/50 dark:text-primary-dark' : ''} ${FOCUS}`}
+                  >
+                    {playing ? (
+                      <Pause size={24} className="animate-pulse" aria-hidden="true" />
+                    ) : (
+                      <Play size={24} aria-hidden="true" />
+                    )}
+                    <span className="text-[12px] font-semibold">{playing ? 'Pause' : 'Play'}</span>
+                  </button>
+                  <div className="grid grid-rows-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => bump(SPEED_STEP)}
+                      disabled={speed >= SPEED_MAX}
+                      className={`${KEY} text-[12px] ${FOCUS}`}
+                    >
+                      <Plus size={16} aria-hidden="true" />
+                      <span className="font-semibold">Faster</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => bump(-SPEED_STEP)}
+                      disabled={speed <= SPEED_MIN}
+                      className={`${KEY} text-[12px] ${FOCUS}`}
+                    >
+                      <Minus size={16} aria-hidden="true" />
+                      <span className="font-semibold">Slower</span>
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-center gap-2">
+                  <span className="font-mono text-[9px] tracking-widest text-text-light/40 uppercase dark:text-text-dark/40">
+                    Speed
+                  </span>
+                  <div className="flex gap-1" aria-hidden="true">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`h-1.5 w-2.5 transition-colors duration-200 ${
+                          i < speedPips
+                            ? 'bg-primary-light shadow-[0_0_6px] shadow-primary-light/60 dark:bg-primary-dark dark:shadow-primary-dark/60'
+                            : 'bg-black/10 dark:bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* poll — available any time */}
+            <PollPicker send={send} />
+
+            {/* bottom actions: jump menu + back to board */}
+            <div className="mt-auto grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  play('ui-tap')
+                  setMenuOpen((v) => !v)
+                }}
+                aria-expanded={menuOpen}
+                className={`${KEY} h-14 text-[14px] ${FOCUS}`}
+              >
+                <List size={17} aria-hidden="true" /> <span>Jump to section</span>
               </button>
               <button
                 type="button"
-                onClick={togglePlay}
-                aria-pressed={playing}
-                className={`${KEY} h-20 flex-col ${playing ? 'border-primary-light/50 text-primary-light dark:border-primary-dark/50 dark:text-primary-dark' : ''} ${FOCUS}`}
+                onClick={() => {
+                  play('ui-tap')
+                  send({ type: 'holding' })
+                  setStepIdx(0)
+                  setLiveIdx(-1)
+                  setSkipped(new Set())
+                  setJudgingSelf(false)
+                  setPlaying(false)
+                  setTreasurerBoard(false)
+                  setSpotlight(false)
+                  setMenuOpen(false)
+                }}
+                className={`${KEY} h-14 text-[14px] ${FOCUS}`}
               >
-                {playing ? (
-                  <Pause size={24} className="animate-pulse" aria-hidden="true" />
-                ) : (
-                  <Play size={24} aria-hidden="true" />
-                )}
-                <span className="text-[12px] font-semibold">{playing ? 'Pause' : 'Play'}</span>
+                <Tv size={17} aria-hidden="true" /> <span>Check-in board</span>
               </button>
-              <div className="grid grid-rows-2 gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => bump(SPEED_STEP)}
-                  disabled={speed >= SPEED_MAX}
-                  className={`${KEY} text-[12px] ${FOCUS}`}
-                >
-                  <Plus size={16} aria-hidden="true" />
-                  <span className="font-semibold">Faster</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => bump(-SPEED_STEP)}
-                  disabled={speed <= SPEED_MIN}
-                  className={`${KEY} text-[12px] ${FOCUS}`}
-                >
-                  <Minus size={16} aria-hidden="true" />
-                  <span className="font-semibold">Slower</span>
-                </button>
-              </div>
-            </div>
-            <div className="mt-3 flex items-center justify-center gap-2">
-              <span className="font-mono text-[9px] tracking-widest text-text-light/40 uppercase dark:text-text-dark/40">
-                Speed
-              </span>
-              <div className="flex gap-1" aria-hidden="true">
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`h-1.5 w-2.5 transition-colors duration-200 ${
-                      i < speedPips
-                        ? 'bg-primary-light shadow-[0_0_6px] shadow-primary-light/60 dark:bg-primary-dark dark:shadow-primary-dark/60'
-                        : 'bg-black/10 dark:bg-white/10'
-                    }`}
-                  />
-                ))}
-              </div>
             </div>
           </div>
-        )}
-
-        {/* poll — available any time */}
-        <PollPicker send={send} />
-
-        {/* bottom actions: jump menu + back to board */}
-        <div className="mt-auto grid grid-cols-2 gap-2.5">
-          <button
-            type="button"
-            onClick={() => {
-              play('ui-tap')
-              setMenuOpen((v) => !v)
-            }}
-            aria-expanded={menuOpen}
-            className={`${KEY} h-14 text-[14px] ${FOCUS}`}
-          >
-            <List size={17} aria-hidden="true" /> <span>Jump to section</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              play('ui-tap')
-              send({ type: 'holding' })
-              setStepIdx(0)
-              setLiveIdx(-1)
-              setSkipped(new Set())
-              setJudgingSelf(false)
-              setPlaying(false)
-              setTreasurerBoard(false)
-              setSpotlight(false)
-              setMenuOpen(false)
-            }}
-            className={`${KEY} h-14 text-[14px] ${FOCUS}`}
-          >
-            <Tv size={17} aria-hidden="true" /> <span>Check-in board</span>
-          </button>
-        </div>
-      </motion.div>
+        </motion.div>
+      </GlassMenu>
 
       {/* jump panel — full bleed, one row per run-of-show section */}
       <AnimatePresence>
@@ -939,9 +970,9 @@ export function HostRemoteClient({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10, transition: { duration: 0.14 } }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="fixed inset-0 z-50 flex flex-col bg-bg-light/98 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm dark:bg-bg-dark/98"
+            className="fixed inset-0 z-50 flex flex-col bg-white/70 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-xl dark:bg-[#06101b]/75"
           >
-            <div className="mx-auto flex min-h-0 w-full max-w-140 flex-1 flex-col px-5">
+            <div className="mx-auto flex min-h-0 w-full max-w-140 flex-1 flex-col px-5 landscape:max-w-none landscape:pl-[max(1.25rem,env(safe-area-inset-left))] landscape:pr-[max(1.25rem,env(safe-area-inset-right))]">
               <div className="flex shrink-0 items-center justify-between pb-3 pt-1">
                 <span className="font-mono text-[12px] tracking-widest text-primary-light uppercase [text-shadow:0_0_10px_rgba(96,165,250,0.3)] dark:text-primary-dark dark:[text-shadow:0_0_10px_rgba(96,165,250,0.45)]">
                   Jump to a section
@@ -967,7 +998,7 @@ export function HostRemoteClient({
                 going from there.
               </p>
               <motion.ol
-                className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pb-4"
+                className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pb-4 landscape:grid landscape:grid-cols-2 landscape:content-start landscape:gap-2 landscape:space-y-0"
                 variants={{ hidden: {}, show: { transition: { staggerChildren: 0.035 } } }}
                 initial="hidden"
                 animate="show"
@@ -1019,6 +1050,9 @@ export function HostRemoteClient({
           </motion.div>
         )}
       </AnimatePresence>
+      {/* the script plays here, on the host's phone, rather than across the TV */}
+      <PhonePrompter segments={segments} send={send} />
+
       <ManualPickerOverlay
         title="Pick the Guiding Light"
         show={pickerOpen}

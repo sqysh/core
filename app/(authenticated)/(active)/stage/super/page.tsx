@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { loadHarbor } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
@@ -33,8 +34,15 @@ export default async function StageSuperPage() {
     return generateWeeklyMatches()
   }
 
+  // the harbor at the top of the remote, on their own boat
+  const harbor = await loadHarbor()
+  if (!harbor.members.some((m) => m.id === session.user.id))
+    harbor.members.push({ id: session.user.id, name: session.user.name ?? '', company: '', profileImage: null })
+
   return (
     <SuperRemoteClient
+      harbor={harbor}
+      me={session.user.id}
       presentation={res.data.presentation}
       names={res.data.names}
       members={members}

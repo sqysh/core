@@ -1,12 +1,13 @@
-import { PALETTES, Palette } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
 import { BoatVoice, voiceFor } from '@/app/(authenticated)/(active)/attendance/_lib/boatSounds'
-import { hashString } from '@/app/(authenticated)/(active)/attendance/_lib/random'
+import { defaultVesselConfig, VesselClassId, VesselConfig } from '@/lib/vessel/catalog'
 import { Member } from '@/types/attendance.types'
+import { lookOf, VesselLook } from './vessel/look'
 
-// Each member's boat, decided by their id exactly as the 2D harbor board does it, so it's the same every week:
-// the boat class, its colours (the board's own palettes) and its engine and horn voice.
+// Each member's boat: their saved vessel (MemberVessel) when they've customised one, otherwise the default their id has
+// always given them (the same class and colours as the 2D harbor board), so it's the same every week and every screen.
+// Plus their nameplate label and their engine and horn voice.
 
-export type BoatClass = 'runabout' | 'lobster' | 'sloop'
+export type BoatClass = VesselClassId
 
 export type Identity = {
   id: string
@@ -15,13 +16,13 @@ export type Identity = {
   /** Profile photo, when they have one */
   image: string | null
   boat: BoatClass
-  palette: Palette
+  config: VesselConfig
+  look: VesselLook
   voice: BoatVoice
   /** Place on the roster by id, which spreads pitches so no two boats share a voice */
   index: number
 }
 
-const CLASSES: BoatClass[] = ['runabout', 'lobster', 'sloop']
 /** The board's engine and horn sets that suit each class */
 const VOICE_KIND: Record<BoatClass, string> = { runabout: 'yacht', lobster: 'lobster', sloop: 'sloop' }
 
@@ -32,13 +33,13 @@ export function plateLabel(name: string) {
   return last ? `${first} ${last[0]}.` : first
 }
 
-export function identities(members: Member[]) {
+/** Everyone's boat, keyed by member id; `saved` holds the vessels members have customised */
+export function identities(members: Member[], saved: Record<string, VesselConfig> = {}) {
   // the roster position by id (not name) spreads voices out, as the board does
   const order = new Map([...members].sort((a, b) => a.id.localeCompare(b.id)).map((m, i) => [m.id, i]))
   return new Map(
     members.map((m) => {
-      const h = hashString(m.id)
-      const boat = CLASSES[h % CLASSES.length]
+      const config = saved[m.id] ?? defaultVesselConfig(m.id)
       return [
         m.id,
         {
@@ -46,9 +47,10 @@ export function identities(members: Member[]) {
           name: m.name,
           image: m.profileImage ?? null,
           label: plateLabel(m.name),
-          boat,
-          palette: PALETTES[Math.floor(h / CLASSES.length) % PALETTES.length],
-          voice: voiceFor(VOICE_KIND[boat], order.get(m.id) ?? 0),
+          boat: config.vesselClass,
+          config,
+          look: lookOf(config),
+          voice: voiceFor(VOICE_KIND[config.vesselClass], order.get(m.id) ?? 0),
           index: order.get(m.id) ?? 0
         } satisfies Identity
       ]
