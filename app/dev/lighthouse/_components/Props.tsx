@@ -160,7 +160,8 @@ function SteppingStones({ from, to, y, seed, size = 0.17 }: { from: [number, num
   )
 }
 
-export function Props() {
+/** `crossPost`: the cross-armed mooring post by the rowboat (a scene can leave it out) */
+export function Props({ crossPost = true }: { crossPost?: boolean } = {}) {
   // string-light anchors: the two beam ends on the tower, the cottage spire, a tall post by the cypresses
   const anchors = useMemo(() => {
     const r = towerRadius(TOWER.beamY) + 0.95
@@ -201,7 +202,7 @@ export function Props() {
   return (
     <group>
       <Rowboat u={3.5} v={2.4} yaw={-0.35} />
-      <Post x={crossX} y={0.22} z={crossZ} h={1.15} cross />
+      {crossPost && <Post x={crossX} y={0.22} z={crossZ} h={1.15} cross />}
       <Post x={anchors.postBase[0]} y={1.18} z={anchors.postBase[1]} h={1.62} r={0.06} />
 
       {rail.map((p, i) => (

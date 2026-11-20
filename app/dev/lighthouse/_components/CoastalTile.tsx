@@ -55,7 +55,7 @@ float ripples(vec2 p, float t) {
 type Uniform<T> = { value: T }
 const time: Uniform<number> = { value: 0 }
 
-function waterSurfaceMaterial(shore: Texture) {
+export function waterSurfaceMaterial(shore: Texture) {
   const mat = new MeshStandardMaterial({ roughness: 0.12, metalness: 0, color: '#ffffff' })
   const uniforms = {
     uTime: time,
@@ -185,24 +185,33 @@ export function CoastalTile({
   position = [0, WATER_Y, 0],
   shore,
   sides = ALL_SIDES,
+  beachDetail = 220,
+  waterDetail = 160,
+  water = true,
   children
 }: {
   position?: [number, number, number]
   shore: ShoreField
   sides?: TileSides
+  /** Beach mesh resolution; open-water tiles can use less */
+  beachDetail?: number
+  /** Water mesh resolution; distant tiles can use less */
+  waterDetail?: number
+  /** Draw the tile's own sea block and surface (off when a larger sea is drawn around it) */
+  water?: boolean
   children?: ReactNode
 }) {
   const shoreTex = useMemo(() => bakeShoreTexture(shore), [shore])
   const surfaceMat = useMemo(() => waterSurfaceMaterial(shoreTex), [shoreTex])
 
-  const water = useMemo(() => {
-    const g = new PlaneGeometry(TILE_SIZE, TILE_SIZE, 160, 160)
+  const waterGeo = useMemo(() => {
+    const g = new PlaneGeometry(TILE_SIZE, TILE_SIZE, waterDetail, waterDetail)
     g.rotateX(-Math.PI / 2)
     return g
-  }, [])
+  }, [waterDetail])
 
   const beach = useMemo(() => {
-    const g = new PlaneGeometry(TILE_SIZE - 0.04, TILE_SIZE - 0.04, 220, 220)
+    const g = new PlaneGeometry(TILE_SIZE - 0.04, TILE_SIZE - 0.04, beachDetail, beachDetail)
     g.rotateX(-Math.PI / 2)
     const pos = g.getAttribute('position')
     const colors = new Float32Array(pos.count * 3)
@@ -213,7 +222,8 @@ export function CoastalTile({
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i)
       const z = pos.getZ(i)
-      const y = beachHeight(shore, x, z)
+      // dunes are sampled in world space so a beach running across a tile edge stays continuous
+      const y = beachHeight(shore, x, z, 0, position[0], position[2])
       pos.setY(i, y)
       c.copy(dry)
         .lerp(wet, 1 - smoothstep(0.03, 0.14, y))
@@ -226,7 +236,8 @@ export function CoastalTile({
     const uv = g.getAttribute('uv')
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 4, uv.getY(i) * 4)
     return g
-  }, [shore])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shore, beachDetail, position[0], position[2]])
 
   const block = useMemo(() => {
     const g = new BoxGeometry(TILE_SIZE, SEA_DEPTH, TILE_SIZE)
@@ -247,14 +258,15 @@ export function CoastalTile({
     ]
   }, [sides])
 
-  useFrame((_, dt) => {
-    time.value += Math.min(dt, 0.1)
+  // every tile shares one clock (set, not accumulated, so several tiles don't speed the sea up)
+  useFrame(({ clock }) => {
+    time.value = clock.elapsedTime
   })
 
   return (
     <group position={position}>
-      <mesh geometry={block} material={blockMats} renderOrder={2} />
-      <mesh geometry={water} material={surfaceMat} receiveShadow />
+      {water && <mesh geometry={block} material={blockMats} renderOrder={2} />}
+      {water && <mesh geometry={waterGeo} material={surfaceMat} receiveShadow />}
       <mesh geometry={beach} material={materials().sand} receiveShadow castShadow />
       {children}
     </group>

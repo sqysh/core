@@ -9,14 +9,28 @@ import { studioBackdrop } from '../_lib/textures'
 // The world's single lighting rig: a warm key from the upper left, a cool sky fill, a faint cool rim, and a soft studio
 // environment for gentle reflections on paint, glass and copper. Every tile is lit by this, never by its own lights.
 
-export function StudioLighting({ focus = [0, 0, 0] }: { focus?: [number, number, number] }) {
+export function StudioLighting({
+  focus = [0, 0, 0],
+  backdrop = true,
+  shadowRange = 15,
+  shadowSoftness = 5
+}: {
+  focus?: [number, number, number]
+  /** Half-width of the shadow box round the focus (the diorama tile needs 15; a wider scene more) */
+  shadowRange?: number
+  /** Shadow edge blur (the diorama uses 5; a wider scene reads better softer) */
+  shadowSoftness?: number
+  /** The charcoal studio backdrop; scenes with their own sky or haze turn it off */
+  backdrop?: boolean
+}) {
   const scene = useThree((s) => s.scene)
   useEffect(() => {
+    if (!backdrop) return
     scene.background = studioBackdrop()
     return () => {
       scene.background = null
     }
-  }, [scene])
+  }, [scene, backdrop])
 
   // the key light (and its shadow box) follows the focus, so it can travel with the camera across tiles
   const target = useMemo(() => new Object3D(), [])
@@ -29,16 +43,16 @@ export function StudioLighting({ focus = [0, 0, 0] }: { focus?: [number, number,
         castShadow
         color="#ffdcb2"
         intensity={3.7}
-        position={[fx - 14, fy + 24, fz + 15]}
+        position={[fx - 14 * (shadowRange / 15), fy + 24 * (shadowRange / 15), fz + 15 * (shadowRange / 15)]}
         target={target}
         shadow-mapSize={[4096, 4096]}
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
+        shadow-camera-left={-shadowRange}
+        shadow-camera-right={shadowRange}
+        shadow-camera-top={shadowRange}
+        shadow-camera-bottom={-shadowRange}
         shadow-camera-near={1}
-        shadow-camera-far={80}
-        shadow-radius={5}
+        shadow-camera-far={80 * (shadowRange / 15)}
+        shadow-radius={shadowSoftness}
         shadow-bias={-0.0004}
         shadow-normalBias={0.03}
       />
