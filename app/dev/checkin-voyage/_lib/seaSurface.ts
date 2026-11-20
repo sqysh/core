@@ -208,7 +208,7 @@ export function seaSurfaceMaterial(map: DataTexture, time: { value: number }, px
 
         // transparency follows the real depth: sand and rocks show through the shallows, the deep is solid colour
         float clarity = 1.0 - smoothstep(0.0, uClarity, depth);
-        diffuseColor.a = mix(clamp(mix(0.97, 0.2, clarity) * uOpacity, 0.0, 1.0), 0.98, foam);
+        diffuseColor.a = mix(clamp(mix(0.97, ${SEA_LOOK.shallowAlpha.toFixed(2)}, clarity) * uOpacity, 0.0, 1.0), 0.98, foam);
         totalEmissiveRadiance += foam * vec3(0.18) + water * 0.08;`
       )
       .replace(

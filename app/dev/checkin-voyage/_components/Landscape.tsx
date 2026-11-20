@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { CylinderGeometry, MeshStandardMaterial } from 'three'
 import { boulder, cypress, rockSlab, shrub } from '../../lighthouse/_lib/geometry'
 import { sculptSlab, settle } from '../_lib/rockKit'
-import { duneGrass, duneGrassMaterial, windsweptPine } from '../_lib/vegetationKit'
+import { duneGrass, duneGrassMaterial, swayMaterial, windsweptPine } from '../_lib/vegetationKit'
 import { useFrame } from '@react-three/fiber'
 import { InstancedMesh, Object3D } from 'three'
 import { useLayoutEffect, useRef } from 'react'
@@ -13,6 +13,8 @@ import { rng } from '../../lighthouse/_lib/noise'
 import { at } from '../../lighthouse/_lib/world'
 import { coastShore, seabed } from '../_lib/coast'
 import { Slab, SLABS, STEPS } from '../_lib/formations'
+import { SEA_LOOK } from '../_lib/seaLook'
+import { NOISE } from '../_lib/seaSurface'
 import { groundHeight, groundSlope, shelter, terrainNoise } from '../_lib/terrain'
 
 import { BufferAttribute, BufferGeometry, Color, IcosahedronGeometry, PlaneGeometry } from 'three'
@@ -270,12 +272,13 @@ function CoastalVegetation() {
       }),
     []
   )
-  const leafy = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }), [])
+  const leafy = useMemo(() => swayMaterial(new MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }), grassTime, 0.035), [])
+  const sway = useMemo(() => swayMaterial(m.foliage, grassTime, 0.1), [m.foliage])
   return (
     <group>
       <DuneGrass spots={grass} seed={2} />
       {shrubs.map((s, i) => (
-        <mesh key={i} geometry={shrubGeos[s.k]} material={m.foliage} position={[s.x, s.y, s.z]} rotation={[0, s.rot, 0]} scale={s.s} castShadow receiveShadow />
+        <mesh key={i} geometry={shrubGeos[s.k]} material={sway} position={[s.x, s.y, s.z]} rotation={[0, s.rot, 0]} scale={s.s} castShadow receiveShadow />
       ))}
       {pines.map((p) => (
         <mesh key={p.seed} geometry={p.geo} material={leafy} position={[p.pos[0], p.y - 0.03, p.pos[1]]} castShadow receiveShadow />
@@ -368,7 +371,35 @@ function walkDistance(x: number, z: number) {
  * where it runs down to the water. Cells inside the island's own tile are left to the tile.
  */
 function Ground() {
-  const mat = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 0.92, bumpMap: grainBump(), bumpScale: 0.45 }), [])
+  const mat = useMemo(() => {
+    const m = new MeshStandardMaterial({ vertexColors: true, roughness: 0.92, bumpMap: grainBump(), bumpScale: 0.8 })
+    m.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vLandW;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLandW = (modelMatrix * vec4(position, 1.0)).xyz;')
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', `#include <common>\nvarying vec3 vLandW;\n${NOISE}`)
+        .replace(
+          '#include <color_fragment>',
+          `#include <color_fragment>
+          {
+            vec2 p = vLandW.xz;
+            float grassy = smoothstep(-0.02, 0.07, diffuseColor.g - diffuseColor.r);
+            // grass: broad light and shade, then short blade streaks leaning with the wind
+            float mott = snoise(p * 0.5 + 3.0) * 0.6 + snoise(p * 1.6) * 0.4;
+            vec2 w = vec2(dot(p, vec2(0.9, 0.44)), dot(p, vec2(-0.44, 0.9)));
+            float blades = snoise(vec2(w.x * 7.0, w.y * 1.6)) * 0.6 + snoise(vec2(w.x * 15.0, w.y * 3.2)) * 0.4;
+            // sand and dirt: soft dune ripples and a fine speckle
+            float dunes = 0.5 + 0.5 * sin((w.x + snoise(p * 0.3) * 1.3) * 4.5);
+            float speck = snoise(p * 13.0);
+            float g = mott * 0.12 + blades * 0.09;
+            float s = (dunes - 0.5) * 0.1 + mott * 0.07 + speck * 0.05;
+            diffuseColor.rgb *= 1.0 + mix(s, g, grassy) * ${SEA_LOOK.landTexture.toFixed(2)};
+          }`
+        )
+    }
+    return m
+  }, [])
   const geo = useMemo(() => {
     const X0 = -34
     const X1 = 10
@@ -558,6 +589,8 @@ export function Landscape() {
       }),
     []
   )
+  const treeSway = useMemo(() => swayMaterial(m.foliage, grassTime, 0.022), [m.foliage])
+  const shrubSway = useMemo(() => swayMaterial(m.foliage, grassTime, 0.1), [m.foliage])
   return (
     <group>
       <Ground />
@@ -582,11 +615,11 @@ export function Landscape() {
           <mesh material={m.timber} position={[0, 0.12, 0]} castShadow>
             <cylinderGeometry args={[0.045, 0.06, 0.3, 8]} />
           </mesh>
-          <mesh geometry={t.geo} material={m.foliage} position={[0, 0.16, 0]} castShadow receiveShadow />
+          <mesh geometry={t.geo} material={treeSway} position={[0, 0.16, 0]} castShadow receiveShadow />
         </group>
       ))}
       {shrubs.map((s) => (
-        <mesh key={s.seed} geometry={s.geo} material={m.foliage} position={[s.pos[0], s.y - 0.04, s.pos[1]]} castShadow receiveShadow />
+        <mesh key={s.seed} geometry={s.geo} material={shrubSway} position={[s.pos[0], s.y - 0.04, s.pos[1]]} castShadow receiveShadow />
       ))}
     </group>
   )

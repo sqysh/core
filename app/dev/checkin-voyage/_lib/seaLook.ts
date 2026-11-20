@@ -79,7 +79,15 @@ export const SEA_LOOK = {
   causticStrength: 0.06,
   causticSpeed: 0.55,
   /** How far submerged sand shifts to turquoise with depth (0-1), and how irregular the underwater shelf is (world units) */
-  sandTurquoise: 0.6,
+  sandTurquoise: 0.9,
+  /** Texture of the submerged sand: ripple ridges, mottling and speckle (0 = none, 1 = as set here, 2 = double) */
+  sandTexture: 1.0,
+  /** Texture on the land: grass mottling and blade streaks, dirt speckle, dune ripples on dry sand (0 = none, 2 = double) */
+  landTexture: 1.0,
+  /** Opacity of the water right over the sand (lower = more see-through, but more of the sand's own colour) */
+  shallowAlpha: 0.34,
+  /** Submerged sand: how quickly it cools from tan to aqua with depth (world units of depth) */
+  sandCoolDepth: [0.08, 1.4] as const,
   shelfIrregularity: 1.1,
   /** Fine surface texture / normal intensity (the diorama's was 1; 0.4 is 60% calmer) */
   fineRipple: 0.4,

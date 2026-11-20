@@ -516,9 +516,10 @@ export const BOAT_LENGTH: Record<BoatClass, number> = {
 /**
  * How high each class rides: enough that the boot stripe sits right on the water with a sliver of bottom paint
  * showing as it rocks, so the hull reads as a whole boat floating, not a shape sliced off at the surface.
- * Each hull's painted waterline sits just under -LIFT.
+ * Each hull's painted waterline sits just under -LIFT. Raised so a clear band of bottom paint shows above the water
+ * from the viewing angle (the sea is solid blue now, so a sliver wasn't enough to read the hull's underside).
  */
-export const LIFT: Record<BoatClass, number> = { runabout: 0.035, lobster: 0.05, sloop: 0.045 }
+export const LIFT: Record<BoatClass, number> = { runabout: 0.08, lobster: 0.095, sloop: 0.09 }
 
 export function Boat({ kind, palette, rig }: { kind: BoatClass; palette: Palette; rig: Rig }) {
   return (

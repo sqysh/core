@@ -417,3 +417,34 @@ export function vineMaterial(time: { value: number }) {
   }
   return mat
 }
+
+/**
+ * A copy of a foliage material that sways in the wind: the crown moves more the higher it is above its base, in a
+ * rolling gust that travels across the land (so neighbouring trees don't move in step), plus a quicker flutter at the
+ * tips. `amp` is the sway in world units per unit of height^1.5. The base stays put. Works on any geometry whose origin
+ * is at its foot, which every tree and shrub here is.
+ */
+export function swayMaterial<M extends MeshStandardMaterial>(base: M, time: { value: number }, amp: number): M {
+  const m = base.clone() as M
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.uSwayTime = time
+    shader.uniforms.uSwayAmp = { value: amp }
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform float uSwayTime, uSwayAmp;')
+      .replace(
+        '#include <begin_vertex>',
+        `#include <begin_vertex>
+        {
+          vec3 wp0 = (modelMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+          float lift = pow(max(position.y, 0.0), 1.5);
+          // a gust rolls across the land from the south-west, with a slow lean and a quicker flutter on top
+          float gust = 0.5 + 0.5 * sin(uSwayTime * 0.7 - (wp0.x * 0.35 + wp0.z * 0.2));
+          float lean = (0.35 + 0.65 * gust) * uSwayAmp * lift;
+          float flutter = sin(uSwayTime * 2.3 + position.x * 5.0 + position.z * 4.0 + wp0.x) * 0.25 * uSwayAmp * lift;
+          transformed.x += lean * 0.9 + flutter;
+          transformed.z += lean * 0.45 - flutter * 0.6;
+        }`
+      )
+  }
+  return m
+}

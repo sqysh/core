@@ -75,8 +75,8 @@ export const UI_ZONES: Rect[] = [
 export const overlaps = (a: Rect, b: Rect, pad = 0) =>
   a.x0 < b.x1 + pad && a.x1 + pad > b.x0 && a.y0 < b.y1 + pad && a.y1 + pad > b.y0
 
-/** A nameplate's rough size on the reference screen: 1.55vw type, padding and the colour dot */
-export const plateSize = (label: string) => ({ w: 72 + label.length * 19, h: 52 })
+/** A profile badge's size on the reference screen: a 4vw circle with its ring */
+export const plateSize = (_label: string) => ({ w: 92, h: 92 })
 
 /** The view's own axes, fixed: toward the camera, screen-right, screen-up (and the azimuth) */
 export function viewAxes() {

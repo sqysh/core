@@ -91,14 +91,16 @@ function Gull({ radius, height, speed, phase, tilt }: { radius: number; height: 
   )
 }
 
-export function Sky({ center }: { center: [number, number] }) {
+export function Sky({ center, clouds = true }: { center: [number, number]; clouds?: boolean }) {
   return (
     <group>
-      <Clouds material={MeshBasicMaterial} texture={cloudPuffUrl()} limit={200}>
-        {CLOUDS.map((c, i) => (
-          <DriftingCloud key={i} c={c} i={i} />
-        ))}
-      </Clouds>
+      {clouds && (
+        <Clouds material={MeshBasicMaterial} texture={cloudPuffUrl()} limit={200}>
+          {CLOUDS.map((c, i) => (
+            <DriftingCloud key={i} c={c} i={i} />
+          ))}
+        </Clouds>
+      )}
       <group position={[center[0], 0, center[1]]}>
         <Gull radius={4.2} height={13.2} speed={0.28} phase={0} tilt={0.25} />
         <Gull radius={5.1} height={11.6} speed={0.22} phase={2.2} tilt={0.3} />

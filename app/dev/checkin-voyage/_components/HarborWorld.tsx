@@ -33,7 +33,7 @@ export function HarborWorld({ checkInUrl }: { checkInUrl: string }) {
   return (
     <>
       {/* the island's beach follows the whole coast, so it runs straight into the neck; the sea is drawn below */}
-      <LighthouseTile sides={OPEN} shore={coastShore} water={false} crossPost={false} />
+      <LighthouseTile sides={OPEN} shore={coastShore} water={false} crossPost={false} clouds={false} solidRowboat />
       <Landscape />
       <Details />
       <Vines />

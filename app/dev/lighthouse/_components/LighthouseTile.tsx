@@ -18,7 +18,9 @@ export function LighthouseTile({
   sides = ALL_SIDES,
   shore = lighthouseShore,
   water = true,
-  crossPost = true
+  crossPost = true,
+  clouds = true,
+  solidRowboat = false
 }: {
   col?: number
   row?: number
@@ -29,6 +31,10 @@ export function LighthouseTile({
   water?: boolean
   /** The cross-armed post by the rowboat */
   crossPost?: boolean
+  /** The few cumulus puffs drifting round the tower (a wide open-sea scene doesn't want them) */
+  clouds?: boolean
+  /** The rowboat on the sand gets a planked floor and a keel, and rides a little higher */
+  solidRowboat?: boolean
 }) {
   return (
     <CoastalTile position={tileOrigin(col, row)} shore={shore} sides={sides} water={water}>
@@ -36,8 +42,8 @@ export function LighthouseTile({
       <Lighthouse position={[LIGHTHOUSE.x, LIGHTHOUSE.y, LIGHTHOUSE.z]} />
       <Cottage position={[COTTAGE.x, COTTAGE.y, COTTAGE.z]} />
       <Vegetation />
-      <Props crossPost={crossPost} />
-      <Sky center={[LIGHTHOUSE.x, LIGHTHOUSE.z]} />
+      <Props crossPost={crossPost} solidRowboat={solidRowboat} />
+      <Sky center={[LIGHTHOUSE.x, LIGHTHOUSE.z]} clouds={clouds} />
     </CoastalTile>
   )
 }

@@ -23,11 +23,11 @@ import { at } from '../_lib/world'
 // The small things that make the island lived-in: the rowboat and its oars, wooden posts with rope rails, a
 // stepping-stone path and the strings of lights slung from the lighthouse.
 
-function Rowboat({ u, v, yaw }: { u: number; v: number; yaw: number }) {
+function Rowboat({ u, v, yaw, solid = false }: { u: number; v: number; yaw: number; solid?: boolean }) {
   const m = materials()
   const [x, z] = at(u, v)
   // resting on the wet sand with its keel just bedded in
-  const y = Math.max(0, beachHeight(lighthouseShore, x, z)) + 0.3
+  const y = Math.max(0, beachHeight(lighthouseShore, x, z)) + 0.3 + (solid ? 0.1 : 0)
   const { geo, rail, transom } = useMemo(() => rowboatHull({}), [])
   const railGeo = useMemo(() => new TubeGeometry(new CatmullRomCurve3(rail, true), 120, 0.028, 6, true), [rail])
   const transomGeo = useMemo(() => {
@@ -45,6 +45,19 @@ function Rowboat({ u, v, yaw }: { u: number; v: number; yaw: number }) {
       <mesh geometry={geo} material={m.boatWood} castShadow receiveShadow />
       <mesh geometry={railGeo} material={m.timber} castShadow />
       <mesh geometry={transomGeo} material={m.wood} castShadow />
+      {solid && (
+        <>
+          {/* a planked floor inside the hull, and a keel strip along the bottom, so it reads as a whole boat */}
+          {[-0.16, -0.055, 0.055, 0.16].map((pz, i) => (
+            <mesh key={pz} material={m.wood} position={[0.02, -0.255 + Math.abs(pz) * 0.55, pz]} rotation={[0, 0, 0]} castShadow receiveShadow>
+              <boxGeometry args={[1.0 - (i % 3) * 0.04, 0.02, 0.1]} />
+            </mesh>
+          ))}
+          <mesh material={m.timber} position={[0.02, -0.3, 0]} castShadow>
+            <boxGeometry args={[1.25, 0.05, 0.07]} />
+          </mesh>
+        </>
+      )}
       {[-0.35, 0.18].map((bx) => (
         <mesh key={bx} material={m.wood} position={[bx, -0.06, 0]} castShadow>
           <boxGeometry args={[0.16, 0.035, 0.5 - Math.abs(bx) * 0.1]} />
@@ -161,7 +174,7 @@ function SteppingStones({ from, to, y, seed, size = 0.17 }: { from: [number, num
 }
 
 /** `crossPost`: the cross-armed mooring post by the rowboat (a scene can leave it out) */
-export function Props({ crossPost = true }: { crossPost?: boolean } = {}) {
+export function Props({ crossPost = true, solidRowboat = false }: { crossPost?: boolean; solidRowboat?: boolean } = {}) {
   // string-light anchors: the two beam ends on the tower, the cottage spire, a tall post by the cypresses
   const anchors = useMemo(() => {
     const r = towerRadius(TOWER.beamY) + 0.95
@@ -201,7 +214,7 @@ export function Props({ crossPost = true }: { crossPost?: boolean } = {}) {
 
   return (
     <group>
-      <Rowboat u={3.5} v={2.4} yaw={-0.35} />
+      <Rowboat u={3.5} v={2.4} yaw={-0.35} solid={solidRowboat} />
       {crossPost && <Post x={crossX} y={0.22} z={crossZ} h={1.15} cross />}
       <Post x={anchors.postBase[0]} y={1.18} z={anchors.postBase[1]} h={1.62} r={0.06} />
 

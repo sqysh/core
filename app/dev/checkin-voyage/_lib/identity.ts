@@ -12,6 +12,8 @@ export type Identity = {
   id: string
   label: string
   name: string
+  /** Profile photo, when they have one */
+  image: string | null
   boat: BoatClass
   palette: Palette
   voice: BoatVoice
@@ -42,6 +44,7 @@ export function identities(members: Member[]) {
         {
           id: m.id,
           name: m.name,
+          image: m.profileImage ?? null,
           label: plateLabel(m.name),
           boat,
           palette: PALETTES[Math.floor(h / CLASSES.length) % PALETTES.length],

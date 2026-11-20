@@ -21,7 +21,7 @@ const SEGMENTS = 300
 /** The sea floor: sand shelving down from the beaches, rocks in the shallows, caustics playing over it under water */
 function seabedMaterial(time: { value: number }) {
   // the very same sand as the island's beach: its speckle map, grain and roughness, tinted by the vertex colours
-  const mat = new MeshStandardMaterial({ vertexColors: true, map: sandMap(), roughness: 0.96, bumpMap: grainBump(), bumpScale: 0.7 })
+  const mat = new MeshStandardMaterial({ vertexColors: true, map: sandMap(), roughness: 0.96, bumpMap: grainBump(), bumpScale: 1.1 })
   mat.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, { uTime: time, uCaus: seaUniforms.uCaus })
     shader.vertexShader = shader.vertexShader
@@ -29,6 +29,21 @@ function seabedMaterial(time: { value: number }) {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvW = (modelMatrix * vec4(position, 1.0)).xyz;')
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', `#include <common>\nuniform float uTime, uCaus;\nvarying vec3 vW;\n${NOISE}`)
+      .replace(
+        '#include <color_fragment>',
+        `#include <color_fragment>
+        {
+          // submerged sand: slow current ripples running along one direction, soft mottling, fine speckle
+          float wet = smoothstep(0.1, -0.05, vW.y);
+          vec2 q = vec2(dot(vW.xz, vec2(0.87, 0.5)), dot(vW.xz, vec2(-0.5, 0.87)));
+          float bend = snoise(vW.xz * 0.35) * 1.4;
+          float ridges = 0.5 + 0.5 * sin((q.x + bend) * 5.5 + snoise(vW.xz * 0.9) * 2.0);
+          float mottle = snoise(vW.xz * 1.3 + 4.0) * 0.6 + snoise(vW.xz * 3.1) * 0.4;
+          float speck = snoise(vW.xz * 14.0);
+          float tex = (ridges - 0.5) * 0.16 + mottle * 0.1 + speck * 0.05;
+          diffuseColor.rgb *= 1.0 + tex * mix(${(0.7 * SEA_LOOK.landTexture).toFixed(2)}, ${SEA_LOOK.sandTexture.toFixed(2)}, wet);
+        }`
+      )
       .replace(
         '#include <emissivemap_fragment>',
         `#include <emissivemap_fragment>
@@ -50,10 +65,12 @@ function seabedGeometry() {
   // the diorama's beach colours, shading to a cooler sand in the deep
   const dry = new Color(PALETTE.sand)
   const wet = new Color(PALETTE.wetSand)
-  const deep = new Color('#9d8a63')
-  const deepSand = new Color('#6fb4a2')
-  const patchy = new Color('#c9b98a')
+  const deep = new Color('#b7b88f')
+  const deepSand = new Color('#74c0b0')
+  const patchy = new Color('#9fd0bd')
   const c = new Color()
+  const tile = new Color()
+  const tileDeep = new Color('#9d8a63')
   const keep: boolean[] = []
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i)
@@ -68,10 +85,14 @@ function seabedGeometry() {
     // dry sand, a clean band of wet sand at the water's edge, then the sand darkening as it goes under
     c.copy(dry)
       .lerp(wet, 1 - smoothstep(0.06, 0.18, h))
-      .lerp(deep, 1 - smoothstep(-0.32, -0.02, h))
-      .lerp(deepSand, smoothstep(-0.5, -3.0, h) * SEA_LOOK.sandTurquoise)
+      .lerp(deep, 1 - smoothstep(-0.2, -0.02, h))
+      .lerp(deepSand, smoothstep(-SEA_LOOK.sandCoolDepth[0], -SEA_LOOK.sandCoolDepth[1], h) * SEA_LOOK.sandTurquoise)
     // patches of slightly warmer and cooler sand, so the floor isn't one even tone
     c.lerp(patchy, 0.35 * (0.5 + 0.5 * fbm3(x * 0.25, 5, z * 0.25, 77)) * (1 - smoothstep(-0.3, -2.0, h)))
+    // at the island's tile the sand must be the tile's own (dry, wet, then its tan under water), so there's no visible
+    // seam where its beach ends; the cooler harbor colours take over gradually beyond it
+    tile.copy(dry).lerp(wet, 1 - smoothstep(0.03, 0.14, h)).lerp(tileDeep, 1 - smoothstep(-0.3, 0.0, h))
+    c.lerp(tile, 1 - smoothstep(4.9, 10, Math.max(Math.abs(x), Math.abs(z))))
     col.set([c.r, c.g, c.b], i * 3)
   }
   const index = g.getIndex()!

@@ -28,6 +28,8 @@ import { SeaTuningPanel } from './_components/SeaTuningPanel'
 const CHECK_IN_URL = 'https://coastalreferralxchange.com/check-in'
 /** Simultaneous check-ins launch this far apart, so each boat still appears within about a second of its turn */
 const LAUNCH_GAP_MS = 850
+/** How long a new arrival's profile badge stays up */
+const BADGE_MS = 6000
 
 /** Stand-in crew for testing a bigger harbor than the chapter has members (?fleet=30) */
 const TEST_NAMES = [
@@ -54,6 +56,8 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   const store = useMemo(() => createStore(), [])
   const [ids, setIds] = useState<string[]>([])
   const [welcome, setWelcome] = useState<{ id: string; key: number } | null>(null)
+  /** Boats whose profile badge is showing: it appears as they sail in and is gone after a few seconds */
+  const [badges, setBadges] = useState<Set<string>>(new Set())
   const [audio, setAudioState] = useState(audioSettings)
   const lastLaunch = useRef(0)
   const lastGate = useRef<string | null>(null)
@@ -114,7 +118,19 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
       }
       store.boats.set(id, b)
       setIds((prev) => [...prev, id])
-      if (sail) window.setTimeout(() => setWelcome({ id, key: launchAt }), Math.max(0, launchAt - now))
+      if (sail) {
+        window.setTimeout(() => setWelcome({ id, key: launchAt }), Math.max(0, launchAt - now))
+        window.setTimeout(() => setBadges((o) => new Set(o).add(id)), Math.max(0, launchAt - now))
+        window.setTimeout(
+          () =>
+            setBadges((o) => {
+              const n = new Set(o)
+              n.delete(id)
+              return n
+            }),
+          Math.max(0, launchAt - now) + BADGE_MS
+        )
+      }
       return true
     },
     [store, who]
@@ -206,12 +222,13 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
       </Canvas>
       <SeaTuningPanel />
 
-      {/* nameplates: big enough to read across the room, tied to their boats by a thin line */}
+      {/* profile badges: a new arrival's photo rides over its boat for a few seconds, then fades away */}
       <div className="pointer-events-none absolute inset-0">
         {ids.map((id) => {
           const w = who.get(id)
           if (!w) return null
-          const fresh = welcome?.id === id
+          const shown = badges.has(id)
+          const accent = w.palette.hull === '#fbf6ec' ? w.palette.trim : w.palette.hull
           return (
             <div
               key={id}
@@ -221,28 +238,30 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
               }}
               className="absolute left-0 top-0 opacity-0 will-change-transform"
             >
-              <div
-                className={`flex items-center gap-[0.55vw] whitespace-nowrap rounded-[0.7vw] px-[0.9vw] py-[0.35vw] transition-[box-shadow,transform] duration-700 ${fresh ? 'scale-110' : ''}`}
-                style={{
-                  background: 'rgba(246,236,210,0.95)',
-                  border: '0.16vw solid #1d3767',
-                  boxShadow: fresh
-                    ? '0 0 0 0.25vw rgba(242,193,78,0.85), 0 0.4vw 1.2vw rgba(10,30,60,0.45)'
-                    : 'inset 0 0 0 0.16vw rgba(29,55,103,0.18), 0 0.3vw 0.9vw rgba(10,30,60,0.35)'
-                }}
-              >
-                <span
-                  className="h-[0.75vw] w-[0.75vw] shrink-0 rounded-full"
-                  style={{ background: w.palette.hull === '#fbf6ec' ? w.palette.trim : w.palette.hull, boxShadow: '0 0 0 0.12vw #1d3767' }}
-                />
-                <span className="font-sora text-[1.55vw] font-black leading-none tracking-[-0.01em] text-[#1d3767]">{w.label}</span>
+              <div className={`transition-[opacity,transform] duration-700 ${shown ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}>
+                <div
+                  className="relative h-[4vw] w-[4vw] overflow-hidden rounded-full"
+                  style={{ border: '0.22vw solid #f6ecd2', boxShadow: `0 0 0 0.2vw ${accent}, 0 0.4vw 1.2vw rgba(10,30,60,0.45)`, background: accent }}
+                >
+                  {w.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={w.image} alt={w.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center font-sora text-[1.5vw] font-black text-white">
+                      {w.name
+                        .split(/\s+/)
+                        .map((p) => p[0])
+                        .slice(0, 2)
+                        .join('')}
+                    </span>
+                  )}
+                </div>
+                <div data-line className="absolute left-1/2 top-full w-[0.12vw] -translate-x-1/2 bg-[#1d3767]/70" style={{ opacity: shown ? 1 : 0, transition: 'opacity 0.7s' }} />
               </div>
-              <div data-line className="absolute left-1/2 top-full w-[0.12vw] -translate-x-1/2 bg-[#1d3767]/70" />
             </div>
           )
         })}
       </div>
-
 
       {/* the welcome: a lower-third for the newest arrival */}
       <div
