@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@/lib/auth/auth'
+import { requireActiveMember } from '@/lib/auth/activeMember'
 import { vesselConfigSchema } from '@/lib/schemas/vessel.schema'
 import { createLog } from '@/lib/utils/api/createLog'
 import { COSMETICS, equippedCosmetics, VesselConfig } from '@/lib/vessel/catalog'
@@ -8,20 +8,21 @@ import prisma from '@/prisma/client'
 import { ActionResult } from '@/types/action.types'
 
 /**
- * Saves the signed-in member's boat. Always their own (the id comes from the session, never the input); the shape is
+ * Saves the signed-in member's boat. Always their own (the id comes from the session, never the input), and only for an
+ * active member (checked against their record); the shape is
  * validated against the catalog, and anything that isn't free must already be unlocked for them.
  */
 export async function saveMyVessel(input: unknown): Promise<ActionResult<VesselConfig>> {
-  const session = await auth()
-  const userId = session?.user?.id
-  if (!userId) {
-    await createLog('warn', 'saveMyVessel: no session')
-    return { success: false, error: 'Not signed in' }
+  // eligibility comes from the member's record (an ACTIVE membership), not the session, which doesn't carry it
+  const member = await requireActiveMember()
+  if (!member.ok) {
+    await createLog('warn', `saveMyVessel: blocked (${member.reason})`, {
+      userId: member.userId,
+      status: member.status
+    })
+    return { success: false, error: member.error ?? 'You can’t save a boat right now' }
   }
-  if (session.user.membershipStatus !== 'ACTIVE' && session.user.role !== 'SUPER_USER') {
-    await createLog('warn', 'saveMyVessel: blocked non-active member', { userId, status: session.user.membershipStatus })
-    return { success: false, error: 'Active members only' }
-  }
+  const userId = member.userId as string
 
   const parsed = vesselConfigSchema.safeParse(input)
   if (!parsed.success) {
@@ -34,7 +35,10 @@ export async function saveMyVessel(input: unknown): Promise<ActionResult<VesselC
   try {
     const locked = equippedCosmetics(config).filter((id) => !COSMETICS[id].free)
     if (locked.length) {
-      const owned = await prisma.vesselUnlock.findMany({ where: { userId, itemId: { in: locked } }, select: { itemId: true } })
+      const owned = await prisma.vesselUnlock.findMany({
+        where: { userId, itemId: { in: locked } },
+        select: { itemId: true }
+      })
       const missing = locked.filter((id) => !owned.some((o) => o.itemId === id))
       if (missing.length) {
         await createLog('warn', 'saveMyVessel: locked cosmetic', { userId, missing })
