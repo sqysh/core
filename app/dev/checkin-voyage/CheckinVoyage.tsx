@@ -1,7 +1,16 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
-import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from '@react-three/postprocessing'
+import {
+  Bloom,
+  BrightnessContrast,
+  EffectComposer,
+  HueSaturation,
+  N8AO,
+  SMAA,
+  ToneMapping,
+  Vignette
+} from '@react-three/postprocessing'
 import { ToneMappingMode } from 'postprocessing'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PCFShadowMap } from 'three'
@@ -18,6 +27,9 @@ import { identities, refreshIdentity } from './_lib/identity'
 import { createStore } from './_lib/store'
 import { VIEW } from './_lib/view'
 import { SeaTuningPanel } from './_components/SeaTuningPanel'
+import { LightingGrade } from './_components/LightingGrade'
+import { LightingTuningPanel } from './_components/LightingTuningPanel'
+import { APPROVED_LIGHT, useLight } from './_lib/lightLook'
 
 // The check-in board as a 3D harbor: everyone already checked in today is moored on load (no repeat arrivals),
 // a real check-in (the same Pusher event the TV board listens for) sails that member's boat in, and the temporary
@@ -94,6 +106,8 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
     }))
     return [...realMembers, ...extra]
   })
+  // the lighting and grading values, from the Lighting panel
+  const light = useLight()
   const who = useMemo(() => identities(members, vessels), [members, vessels])
   const store = useMemo(() => createStore(), [])
   // ?drive: steer a boat from the keyboard (development; see DevHelm)
@@ -239,18 +253,37 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
           }}
         />
         {drive && <DevHelm store={store} />}
+        <LightingGrade />
         <MeetingCamera store={store} />
         <PlateTracker store={store} />
         <EffectComposer multisampling={0} enableNormalPass={false}>
           {/* a tighter radius for crisp contact shadows where plants, rocks and buildings meet the ground */}
-          <N8AO aoRadius={0.7} distanceFalloff={0.5} intensity={2.3} quality="medium" color="#1d1712" halfRes={false} />
-          <Bloom mipmapBlur luminanceThreshold={0.95} luminanceSmoothing={0.2} intensity={0.45} />
-          <ToneMapping mode={ToneMappingMode.NEUTRAL} />
-          <Vignette offset={0.4} darkness={0.18} />
+          <N8AO
+            aoRadius={light.aoRadius}
+            distanceFalloff={0.5}
+            intensity={light.aoIntensity}
+            quality="medium"
+            color="#1d1712"
+            halfRes={false}
+          />
+          <Bloom
+            mipmapBlur
+            luminanceThreshold={light.bloomThreshold}
+            luminanceSmoothing={0.2}
+            intensity={light.bloom}
+          />
+          <ToneMapping mode={ToneMappingMode[light.tone]} />
+          {/* colour grade after tone mapping; left out while it changes nothing, so the approved look costs nothing extra */}
+          {light.saturation !== APPROVED_LIGHT.saturation && <HueSaturation saturation={light.saturation} />}
+          {(light.contrast !== APPROVED_LIGHT.contrast || light.brightness !== APPROVED_LIGHT.brightness) && (
+            <BrightnessContrast contrast={light.contrast} brightness={light.brightness} />
+          )}
+          <Vignette offset={0.4} darkness={light.vignette} />
           <SMAA />
         </EffectComposer>
       </Canvas>
       <SeaTuningPanel />
+      <LightingTuningPanel />
 
       {/* profile badges: a new arrival's photo rides over its boat for a few seconds, then fades away */}
       <div className="pointer-events-none absolute inset-0">
