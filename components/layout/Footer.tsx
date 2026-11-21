@@ -18,6 +18,7 @@ const hideLink = (path: string) =>
     '/visitor',
     '/attendance',
     '/check-in',
+    '/garage',
     '/events',
     '/guiding-light',
     '/election',

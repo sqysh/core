@@ -18,7 +18,7 @@ import { CHECK_IN_URL } from './_components/HarborStage'
 import { HarborWorld } from './_components/HarborWorld'
 import type { BoatRuntime } from './_lib/store'
 import type { VesselClassSpec } from './_lib/vessel/classes'
-import { layoutOf, specOf } from './_lib/vessel/modular'
+import { specOf } from './_lib/vessel/modular'
 import { VIEW } from './_lib/view'
 import { MOOR_HEADING } from './_lib/harbor'
 import { floatOnSwell } from './_lib/vessel/motion'
@@ -352,6 +352,33 @@ function Stage({
   )
 }
 
+/**
+ * Reports once, after the scene has drawn its first frame. It sits beside the stage inside the Suspense boundary, so it
+ * only mounts once everything the stage needs has loaded; useFrame runs just before a frame is drawn, so the report
+ * waits one more animation frame, until that one has been.
+ */
+function FirstFrame({ onBuilt, onReady }: { onBuilt: () => void; onReady: () => void }) {
+  const reported = useRef(false)
+  useFrame(() => {
+    if (reported.current) return
+    reported.current = true
+    // the scene is built and mounted; the frame about to be drawn compiles its shaders
+    onBuilt()
+    requestAnimationFrame(onReady)
+  })
+  return null
+}
+
+/** What can be measured of the scene coming up (the rest is `onReady`) */
+export type SceneLoad = {
+  /** The WebGL context and renderer exist */
+  engine?: true
+  /** The scene is built and mounted (everything it needs has loaded) */
+  built?: true
+  /** Files the loaders have fetched so far, of those they have been asked for */
+  assets?: { loaded: number; total: number }
+}
+
 type Root = ReturnType<typeof createRoot<HTMLCanvasElement>>
 
 export default function BoatPreview({
@@ -360,6 +387,7 @@ export default function BoatPreview({
   home = 0,
   name,
   onReady,
+  onLoad,
   onUnsupported
 }: {
   config: VesselConfig
@@ -369,15 +397,38 @@ export default function BoatPreview({
   home?: number
   /** The name on the boat's nameplate */
   name?: string
-  /** The first frame is up */
+  /** The scene (the sea, the harbor and the boat) has drawn its first frame */
   onReady?: () => void
+  /** Measured progress towards the first frame, stage by stage */
+  onLoad?: (progress: SceneLoad) => void
   /** No usable WebGL context could be made (already reported): show something else */
   onUnsupported?: () => void
 }) {
   const host = useRef<HTMLDivElement>(null)
   const [root, setRoot] = useState<Root | null>(null)
-  const latest = useRef({ onReady, onUnsupported })
-  latest.current = { onReady, onUnsupported }
+  const latest = useRef({ onReady, onLoad, onUnsupported })
+  latest.current = { onReady, onLoad, onUnsupported }
+  // files fetched through three's loaders, as they are (the default manager counts every loader that isn't given its own)
+  useEffect(() => {
+    const m = THREE.DefaultLoadingManager
+    const before = { onStart: m.onStart, onProgress: m.onProgress, onLoad: m.onLoad }
+    const report = (loaded: number, total: number) => latest.current.onLoad?.({ assets: { loaded, total } })
+    m.onStart = (url, loaded, total) => {
+      before.onStart?.(url, loaded, total)
+      report(loaded, total)
+    }
+    m.onProgress = (url, loaded, total) => {
+      before.onProgress?.(url, loaded, total)
+      report(loaded, total)
+    }
+    m.onLoad = () => {
+      before.onLoad?.()
+      report(1, 1)
+    }
+    return () => {
+      Object.assign(m, before)
+    }
+  }, [])
   // the member turns the boat by dragging across her (one finger or the mouse); nothing zooms or pans
   const turn = useRef<Turn>({ yaw: 0, spin: 0, dragging: false, home: false }).current
   const drag = useRef<{ id: number; x: number; t: number } | null>(null)
@@ -426,6 +477,11 @@ export default function BoatPreview({
         }
         return
       }
+      // three.js writes the canvas's CSS size in pixels on every resize, from a measured rectangle that can be a
+      // fraction short of the container's, which leaves a bare strip at its edge. Leave the CSS to the layout (the
+      // canvas is 100% of its container, from makeContext) and let three size only the drawing buffer.
+      const setBufferSize = renderer.setSize.bind(renderer)
+      renderer.setSize = (w, h) => setBufferSize(w, h, false)
       const r = createRoot(canvas)
       const rect = el.getBoundingClientRect()
       r.configure({
@@ -442,9 +498,11 @@ export default function BoatPreview({
         size: { width: rect.width || 1, height: rect.height || 1, top: 0, left: 0 },
         onCreated: ({ gl: g }) => {
           g.toneMapping = NeutralToneMapping
-          latest.current.onReady?.()
         }
       })
+      // the engine is up. Say so now and let the browser draw that before the scene is built, which keeps the main
+      // thread busy for a while: the stage and its status are then on screen while it works, not after
+      latest.current.onLoad?.({ engine: true })
       // follow the container (rotation, the keyboard, the address bar)
       const ro = new ResizeObserver(([entry]) => {
         const { width, height } = entry.contentRect
@@ -457,7 +515,12 @@ export default function BoatPreview({
         canvas.remove()
       }
       if (cancelled) disposeAll()
-      else setRoot(r)
+      else
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            if (!cancelled) setRoot(r)
+          })
+        )
     }
 
     const notes: string[] = []
@@ -478,6 +541,10 @@ export default function BoatPreview({
       <RenderBoundary label="garage:scene" onFail={() => latest.current.onUnsupported?.()}>
         <Suspense fallback={null}>
           <Stage config={config} frame={frame} turn={turn} name={name} />
+          <FirstFrame
+            onBuilt={() => latest.current.onLoad?.({ built: true })}
+            onReady={() => latest.current.onReady?.()}
+          />
         </Suspense>
       </RenderBoundary>
     )
