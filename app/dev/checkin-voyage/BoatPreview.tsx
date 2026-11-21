@@ -1,34 +1,47 @@
 'use client'
 
-import { OrbitControls } from '@react-three/drei'
 import { createRoot, extend, useFrame, useThree } from '@react-three/fiber'
-import { ReactNode, RefObject, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import {
-  Box3,
-  CircleGeometry,
-  Group,
-  MeshStandardMaterial,
-  NeutralToneMapping,
-  PCFShadowMap,
-  PerspectiveCamera,
-  RingGeometry,
-  Sphere,
-  Vector3,
-  WebGLRenderer
-} from 'three'
+import { Group, NeutralToneMapping, OrthographicCamera, PCFShadowMap, Vector3, WebGLRenderer } from 'three'
 import { RenderBoundary } from '@/components/_shared/RenderBoundary'
 import { reportError } from '@/lib/utils/reportError'
-import { VesselConfig } from '@/lib/vessel/catalog'
+import { partsOf, VesselConfig } from '@/lib/vessel/catalog'
+import { coastShore, seabed } from './_lib/coast'
+import { at } from '../lighthouse/_lib/world'
 import { StudioLighting } from '../lighthouse/_components/StudioLighting'
 import { Boat } from './_components/boats/Boats'
 import type { Rig } from './_lib/store'
 import { lookOf } from './_lib/vessel/look'
+import { Collar } from './_components/HarborFleet'
+import { CHECK_IN_URL } from './_components/HarborStage'
+import { HarborWorld } from './_components/HarborWorld'
+import type { BoatRuntime } from './_lib/store'
+import type { VesselClassSpec } from './_lib/vessel/classes'
+import { layoutOf, specOf } from './_lib/vessel/modular'
+import { VIEW } from './_lib/view'
+import { MOOR_HEADING } from './_lib/harbor'
+import { floatOnSwell } from './_lib/vessel/motion'
+import { VESSEL_CLASS_SPECS } from './_lib/vessel/classes'
+import { STAGE_IDS } from '@/lib/vessel/catalog'
+import { setStage } from '@/lib/vessel/items'
+import { seaTime } from './_lib/vessel/submerged'
 
-// One boat in the Garage: the very model the TV's harbor sails (Boats.tsx), in the same studio lighting, dressed from
-// the member's config, on a display platform. None of the coastal world loads. The boat is held above the platform as
-// if in a showroom, which also keeps it clear of the waterline the models use to draw their submerged parts, so the
-// whole hull, keel, rudder and propeller show. Drag to turn it; it turns itself slowly until touched.
+// The Garage's sea: the member's own boat, the very model the TV's harbor sails (Boats.tsx), dressed from their config
+// and floating on the approved Check-in Voyage water (the same shader and settings, unchanged) out in open sea, riding
+// the shared swell with the harbor's own buoyancy, with foam where the hull meets the water and its keel, rudder and
+// propeller showing down through it.
+//
+// She is moored in the harbor itself: the very world the TV and the phones draw (HarborWorld: the lighthouse island,
+// the coast, the rock islet with its pines, the beaches, the baked seabed under the approved sea), just below the
+// islet, where its rocks, trees and turquoise shallows frame her from behind and the open water lies in front.
+//
+// It is seen exactly as the TV sees its harbor: the meeting camera's orthographic projection and its fixed view
+// direction (view.ts, VIEW: 45° round, 35° down), with the boat lying at the harbor's moored heading, so she looks just
+// as she does riding at anchor on the TV. The one difference is scale: the TV's (34 px a unit at 1080p) would make a
+// skiff a speck on a phone, so the Garage brings her close: a skiff fills a good part of her side of the screen and
+// bigger boats fill more of it, up to the biggest, which still fits. The camera never moves: dragging turns the boat
+// about her mast, and reset turns her back.
 //
 // The WebGL context is made here, not by a <Canvas>. On iOS (WebKit) a context can be handed over already lost, and
 // then three.js dies inside its constructor (getShaderPrecisionFormat returns null on a lost context). So this
@@ -78,97 +91,263 @@ function makeContext(attempt: (typeof ATTEMPTS)[number], host: HTMLElement): Mad
   return note
 }
 
-function Platform() {
-  const { disc, ring, deck, rim } = useMemo(
-    () => ({
-      disc: new CircleGeometry(2.4, 72),
-      ring: new RingGeometry(2.36, 2.44, 96),
-      deck: new MeshStandardMaterial({ color: '#0d2236', roughness: 0.35, metalness: 0.25 }),
-      rim: new MeshStandardMaterial({
-        color: '#38bdf8',
-        emissive: '#38bdf8',
-        emissiveIntensity: 1.6,
-        toneMapped: false
-      })
-    }),
-    []
-  )
-  return (
-    <group rotation={[-Math.PI / 2, 0, 0]}>
-      <mesh geometry={disc} material={deck} receiveShadow />
-      <mesh geometry={ring} material={rim} position={[0, 0, 0.002]} />
-    </group>
-  )
+/** The stretch of shore she lies off, and the way out from it (screen-aligned: u right, v toward the viewer) */
+const GARAGE_SHORE = { u: 1.5, v: 3.5, du: 0.35, dv: 1 }
+
+/**
+ * Where the Garage moors her: off a stretch of the harbor's shore, as close in as she safely can be, so a little coast
+ * frames her from behind (up and to the left on screen) at any size. Searched outward from the shore, in screen-aligned
+ * (u, v), for the first spot with water deeper than her draft under her middle and open water all round her ends,
+ * however she's turned. A bigger boat simply lies further off.
+ */
+const SHORE = { u: GARAGE_SHORE.u, v: GARAGE_SHORE.v, du: GARAGE_SHORE.du, dv: GARAGE_SHORE.dv }
+type Spot = { x: number; z: number }
+const moorings = new Map<string, Spot>()
+function mooringFor(dims: VesselClassSpec['dims'], draft: number): Spot {
+  const key = `${dims.length.toFixed(2)}:${dims.beam.toFixed(2)}:${draft.toFixed(2)}`
+  const hit = moorings.get(key)
+  if (hit) return hit
+  const reach = Math.hypot(dims.length / 2, dims.beam / 2) + 0.15
+  const n = Math.hypot(SHORE.du, SHORE.dv)
+  let spot: Spot | null = null
+  for (let s = 0.5; s < 14 && !spot; s += 0.1) {
+    const [x, z] = at(SHORE.u + (SHORE.du / n) * s, SHORE.v + (SHORE.dv / n) * s)
+    let ok = true
+    for (let a = 0; a < 16 && ok; a++)
+      for (const f of [0, 0.3, 0.6, 1]) {
+        const r = reach * f
+        const px = x + Math.cos((a / 16) * Math.PI * 2) * r
+        const pz = z + Math.sin((a / 16) * Math.PI * 2) * r
+        const floor = seabed(px, pz)
+        // her middle needs the depth of her keel; her ends, water under them and no land
+        if ((f <= 0.3 && floor > -draft) || (f > 0.3 && (floor > -0.3 || coastShore(px, pz) < 0.2))) {
+          ok = false
+          break
+        }
+      }
+    if (ok) spot = { x, z }
+  }
+  const found = spot ?? { x: 4.95, z: -14.14 }
+  moorings.set(key, found)
+  return found
+}
+/**
+ * How far below the waterline she reaches: her hull (less the lift she floats at) and her outboard leg or skeg, or a
+ * sailboat's fin keel and bulb, with a little water to spare
+ */
+const draftOf = (config: VesselConfig, spec: VesselClassSpec) => {
+  const rigged =
+    config.vesselClass === 'sloop' || (config.vesselClass === 'modular' && partsOf(config).includes('top:mast'))
+  return spec.hull.depth - spec.lift + (rigged ? 0.55 * (spec.dims.length / 2.25) + 0.12 : 0.14)
+}
+/** The meeting camera's distance (orthographic: it only keeps the boat in front of it) */
+const CAM_DISTANCE = 30
+/** The meeting camera's view direction (VIEW), from the boat toward the camera: never changes */
+const VIEW_DIRECTION = new Vector3(
+  Math.cos(VIEW.elevation) * Math.sin(VIEW.azimuth),
+  Math.sin(VIEW.elevation),
+  Math.cos(VIEW.elevation) * Math.cos(VIEW.azimuth)
+)
+
+/** What a boat covers on screen in this view, in world units, at any heading: its width, and keel to masthead */
+const screenSize = (d: VesselClassSpec['dims']) => ({
+  width: 0.78 * (d.length + d.beam) + 0.3,
+  height: 0.82 * (d.top + 0.5) + 0.42 * (d.length + d.beam)
+})
+/** Where the camera aims: the middle of the boat, between its keel and its highest point */
+const aimY = (d: VesselClassSpec['dims']) => (d.top - 0.5) / 2
+
+/** Every boat there can be (each vessel level, each heritage class): the scale is set so the biggest of them fits */
+const ALL_DIMS: VesselClassSpec['dims'][] = [
+  ...STAGE_IDS.map(
+    (stage) =>
+      specOf(
+        setStage(
+          {
+            vesselClass: 'modular',
+            hullColor: '#000000',
+            trimColor: '#000000',
+            accentColor: '#000000',
+            sailColor: '#000000',
+            sailPattern: 'plain',
+            accessories: [],
+            details: { parts: ['fun:garden', 'deck:radar', 'deck:antenna'] }
+          },
+          stage
+        ).config
+      ).dims
+  ),
+  ...Object.values(VESSEL_CLASS_SPECS).map((s) => s.dims)
+]
+
+/** How much of her part of the screen a boat fills: the starter skiff, and the biggest boat there is */
+const FILL = { smallest: 0.62, biggest: 0.88 }
+
+/** Pixels per world unit at which a boat of these dimensions would just fill her part of the screen */
+const fitZoom = (d: VesselClassSpec['dims'], frame: PreviewFrame, width: number, height: number) => {
+  const s = screenSize(d)
+  return Math.min((width * frame.width) / s.width, (height * frame.height) / s.height)
 }
 
-/** A slow float, so it feels alive on the stand */
-function Floating({ children, innerRef }: { children: ReactNode; innerRef: RefObject<Group | null> }) {
-  const ref = innerRef
+/**
+ * The Garage's scale for a boat (pixels per world unit): close enough that she's the main character, and growing on
+ * screen as she grows, from the skiff at FILL.smallest of her area to the biggest boat at FILL.biggest, so a bigger
+ * boat always looks bigger and none ever crowds the edges or the panel.
+ */
+const garageZoom = (d: VesselClassSpec['dims'], frame: PreviewFrame, width: number, height: number) => {
+  const fit = fitZoom(d, frame, width, height)
+  const small = 1 / fitZoom(ALL_DIMS[0], frame, width, height)
+  const big = Math.max(...ALL_DIMS.map((x) => 1 / fitZoom(x, frame, width, height)))
+  const t = Math.min(1, Math.max(0, (1 / fit - small) / (big - small)))
+  return fit * (FILL.smallest + (FILL.biggest - FILL.smallest) * t)
+}
+
+/**
+ * Where on screen the boat sits and how much of the screen it has, as fractions: held sideways the menu takes the
+ * right, so the boat has the left; upright the panel is at the bottom, so the boat has the top.
+ */
+export type PreviewFrame = { x: number; y: number; width: number; height: number }
+const CENTRED: PreviewFrame = { x: 0.5, y: 0.5, width: 1, height: 1 }
+
+/** How the boat is turned by the member: drag sets it, reset brings it back to 0 (the TV's moored heading) */
+export type Turn = { yaw: number; spin: number; dragging: boolean; home: boolean }
+
+/** A boat that isn't going anywhere: just enough state for the harbor's buoyancy to float it */
+function floater(config: VesselConfig, spec: VesselClassSpec): BoatRuntime {
+  return {
+    id: 'garage',
+    who: { boat: config.vesselClass, spec } as BoatRuntime['who'],
+    berth: { x: 0, z: 0 },
+    phase: 'moored',
+    x: 0,
+    z: 0,
+    heading: MOOR_HEADING,
+    speed: 0,
+    turnRate: 0,
+    settled: 0,
+    y: 0,
+    vy: 0,
+    roll: 0,
+    vRoll: 0,
+    pitch: 0,
+    vPitch: 0
+  } as unknown as BoatRuntime
+}
+
+/** Keeps the sea's clock for the boat's under-water parts, as the TV's fleet does */
+function SeaClock() {
   useFrame(({ clock }) => {
-    if (ref.current) ref.current.position.y = RAISE + Math.sin(clock.elapsedTime * 1.1) * 0.03
+    seaTime.value = clock.elapsedTime
   })
-  // starts at its height, so the framing (measured on the first frame) already has it on the stand
+  return null
+}
+
+/** The member's boat afloat: the harbor's buoyancy on the shared swell, a lazy swing, and foam where hull meets water */
+function Afloat({
+  config,
+  look,
+  spec,
+  name,
+  turn,
+  spot
+}: {
+  config: VesselConfig
+  look: ReturnType<typeof lookOf>
+  spec: VesselClassSpec
+  name?: string
+  turn: Turn
+  spot: Spot
+}) {
+  const outer = useRef<Group>(null)
+  const inner = useRef<Group>(null)
+  // one floating boat for the whole visit; a change of build only changes how it rides
+  const boat = useMemo(() => floater(config, spec), []) // eslint-disable-line react-hooks/exhaustive-deps
+  boat.who = { ...boat.who, boat: config.vesselClass, spec }
+  const dims = spec.dims
+  useFrame(({ clock }, rawDt) => {
+    const t = clock.elapsedTime
+    const dt = Math.min(rawDt, 0.05)
+    // a flick keeps her turning a moment; reset turns her back the short way to the moored heading
+    if (turn.home) {
+      turn.yaw = Math.atan2(Math.sin(turn.yaw), Math.cos(turn.yaw))
+      turn.yaw *= Math.exp(-6 * dt)
+      turn.spin = 0
+      if (Math.abs(turn.yaw) < 1e-3) {
+        turn.yaw = 0
+        turn.home = false
+      }
+    } else if (!turn.dragging) {
+      turn.yaw += turn.spin * dt
+      turn.spin *= Math.exp(-4 * dt)
+    }
+    // lying as the harbor's boats lie at anchor, with the same lazy swing, turned by the member
+    boat.heading = MOOR_HEADING + turn.yaw + Math.sin(t * 0.21) * 0.05
+    boat.x = spot.x
+    boat.z = spot.z
+    floatOnSwell(boat, t, dt)
+    outer.current?.position.set(boat.x, boat.y, boat.z)
+    outer.current?.rotation.set(0, boat.heading - Math.PI / 2, 0)
+    inner.current?.rotation.set(boat.roll, 0, boat.pitch)
+  })
   return (
-    <group ref={ref} position={[0, RAISE, 0]}>
-      {children}
+    <group ref={outer} position={[spot.x, 0, spot.z]}>
+      <Collar length={dims.length} beam={dims.beam} />
+      <group ref={inner}>
+        <Boat kind={config.vesselClass} look={look} rig={SHOWROOM_RIG} name={name} showroom />
+      </group>
     </group>
   )
 }
 
 /**
- * Frames the boat: measures its bounding sphere, then sets the camera's distance from the field of view and the view's
- * own aspect ratio (so a long boat fits a narrow portrait screen and a tall mast fits too) and aims the orbit at its
- * centre. Runs again when the class changes or the view changes size; keeps whatever angle the player has turned to.
+ * The camera: the meeting camera's projection and direction, fixed, aimed at the middle of the boat; one scale for
+ * every boat; a view offset puts the boat in its part of the screen. Nothing the member does moves it.
  */
-function AutoFrame({ boat, kind }: { boat: RefObject<Group | null>; kind: string }) {
-  const camera = useThree((s) => s.camera) as PerspectiveCamera
-  const controls = useThree((s) => s.controls) as unknown as { target: Vector3; update: () => void } | null
+function Framing({ frame, dims, spot }: { frame: PreviewFrame; dims: VesselClassSpec['dims']; spot: Spot }) {
+  const camera = useThree((s) => s.camera) as OrthographicCamera
   const width = useThree((s) => Math.round(s.size.width))
   const height = useThree((s) => Math.round(s.size.height))
   useEffect(() => {
-    // after the boat has mounted and its world matrices exist
-    const t = window.setTimeout(() => {
-      const group = boat.current
-      if (!group || !controls || width < 2 || height < 2) return
-      const sphere = new Box3().setFromObject(group).getBoundingSphere(new Sphere())
-      const vfov = (camera.fov * Math.PI) / 180
-      const hfov = 2 * Math.atan(Math.tan(vfov / 2) * (width / height))
-      const distance = (sphere.radius * 1.1) / Math.sin(Math.min(vfov, hfov) / 2)
-      const direction = camera.position.clone().sub(controls.target).normalize()
-      controls.target.copy(sphere.center)
-      camera.position.copy(sphere.center).addScaledVector(direction, distance)
-      camera.updateProjectionMatrix()
-      controls.update()
-    }, 50)
-    return () => window.clearTimeout(t)
-  }, [boat, camera, controls, kind, width, height])
+    if (width < 2 || height < 2) return
+    camera.setViewOffset(width, height, (0.5 - frame.x) * width, (0.5 - frame.y) * height, width, height)
+    const target = new Vector3(spot.x, aimY(dims), spot.z)
+    camera.position.copy(target).addScaledVector(VIEW_DIRECTION, CAM_DISTANCE)
+    camera.lookAt(target)
+    camera.zoom = garageZoom(dims, frame, width, height)
+    camera.updateProjectionMatrix()
+  }, [camera, dims, spot, frame.x, frame.y, frame.width, frame.height, width, height])
   return null
 }
 
-function Stage({ config }: { config: VesselConfig }) {
+function Stage({
+  config,
+  frame,
+  turn,
+  name
+}: {
+  config: VesselConfig
+  frame: PreviewFrame
+  turn: Turn
+  name?: string
+}) {
   const look = useMemo(() => lookOf(config), [config])
-  const kind = config.vesselClass
-  const [spinning, setSpinning] = useState(true)
-  const boatRef = useRef<Group>(null)
+  const spec = useMemo(() => specOf(config), [config])
+  const spot = useMemo(() => mooringFor(spec.dims, draftOf(config, spec)), [config, spec])
   return (
     <>
-      <StudioLighting focus={[0, RAISE, 0]} backdrop={false} shadowRange={4} shadowSoftness={4} shadowMapSize={1024} />
-      <Platform />
-      <Floating innerRef={boatRef}>
-        <Boat kind={kind} look={look} rig={SHOWROOM_RIG} />
-      </Floating>
-      <AutoFrame boat={boatRef} kind={kind} />
-      <OrbitControls
-        makeDefault
-        enablePan={false}
-        enableZoom={false}
-        enableDamping
-        autoRotate={spinning}
-        autoRotateSpeed={0.9}
-        minPolarAngle={0.35}
-        maxPolarAngle={1.45}
-        onStart={() => setSpinning(false)}
+      <StudioLighting
+        focus={[spot.x, 0.6, spot.z]}
+        backdrop={false}
+        // the phones' shadow map, over the patch of harbor the Garage shows
+        shadowRange={8}
+        shadowSoftness={6}
+        shadowMapSize={1024}
       />
+      {/* the harbor's own world and sea, exactly as the TV and the phones draw them */}
+      <HarborWorld checkInUrl={CHECK_IN_URL} />
+      <SeaClock />
+      <Afloat config={config} look={look} spec={spec} name={name} turn={turn} spot={spot} />
+      <Framing frame={frame} dims={spec.dims} spot={spot} />
     </>
   )
 }
@@ -177,10 +356,19 @@ type Root = ReturnType<typeof createRoot<HTMLCanvasElement>>
 
 export default function BoatPreview({
   config,
+  frame = CENTRED,
+  home = 0,
+  name,
   onReady,
   onUnsupported
 }: {
   config: VesselConfig
+  /** Where the boat sits on screen (the menu covers the rest) */
+  frame?: PreviewFrame
+  /** Bump this to turn the boat back to the harbor's moored heading */
+  home?: number
+  /** The name on the boat's nameplate */
+  name?: string
   /** The first frame is up */
   onReady?: () => void
   /** No usable WebGL context could be made (already reported): show something else */
@@ -190,6 +378,14 @@ export default function BoatPreview({
   const [root, setRoot] = useState<Root | null>(null)
   const latest = useRef({ onReady, onUnsupported })
   latest.current = { onReady, onUnsupported }
+  // the member turns the boat by dragging across her (one finger or the mouse); nothing zooms or pans
+  const turn = useRef<Turn>({ yaw: 0, spin: 0, dragging: false, home: false }).current
+  const drag = useRef<{ id: number; x: number; t: number } | null>(null)
+  const fingers = useRef(new Set<number>())
+  const firstHome = useRef(home)
+  useEffect(() => {
+    if (home !== firstHome.current) turn.home = true
+  }, [home, turn])
 
   // make the canvas, the context and the renderer: once, after a tick, torn down completely when it unmounts
   useEffect(() => {
@@ -236,7 +432,13 @@ export default function BoatPreview({
         gl: renderer,
         dpr: [1, 1.75],
         shadows: { type: PCFShadowMap },
-        camera: { position: [4.5, 3.2, 5.5], fov: 32, near: 0.1, far: 100 },
+        orthographic: true,
+        camera: {
+          position: [20, 17, 20],
+          zoom: 120,
+          near: 0.1,
+          far: 200
+        },
         size: { width: rect.width || 1, height: rect.height || 1, top: 0, left: 0 },
         onCreated: ({ gl: g }) => {
           g.toneMapping = NeutralToneMapping
@@ -275,11 +477,53 @@ export default function BoatPreview({
     root.render(
       <RenderBoundary label="garage:scene" onFail={() => latest.current.onUnsupported?.()}>
         <Suspense fallback={null}>
-          <Stage config={config} />
+          <Stage config={config} frame={frame} turn={turn} name={name} />
         </Suspense>
       </RenderBoundary>
     )
-  }, [root, config])
+  }, [root, config, frame, turn, name])
 
-  return <div ref={host} className="absolute inset-0 touch-none" />
+  // a full turn for a drag across about half the screen; a second finger (a pinch) is ignored
+  const RADIANS_PER_PX = 0.012
+  return (
+    <div
+      ref={host}
+      className="absolute inset-0 touch-none select-none"
+      onPointerDown={(e) => {
+        fingers.current.add(e.pointerId)
+        // a second finger (a pinch) stops the turn: pinching does nothing here
+        if (fingers.current.size > 1) {
+          drag.current = null
+          Object.assign(turn, { dragging: false, spin: 0 })
+          return
+        }
+        drag.current = { id: e.pointerId, x: e.clientX, t: performance.now() }
+        e.currentTarget.setPointerCapture(e.pointerId)
+        Object.assign(turn, { dragging: true, home: false, spin: 0 })
+      }}
+      onPointerMove={(e) => {
+        const d = drag.current
+        if (!d || d.id !== e.pointerId || fingers.current.size > 1) return
+        const now = performance.now()
+        const dyaw = (e.clientX - d.x) * RADIANS_PER_PX
+        turn.yaw += dyaw
+        turn.spin = dyaw / Math.max((now - d.t) / 1000, 1 / 120)
+        drag.current = { ...d, x: e.clientX, t: now }
+      }}
+      onPointerUp={(e) => {
+        fingers.current.delete(e.pointerId)
+        const d = drag.current
+        if (!d || d.id !== e.pointerId) return
+        drag.current = null
+        turn.dragging = false
+        // only a flick that was still moving when the finger lifted carries on
+        if (performance.now() - d.t > 80) turn.spin = 0
+      }}
+      onPointerCancel={(e) => {
+        fingers.current.delete(e.pointerId)
+        drag.current = null
+        Object.assign(turn, { dragging: false, spin: 0 })
+      }}
+    />
+  )
 }
