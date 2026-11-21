@@ -1,6 +1,6 @@
 'use client'
 
-import Spline from '@splinetool/react-spline'
+import { SafeSpline } from '@/components/_shared/SafeSpline'
 import { motion } from 'framer-motion'
 import { Handshake, Users, Calendar } from 'lucide-react'
 
@@ -41,13 +41,14 @@ export function PurposeOverview() {
       viewport={{ once: true, amount: 0.2 }}
     >
       <div className="absolute inset-0 z-0">
-        <Spline
+        {/* loads only as the section comes into view, so it never starts alongside the hero's ocean */}
+        <SafeSpline
           scene="https://prod.spline.design/VYhiiVwZv5j9V3XG/scene.splinecode"
-          style={{
-            background: 'transparent',
-            width: '100%',
-            height: '100%'
-          }}
+          label="purpose"
+          fallback={
+            <div className="h-full w-full bg-[radial-gradient(55%_70%_at_80%_50%,rgba(56,189,248,0.12),transparent_70%)]" />
+          }
+          className="h-full w-full"
         />
         {/* Left fade so text stays readable */}
         <div className="absolute inset-y-0 left-0 w-2/3 bg-linear-to-r from-bg-dark via-bg-dark/80 to-transparent pointer-events-none z-10" />
