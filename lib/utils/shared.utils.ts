@@ -1,5 +1,13 @@
+/**
+ * Morning, afternoon or evening on the chapter's clock (Eastern). Not the device's: the server renders it in UTC, so a
+ * local hour gave the server and the member's phone different greetings (a hydration mismatch every morning).
+ */
 export function getGreeting(): string {
-  const h = new Date().getHours()
+  const h = Number(
+    new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/New_York' }).format(
+      new Date()
+    )
+  )
   if (h < 12) return 'Good morning'
   if (h < 17) return 'Good afternoon'
   return 'Good evening'

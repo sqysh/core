@@ -98,11 +98,13 @@ export function daysUntil(iso: string) {
  * Returns today's date formatted as a long weekday + short month + day label.
  * Example: "Saturday, May 23"
  */
+/** Today on the chapter's calendar (Eastern), so the server (UTC) and the member's phone agree on the date */
 export function getTodayLabel(): string {
   return new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'America/New_York'
   })
 }
 

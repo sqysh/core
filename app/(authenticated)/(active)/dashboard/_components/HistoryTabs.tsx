@@ -80,7 +80,7 @@ export function HistoryTabs({ recentActivity }: { recentActivity: ActivityItem[]
                 )}
                 {item.type === 'CLOSED' && item.businessValue && (
                   <p className="mt-1 font-mono text-[14px] tabular-nums text-muted-light dark:text-muted-dark">
-                    ${Number(item.businessValue).toLocaleString()}
+                    ${Number(item.businessValue).toLocaleString('en-US')}
                   </p>
                 )}
               </div>

@@ -28,7 +28,9 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    // Chrome on iOS stamps <html> with its own attribute (__gcrremoteframetoken) before React hydrates; this ignores
+    // attribute differences on <html> alone (not its children), so the app's own hydration errors still show
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta property="fb:app_id" content="2265167933990680" />
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />

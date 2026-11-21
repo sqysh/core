@@ -55,7 +55,9 @@ export const LoginCard: FC<ILoginCard> = ({
               </h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Chrome's autofill marks the sign-in form and its email field with its own attributes
+                (__gcrremoteframetoken, __gcruniqueid) before React hydrates; ignore those on these two elements only */}
+            <form onSubmit={handleSubmit} className="space-y-4" suppressHydrationWarning>
               <button
                 type="button"
                 onClick={() => signIn('google', { redirectTo })}
@@ -110,6 +112,7 @@ export const LoginCard: FC<ILoginCard> = ({
                     aria-hidden="true"
                   />
                   <input
+                    suppressHydrationWarning
                     id="email"
                     type="email"
                     value={email}
