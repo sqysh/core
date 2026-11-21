@@ -3,14 +3,13 @@
 import { useFrame } from '@react-three/fiber'
 import { ReactNode, useMemo, useRef } from 'react'
 import { BufferAttribute, BufferGeometry, Group } from 'three'
-import { ACCESSORY_FITS, AccessoryId } from '@/lib/vessel/catalog'
-import { BoatClass } from '../../_lib/identity'
+import { AccessoryId, HeritageClassId } from '@/lib/vessel/catalog'
 import { VESSEL_CLASS_SPECS, VesselClassSpec } from '../../_lib/vessel/classes'
 import { VesselLook } from '../../_lib/vessel/look'
 import { kit } from './kit'
 
-// Accessories: swappable pieces that attach at a class's mount points (vessel/classes.ts) and take their colours from
-// the member's look. A new accessory is an id in the shared catalog plus an entry here; the hulls never change.
+// Accessories on the hand-built heritage classes: pieces that attach at a class's mount points (vessel/classes.ts) and
+// take their colours from the member's look. The modular boat fits its own (Modular.tsx); the flag is shared.
 
 /** A flag on a staff that streams and flutters */
 export function Flag({ at, colour, size = 0.13 }: { at: [number, number, number]; colour: string; size?: number }) {
@@ -40,7 +39,7 @@ export function Flag({ at, colour, size = 0.13 }: { at: [number, number, number]
 }
 
 /** A long, narrow pennant at the masthead, streaming aft and snapping in the breeze */
-function Burgee({ at, colour, trim }: { at: [number, number, number]; colour: string; trim: string }) {
+export function Burgee({ at, colour, trim }: { at: [number, number, number]; colour: string; trim: string }) {
   const k = kit()
   const ref = useRef<Group>(null)
   const geo = useMemo(() => {
@@ -65,21 +64,19 @@ function Burgee({ at, colour, trim }: { at: [number, number, number]; colour: st
   )
 }
 
-const RENDER: Record<AccessoryId, (spec: VesselClassSpec, look: VesselLook) => ReactNode> = {
+const RENDER: Partial<Record<AccessoryId, (spec: VesselClassSpec, look: VesselLook) => ReactNode>> = {
   ensign: (spec, look) => <Flag at={spec.mounts.ensign.at} colour={look.accent} size={spec.mounts.ensign.size} />,
   burgee: (spec, look) => (spec.mounts.masthead ? <Burgee at={spec.mounts.masthead} colour={look.accent} trim={look.trim} /> : null)
 }
 
 /** Everything a member has fitted, at their class's mounts; anything that doesn't fit the class is left off */
-export function Accessories({ kind, look }: { kind: BoatClass; look: VesselLook }) {
+export function Accessories({ kind, look }: { kind: HeritageClassId; look: VesselLook }) {
   const spec = VESSEL_CLASS_SPECS[kind]
   return (
     <>
-      {look.accessories
-        .filter((a) => ACCESSORY_FITS[a]?.includes(kind))
-        .map((a) => (
-          <group key={a}>{RENDER[a](spec, look)}</group>
-        ))}
+      {look.accessories.map((a) => (
+        <group key={a}>{RENDER[a]?.(spec, look)}</group>
+      ))}
     </>
   )
 }

@@ -1,8 +1,17 @@
-import { AccessoryId, SailPattern, VesselClassId, VesselConfig } from '@/lib/vessel/catalog'
-import { VESSEL_CLASS_SPECS } from './classes'
+import {
+  AccessoryId,
+  accessoriesOf,
+  Finish,
+  partsOf,
+  SailPattern,
+  StageId,
+  stageOf,
+  VesselConfig
+} from '@/lib/vessel/catalog'
+import { specOf } from './modular'
 
-// A saved vessel configuration resolved into everything the models paint with. Customisation never touches geometry:
-// the models take a look, and every colour, pattern and accessory comes from it.
+// A saved vessel configuration resolved into everything the models paint with: every colour, the finish, the sail
+// pattern and the flags, and for the modular boat the parts fitted to it.
 
 export type VesselLook = {
   hull: string
@@ -12,8 +21,20 @@ export type VesselLook = {
   roof: string
   sail: string
   bottom: string
+  /** Cushions (the runabout's seats): the cabin colour unless chosen */
+  seats: string
+  /** A painted deck, or null for bare teak (or the class's own deck paint) */
+  deck: string | null
+  /** Painted fittings (rails, mast, outboard, radar), or null for the original chrome and steel */
+  equipment: string | null
+  finish: Finish
   sailPattern: SailPattern
   accessories: AccessoryId[]
+  /** The modular boat's fitted parts, structure and accessories (null for a heritage class) */
+  parts: string[] | null
+  /** Its vessel level, and the accessories its member chose (packed into the level's deck zones) */
+  stage: StageId
+  chosen: string[]
 }
 
 export function lookOf(c: VesselConfig): VesselLook {
@@ -25,8 +46,15 @@ export function lookOf(c: VesselConfig): VesselLook {
     cabin: c.details.cabinColor ?? '#fbf6ec',
     roof: c.details.roofColor ?? c.hullColor,
     sail: c.sailColor,
-    bottom: c.details.bottomColor ?? VESSEL_CLASS_SPECS[c.vesselClass as VesselClassId].bottom,
+    bottom: c.details.bottomColor ?? specOf(c).bottom,
+    seats: c.details.seatsColor ?? c.details.cabinColor ?? '#fbf6ec',
+    deck: c.details.deckColor ?? null,
+    equipment: c.details.equipmentColor ?? null,
+    finish: c.details.finish ?? 'gloss',
     sailPattern: c.sailPattern,
-    accessories: c.accessories
+    accessories: c.accessories,
+    parts: c.vesselClass === 'modular' ? partsOf(c) : null,
+    stage: stageOf(c),
+    chosen: c.vesselClass === 'modular' ? accessoriesOf(c) : []
   }
 }

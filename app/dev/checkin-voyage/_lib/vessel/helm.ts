@@ -30,11 +30,11 @@ export function anchorHere(b: BoatRuntime) {
   if (b.anchor.stage !== 'stowed' || Math.abs(b.speed) > LET_GO_SPEED) return false
   letGo(b)
   // where it will lie once it falls back, head to wind: its berth from now on, kept clear by later arrivals
-  const spec = VESSEL_CLASS_SPECS[b.who.boat]
+  const spec = b.who.spec
   hullToWorld(b, spec.mounts.roller, at)
   const reach = spec.mounts.roller[0] + SCOPE
   b.berth = { x: at.x - FWD.x * reach, z: at.z - FWD.z * reach }
-  b.plate = plateRect(b.berth.x, b.berth.z, b.who.boat, b.who.label)
+  b.plate = plateRect(b.berth.x, b.berth.z, b.who.spec.dims, b.who.label)
   return true
 }
 

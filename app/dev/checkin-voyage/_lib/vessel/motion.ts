@@ -1,6 +1,7 @@
 import { angleDelta, damp } from '../../../voyage/_lib/fleet'
 import { playArrival } from '../boatAudio'
-import { harborShore, MOOR_HEADING, pathAt } from '../harbor'
+import { seabed } from '../coast'
+import { FIELD_CENTER, harborShore, MOOR_HEADING, pathAt } from '../harbor'
 import type { BoatRuntime, HarborStore } from '../store'
 import { VIEW } from '../view'
 import { seaAt, swellMask } from '../waves'
@@ -31,13 +32,13 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 const phaseOf = (b: BoatRuntime) => b.id.length * 0.37 + b.berth.x * 0.21
 
 export function stepVessel(b: BoatRuntime, store: HarborStore, now: number, dt: number, t: number) {
-  const spec = VESSEL_CLASS_SPECS[b.who.boat]
+  const spec = b.who.spec
   if (b.phase === 'waiting') {
     if (now < b.launchAt) return
     b.phase = 'arriving'
     b.speed = spec.handling.cruise
     // left–right placement for the cue: where it enters relative to the middle of the shot
-    playArrival(b.who.boat, b.who.index, clamp((b.x - VIEW.target.x) / 22, -1, 1))
+    playArrival(b.who.sound, b.who.index, clamp((b.x - VIEW.target.x) / 22, -1, 1))
   }
   b.age += dt
   const before = b.speed
@@ -68,10 +69,10 @@ export function stepVessel(b: BoatRuntime, store: HarborStore, now: number, dt: 
 export function separate(store: HarborStore) {
   for (const p of store.boats.values()) {
     if (p.control !== 'player' || p.phase === 'waiting') continue
-    const ps = VESSEL_CLASS_SPECS[p.who.boat].dims
+    const ps = p.who.spec.dims
     for (const o of store.boats.values()) {
       if (o === p || o.phase === 'waiting') continue
-      const os = VESSEL_CLASS_SPECS[o.who.boat].dims
+      const os = o.who.spec.dims
       if (Math.hypot(p.x - o.x, p.z - o.z) > (ps.length + os.length) / 2 + 0.5) continue
       const r = (ps.beam + os.beam) / 2 + 0.06
       for (const i of [-1, 0, 1])
@@ -130,18 +131,21 @@ function helm(b: BoatRuntime, spec: VesselClassSpec, dt: number) {
   const h = spec.handling
   const throttle = clamp(b.helm.throttle, -1, 1)
   const target = throttle >= 0 ? throttle * h.cruise : throttle * h.cruise * h.reverse
-  const gathering = Math.abs(target) > Math.abs(b.speed) && (Math.abs(b.speed) < 0.02 || Math.sign(target) === Math.sign(b.speed))
+  const gathering =
+    Math.abs(target) > Math.abs(b.speed) && (Math.abs(b.speed) < 0.02 || Math.sign(target) === Math.sign(b.speed))
   const rate = gathering ? h.accel : h.brake
   b.speed += clamp(target - b.speed, -rate * dt, rate * dt)
-  // steerage way: a little turn at rest (so a stopped boat can be pointed), the full rate from a quarter of top speed
+  // steerage way: a little turn at rest (so a stopped boat can be pointed; a bow thruster gives her much more), the
+  // full rate from a quarter of top speed
   const flow = Math.min(1, Math.abs(b.speed) / (h.cruise * 0.25))
   // steering right turns to starboard, which is a falling heading; going astern the rudder works the other way
-  const yaw = -clamp(b.helm.steer, -1, 1) * h.turn * (0.12 + 0.88 * flow) * (b.speed < -0.05 ? -1 : 1)
+  const yaw = -clamp(b.helm.steer, -1, 1) * h.turn * (h.steerage + (1 - h.steerage) * flow) * (b.speed < -0.05 ? -1 : 1)
   b.turnRate += (yaw - b.turnRate) * damp(2.5, dt)
   b.heading += b.turnRate * dt
   b.x += Math.sin(b.heading) * b.speed * dt
   b.z += Math.cos(b.heading) * b.speed * dt
   keepOffShore(b, spec)
+  keepToHerWaters(b, spec)
   b.x = clamp(b.x, BOUNDS.x0, BOUNDS.x1)
   b.z = clamp(b.z, BOUNDS.z0, BOUNDS.z1)
 }
@@ -154,7 +158,10 @@ function coast(b: BoatRuntime, spec: VesselClassSpec, dt: number) {
   b.heading += b.turnRate * dt
   b.x += Math.sin(b.heading) * b.speed * dt
   b.z += Math.cos(b.heading) * b.speed * dt
-  if (b.control === 'player') keepOffShore(b, spec)
+  if (b.control === 'player') {
+    keepOffShore(b, spec)
+    keepToHerWaters(b, spec)
+  }
 }
 
 /** Lying to its anchor: it swings lazily head to wind about the anchor, held by the rode as a soft spring */
@@ -191,6 +198,43 @@ function keepOffShore(b: BoatRuntime, spec: VesselClassSpec) {
     b.z += gz * (need - d)
     const into = -(fx * gx + fz * gz) * Math.sign(b.speed)
     if (into > 0) b.speed *= 1 - 0.85 * into
+  }
+}
+
+/**
+ * A player's boat goes only where she can: never into water shallower than her draft (a skiff can nose into a cove a
+ * keelboat can't), and no further out from the harbor than her range (a skiff stays in the harbor; a long-range yacht
+ * crosses the whole chart). Either way she's eased back and loses the way that carried her there.
+ */
+function keepToHerWaters(b: BoatRuntime, spec: VesselClassSpec) {
+  const fx = Math.sin(b.heading)
+  const fz = Math.cos(b.heading)
+  for (const k of [0.3, 0, -0.3]) {
+    const px = b.x + fx * spec.dims.length * k
+    const pz = b.z + fz * spec.dims.length * k
+    const shoal = spec.draft + seabed(px, pz)
+    if (shoal <= 0) continue
+    // out toward deeper water, down the slope of the sea floor
+    const e = 0.15
+    let gx = seabed(px - e, pz) - seabed(px + e, pz)
+    let gz = seabed(px, pz - e) - seabed(px, pz + e)
+    const g = Math.hypot(gx, gz) || 1
+    gx /= g
+    gz /= g
+    b.x += gx * Math.min(shoal, 0.05)
+    b.z += gz * Math.min(shoal, 0.05)
+    const into = -(fx * gx + fz * gz) * Math.sign(b.speed)
+    if (into > 0) b.speed *= 1 - 0.6 * into
+  }
+  const dx = b.x - FIELD_CENTER.x
+  const dz = b.z - FIELD_CENTER.z
+  const far = Math.hypot(dx, dz)
+  if (far > spec.range) {
+    const back = Math.min(far - spec.range, 0.05)
+    b.x -= (dx / far) * back
+    b.z -= (dz / far) * back
+    const out = (fx * dx + fz * dz) / far
+    if (out * b.speed > 0) b.speed *= 1 - 0.85 * Math.abs(out)
   }
 }
 
@@ -243,10 +287,19 @@ function ride(b: BoatRuntime, spec: VesselClassSpec, t: number, dt: number, acce
   b.roll += b.vRoll * dt
 }
 
+/**
+ * Just the buoyancy, for a boat that isn't going anywhere (the Garage's): it rides the shared swell exactly as the
+ * harbor's boats do, heave, pitch and roll from the sea under bow, stern and both sides.
+ */
+export function floatOnSwell(b: BoatRuntime, t: number, dt: number) {
+  ride(b, b.who.spec, t, dt, 0)
+}
+
 /** Sails up under way and down at anchor; the propeller turns with the way it's making */
 function rig(b: BoatRuntime, spec: VesselClassSpec, dt: number) {
   if (b.phase === 'underway') b.rig.hoist = clamp(b.rig.hoist + (b.anchor.stage === 'stowed' ? 0.5 : -0.5) * dt, 0, 1)
-  const driving = b.phase === 'arriving' || (b.phase === 'underway' && b.anchor.stage === 'stowed') || b.anchor.stage === 'weighing'
+  const driving =
+    b.phase === 'arriving' || (b.phase === 'underway' && b.anchor.stage === 'stowed') || b.anchor.stage === 'weighing'
   const target = driving ? b.speed / spec.handling.cruise : 0
   b.rig.prop += (target - b.rig.prop) * damp(2, dt)
 }

@@ -1,6 +1,5 @@
-import { BOAT_DIMS } from './boatDims'
+import { BoatDims } from './boatDims'
 import { pierDistance } from './coast'
-import { BoatClass } from './identity'
 import { Berth, FWD, harborShore, Path, smoothPath } from './harbor'
 import { groundAt, overlaps, plateSize, Rect, SCREEN, toScreen, UI_ZONES, viewCamera } from './view'
 
@@ -16,22 +15,22 @@ import { groundAt, overlaps, plateSize, Rect, SCREEN, toScreen, UI_ZONES, viewCa
 
 const cam = viewCamera()
 
-export type Occupant = { x: number; z: number; boat: BoatClass; plate: Rect }
+export type Occupant = { x: number; z: number; boat: BoatDims; plate: Rect }
 
 const along = (x: number, z: number, b: { x: number; z: number }) => (x - b.x) * FWD.x + (z - b.z) * FWD.z
 const across = (x: number, z: number, b: { x: number; z: number }) => -(x - b.x) * FWD.z + (z - b.z) * FWD.x
 
 /** Distance from a point to a moored hull (a capsule along the wind) */
-function hullDistance(x: number, z: number, o: { x: number; z: number; boat: BoatClass }) {
-  const d = BOAT_DIMS[o.boat]
+function hullDistance(x: number, z: number, o: { x: number; z: number; boat: BoatDims }) {
+  const d = o.boat
   const a = Math.max(-d.length / 2, Math.min(d.length / 2, along(x, z, o)))
   return Math.hypot(along(x, z, o) - a, across(x, z, o))
 }
 
 /** Clearance between two moored boats lying parallel */
-function hullGap(a: { x: number; z: number; boat: BoatClass }, b: { x: number; z: number; boat: BoatClass }) {
-  const da = BOAT_DIMS[a.boat]
-  const db = BOAT_DIMS[b.boat]
+function hullGap(a: { x: number; z: number; boat: BoatDims }, b: { x: number; z: number; boat: BoatDims }) {
+  const da = a.boat
+  const db = b.boat
   const lon = Math.max(0, Math.abs(along(a.x, a.z, b)) - (da.length + db.length) / 2)
   const lat = Math.max(0, Math.abs(across(a.x, a.z, b)) - (da.beam + db.beam) / 2)
   return Math.hypot(lon, lat)
@@ -60,8 +59,8 @@ const CANDIDATES = (() => {
 })()
 
 /** Where a boat's nameplate sits on the reference screen if it moors at (x, z) */
-export function plateRect(x: number, z: number, boat: BoatClass, label: string): Rect {
-  const top = toScreen(cam, x, BOAT_DIMS[boat].top + 0.12, z)
+export function plateRect(x: number, z: number, boat: BoatDims, label: string): Rect {
+  const top = toScreen(cam, x, boat.top + 0.12, z)
   const { w, h } = plateSize(label)
   return { x0: top.x - w / 2, x1: top.x + w / 2, y0: top.y - 14 - h, y1: top.y - 14 }
 }
@@ -69,7 +68,7 @@ export function plateRect(x: number, z: number, boat: BoatClass, label: string):
 /** The first boat in takes the middle of the harbor; everyone after spreads out from there */
 const HERO = { x: SCREEN.w * 0.62, y: SCREEN.h * 0.72 }
 
-export function chooseBerth(occupied: Occupant[], boat: BoatClass, label: string): (Berth & { plate: Rect }) | null {
+export function chooseBerth(occupied: Occupant[], boat: BoatDims, label: string): (Berth & { plate: Rect }) | null {
   let best: { c: (typeof CANDIDATES)[number]; plate: Rect; score: number; clean: boolean } | null = null
   for (const c of CANDIDATES) {
     const me = { x: c.x, z: c.z, boat }
@@ -83,8 +82,8 @@ export function chooseBerth(occupied: Occupant[], boat: BoatClass, label: string
       // nobody may sit in this boat's approach lane, and it mustn't sit in theirs
       for (let k = 1; k <= 3 && ok; k++) {
         const t = (APPROACH * k) / 3
-        if (hullDistance(c.x - FWD.x * t, c.z - FWD.z * t, o) < (BOAT_DIMS[o.boat].beam + BOAT_DIMS[boat].beam) / 2 + 0.5) ok = false
-        if (hullDistance(o.x - FWD.x * t, o.z - FWD.z * t, me) < (BOAT_DIMS[o.boat].beam + BOAT_DIMS[boat].beam) / 2 + 0.5) ok = false
+        if (hullDistance(c.x - FWD.x * t, c.z - FWD.z * t, o) < (o.boat.beam + boat.beam) / 2 + 0.5) ok = false
+        if (hullDistance(o.x - FWD.x * t, o.z - FWD.z * t, me) < (o.boat.beam + boat.beam) / 2 + 0.5) ok = false
       }
       if (!ok) break
       const so = toScreen(cam, o.x, 0.3, o.z)
@@ -145,13 +144,13 @@ const cellOf = (x: number, z: number) => [
 function search(a: { x: number; z: number }, b: { x: number; z: number }, boats: Occupant[], margin: number) {
   const blocked = OPEN.slice()
   for (const o of boats) {
-    const r = BOAT_DIMS[o.boat].length / 2 + margin + 0.5
+    const r = o.boat.length / 2 + margin + 0.5
     const [ci, cj] = cellOf(o.x, o.z)
     const span = Math.ceil(r / GRID.step)
     for (let j = cj - span; j <= cj + span; j++)
       for (let i = ci - span; i <= ci + span; i++) {
         if (i < 0 || j < 0 || i >= NX || j >= NZ) continue
-        if (hullDistance(cellX(i), cellZ(j), o) < BOAT_DIMS[o.boat].beam / 2 + margin) blocked[j * NX + i] = 0
+        if (hullDistance(cellX(i), cellZ(j), o) < o.boat.beam / 2 + margin) blocked[j * NX + i] = 0
       }
   }
   const [si, sj] = cellOf(a.x, a.z)
@@ -259,9 +258,9 @@ function search(a: { x: number; z: number }, b: { x: number; z: number }, boats:
  * last boat used, so arrivals come from different directions), round everything moored, then straight up into the
  * berth along the wind.
  */
-export function planRoute(berth: Berth, boat: BoatClass, others: Occupant[], lastGate: string | null): { path: Path; gate: string } {
+export function planRoute(berth: Berth, boat: BoatDims, others: Occupant[], lastGate: string | null): { path: Path; gate: string } {
   const approach = { x: berth.x - FWD.x * APPROACH, z: berth.z - FWD.z * APPROACH }
-  const margin = BOAT_DIMS[boat].beam / 2 + 0.45
+  const margin = boat.beam / 2 + 0.45
   let best: { points: { x: number; z: number }[]; cost: number; gate: string } | null = null
   for (const gate of GATES) {
     const r = search(gate, approach, others, margin)

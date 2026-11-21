@@ -18,10 +18,10 @@ export const createLaunches = (): Launches => ({ lastGate: null, lastLaunch: 0 }
  */
 export function berthBoat(store: HarborStore, identity: Identity, sail: boolean, launches: Launches): BoatRuntime | null {
   if (store.boats.has(identity.id)) return null
-  const occupied = [...store.boats.values()].map((o) => ({ x: o.berth.x, z: o.berth.z, boat: o.who.boat, plate: o.plate }))
-  const berth = chooseBerth(occupied, identity.boat, identity.label)
+  const occupied = [...store.boats.values()].map((o) => ({ x: o.berth.x, z: o.berth.z, boat: o.who.spec.dims, plate: o.plate }))
+  const berth = chooseBerth(occupied, identity.spec.dims, identity.label)
   if (!berth) return null
-  const route = sail ? planRoute(berth, identity.boat, occupied, launches.lastGate) : null
+  const route = sail ? planRoute(berth, identity.spec.dims, occupied, launches.lastGate) : null
   if (route) launches.lastGate = route.gate
   const launchAt = sail ? Math.max(performance.now(), launches.lastLaunch + LAUNCH_GAP_MS) : 0
   if (sail) launches.lastLaunch = launchAt

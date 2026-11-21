@@ -32,7 +32,7 @@ export function PlateTracker({ store }: { store: HarborStore }) {
         el.style.opacity = '0'
         continue
       }
-      v.current.set(b.x, b.y + VESSEL_CLASS_SPECS[b.who.boat].dims.top + 0.12, b.z)
+      v.current.set(b.x, b.y + b.who.spec.dims.top + 0.12, b.z)
       v.current.project(camera)
       if (v.current.z > 1) {
         el.style.opacity = '0'

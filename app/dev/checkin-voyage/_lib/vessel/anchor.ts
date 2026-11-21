@@ -1,10 +1,9 @@
 import { Euler, Quaternion, Vector3 } from 'three'
 import { seabed } from '../coast'
 import { FWD } from '../harbor'
-import type { BoatClass } from '../identity'
 import type { BoatRuntime, HarborStore } from '../store'
 import { seaAt } from '../waves'
-import { Vec3, VESSEL_CLASS_SPECS } from './classes'
+import { Vec3, VesselClassSpec } from './classes'
 
 // The anchor, as part of the vessel. It stows on the bow roller; let go, it drops through the air, splashes in and
 // sinks to the seabed under the bow; once it bites, the rode pays out and the boat falls back onto it, snubbing up
@@ -46,8 +45,8 @@ const SINK = 0.8
 export const stowedAnchor = (): AnchorState => ({ stage: 'stowed', x: 0, y: 0, z: 0, vy: 0, wet: false, floor: 0, scope: 0, lifting: false, snubbed: false })
 
 /** Already lying to its anchor at `berth`, head to wind (a boat that was in before the page loaded) */
-export function mooredAnchor(cls: BoatClass, berth: { x: number; z: number }): AnchorState {
-  const reach = VESSEL_CLASS_SPECS[cls].mounts.roller[0] + SCOPE
+export function mooredAnchor(spec: VesselClassSpec, berth: { x: number; z: number }): AnchorState {
+  const reach = spec.mounts.roller[0] + SCOPE
   const x = berth.x + FWD.x * reach
   const z = berth.z + FWD.z * reach
   const floor = seabed(x, z)
@@ -70,14 +69,14 @@ export function hullToWorld(b: BoatRuntime, p: Vec3, out: Vector3, q = new Quate
   euler.set(b.roll, 0, b.pitch)
   qInner.setFromEuler(euler)
   q.copy(qOuter).multiply(qInner)
-  return out.set(p[0], p[1] + VESSEL_CLASS_SPECS[b.who.boat].lift, p[2]).applyQuaternion(q).add(tmp.set(b.x, b.y, b.z))
+  return out.set(p[0], p[1] + b.who.spec.lift, p[2]).applyQuaternion(q).add(tmp.set(b.x, b.y, b.z))
 }
 const tmp = new Vector3()
 const roller = new Vector3()
 
 /** Where the boat's centre lies when riding to its anchor at its current heading */
 export function anchorRest(b: BoatRuntime) {
-  const reach = VESSEL_CLASS_SPECS[b.who.boat].mounts.roller[0] + b.anchor.scope
+  const reach = b.who.spec.mounts.roller[0] + b.anchor.scope
   return { x: b.anchor.x - Math.sin(b.heading) * reach, z: b.anchor.z - Math.cos(b.heading) * reach }
 }
 
@@ -86,7 +85,7 @@ export function anchorRest(b: BoatRuntime) {
 /** Let go: it falls from the bow roller */
 export function letGo(b: BoatRuntime) {
   const a = b.anchor
-  hullToWorld(b, VESSEL_CLASS_SPECS[b.who.boat].mounts.roller, roller)
+  hullToWorld(b, b.who.spec.mounts.roller, roller)
   Object.assign(a, { stage: 'dropping', x: roller.x, y: roller.y - 0.03, z: roller.z, vy: 0, wet: false, scope: 0, lifting: false, snubbed: false })
 }
 
@@ -99,7 +98,7 @@ export function weigh(b: BoatRuntime) {
 
 export function stepAnchor(b: BoatRuntime, store: HarborStore, t: number, dt: number) {
   const a = b.anchor
-  const spec = VESSEL_CLASS_SPECS[b.who.boat]
+  const spec = b.who.spec
   if (a.stage === 'stowed') return
   hullToWorld(b, spec.mounts.roller, roller)
 

@@ -55,7 +55,7 @@ export function WakeField({ store }: { store: HarborStore }) {
 
     for (const b of store.boats.values()) {
       if (b.phase !== 'arriving' && b.phase !== 'underway') continue
-      const len = VESSEL_CLASS_SPECS[b.who.boat].dims.length
+      const len = b.who.spec.dims.length
       const fx = Math.sin(b.heading)
       const fz = Math.cos(b.heading)
       const rx = -fz

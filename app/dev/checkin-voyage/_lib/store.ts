@@ -110,7 +110,7 @@ export function createVessel(o: {
     vPitch: 0,
     vx: 0,
     vz: 0,
-    anchor: sail ? stowedAnchor() : mooredAnchor(o.who.boat, o.berth),
+    anchor: sail ? stowedAnchor() : mooredAnchor(o.who.spec, o.berth),
     rig: { hoist: sail ? 1 : 0, moored: !sail, prop: 0 },
     age: sail ? 0 : 99
   }

@@ -1,5 +1,5 @@
 import { getAudioContext } from '@/lib/audio/audioContext'
-import { BoatClass } from './identity'
+import { HeritageClassId as BoatClass } from '@/lib/vessel/catalog'
 
 // Arrival sounds: one short, natural cue per arrival (about 2–4 seconds, faded out), never a running engine.
 //

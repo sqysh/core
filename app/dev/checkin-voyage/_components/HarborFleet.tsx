@@ -36,14 +36,22 @@ function collarTexture() {
   return collarTex
 }
 
-function Collar({ length, beam }: { length: number; beam: number }) {
+export function Collar({ length, beam }: { length: number; beam: number }) {
   const geo = useMemo(() => {
     const g = new PlaneGeometry(1, 1)
     g.rotateX(-Math.PI / 2)
     return g
   }, [])
   const mat = useMemo(() => new MeshBasicMaterial({ map: collarTexture(), transparent: true, depthWrite: false }), [])
-  return <mesh geometry={geo} material={mat} scale={[length * 1.32, 1, beam * 2.1]} position={[0, 0.012, 0]} renderOrder={2} />
+  return (
+    <mesh
+      geometry={geo}
+      material={mat}
+      scale={[length * 1.32, 1, beam * 2.1]}
+      position={[0, 0.012, 0]}
+      renderOrder={2}
+    />
+  )
 }
 
 const BoatNode = memo(function BoatNode({ b }: { b: BoatRuntime }) {
@@ -58,12 +66,12 @@ const BoatNode = memo(function BoatNode({ b }: { b: BoatRuntime }) {
     o.rotation.set(0, b.heading - Math.PI / 2, 0)
     inner.current?.rotation.set(b.roll, 0, b.pitch)
   })
-  const dims = VESSEL_CLASS_SPECS[b.who.boat].dims
+  const dims = b.who.spec.dims
   return (
     <group ref={outer} visible={false}>
       <Collar length={dims.length} beam={dims.beam} />
       <group ref={inner}>
-        <Boat kind={b.who.boat} look={b.who.look} rig={b.rig} />
+        <Boat kind={b.who.boat} look={b.who.look} rig={b.rig} name={b.who.name.split(' ')[0]} />
       </group>
     </group>
   )

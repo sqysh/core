@@ -89,7 +89,7 @@ export function AnchorField({ store }: { store: HarborStore }) {
 
     for (const b of store.boats.values()) {
       if (b.phase === 'waiting' || na >= MAX) continue
-      const spec = VESSEL_CLASS_SPECS[b.who.boat]
+      const spec = b.who.spec
       const a = b.anchor
       const size = spec.anchor
       hullToWorld(b, spec.mounts.roller, tmp.roller, tmp.hull)

@@ -5,6 +5,7 @@ import { BufferAttribute, BufferGeometry, CanvasTexture, SRGBColorSpace, Vector3
 // texture keyed to height, so the waterline stays crisp however coarse the mesh. Bow points along +x.
 
 import { HullSpec, hullStations } from './hullLines'
+import { paintFill } from './vessel/paint'
 
 export type { HullSpec } from './hullLines'
 export { hullStations } from './hullLines'
@@ -125,14 +126,14 @@ export function hullPaintTexture(paint: HullPaint, yMin: number, yMax: number, w
   c.height = H
   const g = c.getContext('2d')!
   const row = (y: number) => H - ((y - yMin) / (yMax - yMin)) * H
-  g.fillStyle = paint.topsides
+  g.fillStyle = paintFill(paint.topsides)
   g.fillRect(0, 0, 4, H)
-  g.fillStyle = paint.bottom
+  g.fillStyle = paintFill(paint.bottom)
   g.fillRect(0, row(waterline), 4, H)
-  g.fillStyle = paint.stripe
+  g.fillStyle = paintFill(paint.stripe)
   g.fillRect(0, row(waterline + 0.045), 4, row(waterline) - row(waterline + 0.045))
   if (paint.sheerLine) {
-    g.fillStyle = paint.sheerLine
+    g.fillStyle = paintFill(paint.sheerLine)
     g.fillRect(0, row(yMax - 0.035), 4, Math.max(2, row(yMax - 0.05) - row(yMax - 0.035)))
   }
   const tex = new CanvasTexture(c)
