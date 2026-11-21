@@ -1,6 +1,7 @@
 import prisma from '@/prisma/client'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
+import { withRegisteredEmails } from '@/lib/auth/adapter'
 import googleProvider from '@/lib/providers/google.provider'
 import { magicLinkConfig } from '@/lib/providers/magic-link.provider'
 import { handleEmailCallback } from '@/lib/callbacks/magic-link.callback'
@@ -14,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 30 * 24 * 60 * 60,
     updateAge: 24 * 60 * 60
   },
-  adapter: PrismaAdapter(prisma),
+  adapter: withRegisteredEmails(PrismaAdapter(prisma)),
   pages: { error: '/login' },
   providers: [googleProvider, magicLinkConfig],
 
