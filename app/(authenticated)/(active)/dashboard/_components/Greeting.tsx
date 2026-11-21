@@ -37,7 +37,7 @@ export function Greeting({
   const links: { href: string; label: string; icon: LucideIcon; show: boolean }[] = [
     { href: '/', label: 'Home', icon: Home, show: true },
     { href: '/profile', label: 'Profile', icon: UserCircle, show: true },
-    { href: '/garage', label: 'Garage', icon: Ship, show: true },
+    { href: '/garage', label: 'The Sqyshyard', icon: Ship, show: true },
     { href: '/billing', label: 'Billing', icon: Receipt, show: showBilling },
     { href: '/admin', label: 'Admin', icon: LayoutDashboard, show: isAdmin || isSuperUser },
     { href: '/super/dashboard', label: 'Super', icon: ShieldCheck, show: isSuperUser }

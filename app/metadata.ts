@@ -1,4 +1,12 @@
-import { Metadata } from 'next'
+import { Metadata, Viewport } from 'next'
+
+// viewport-fit=cover lets the app draw under the notch / home indicator; the env(safe-area-inset-*) padding in the
+// screens keeps content clear of them. Without it iOS reports every inset as 0.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover'
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.coastalreferralxchange.com'),
@@ -79,6 +87,8 @@ export const metadata: Metadata = {
   ],
 
   other: {
+    // Next only emits the unprefixed mobile-web-app-capable; older iOS needs the Apple-prefixed tag for standalone
+    'apple-mobile-web-app-capable': 'yes',
     'business:contact_data:street_address': '25 N Common St',
     'business:contact_data:locality': 'Lynn',
     'business:contact_data:region': 'Massachusetts',

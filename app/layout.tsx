@@ -1,11 +1,12 @@
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import { Lobster_Two, Sora } from 'next/font/google'
-import { metadata as siteMetadata } from './metadata'
+import { metadata as siteMetadata, viewport as siteViewport } from './metadata'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import RootLayoutWrapper from './root-layout'
 
 export const metadata = siteMetadata
+export const viewport = siteViewport
 
 const sora = Sora({
   variable: '--font-sora',
