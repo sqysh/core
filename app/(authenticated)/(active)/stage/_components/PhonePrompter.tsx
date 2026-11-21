@@ -22,12 +22,22 @@ import { Teleprompter, type TeleprompterHandle } from './Teleprompter'
 // work exactly as before. When the closing words finish it puts the closing screen up on the TV, as the TV used to
 // do itself. It keeps the phone awake while the script is up, and can be tucked away to use the remote mid-read.
 
+export type PrompterState = {
+  /** a script is up on this phone */
+  up: boolean
+  playing: boolean
+  speed: number
+}
+
 export function PhonePrompter({
   segments,
-  send
+  send,
+  onState
 }: {
   segments: Segment[]
   send: (cmd: StageCommand) => Promise<boolean>
+  /** told whenever the session starts or ends, plays or pauses, or the speed changes, so a remote can mirror it */
+  onState?: (s: PrompterState) => void
 }) {
   const tp = useRef<TeleprompterHandle | null>(null)
   /** The script is up: a read has started and nothing else has taken the stage since */
@@ -42,6 +52,11 @@ export function PhonePrompter({
   upRef.current = up
 
   useWakeLock(up)
+  const onStateRef = useRef(onState)
+  onStateRef.current = onState
+  useEffect(() => {
+    onStateRef.current?.({ up, playing, speed })
+  }, [up, playing, speed])
 
   useEffect(() => {
     const channel = getPusherClient().subscribe(STAGE_CHANNEL)

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Ship, SlidersHorizontal } from 'lucide-react'
 import { LinkBody } from '@/components/_shared/LinkBody'
+import { GlassButton, glassButton, glassPanel } from '@/components/_shared/LiquidGlass'
 import { holdForMeeting } from '@/lib/actions/attendance/holdForMeeting'
 import { honkHorn } from '@/lib/actions/attendance/honkHorn'
 import { HONK_COOLDOWN_MS } from '@/lib/constants/honk.constants'
@@ -183,11 +184,9 @@ function Hud({ firstName, fresh, controls }: { firstName: string; fresh: boolean
     void honkHorn()
   }
 
-  const glass =
-    'border border-white/30 bg-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_6px_20px_rgba(6,24,44,0.3)] backdrop-blur-md'
   return (
     <div className="pointer-events-none absolute inset-0 pb-[max(14px,env(safe-area-inset-bottom))] pl-[max(14px,env(safe-area-inset-left))] pr-[max(14px,env(safe-area-inset-right))] pt-[max(14px,env(safe-area-inset-top))] opacity-0 animate-[ciFade_0.8s_ease_0.6s_forwards]">
-      <div className={`inline-flex flex-col rounded-2xl px-4 py-2.5 ${glass}`}>
+      <div className={`${glassPanel} inline-flex flex-col rounded-2xl px-4 py-2.5`}>
         <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/80 [text-shadow:0_1px_3px_rgba(6,24,44,0.6)]">
           {fresh ? 'Sailing in' : 'At anchor'}
         </span>
@@ -198,11 +197,7 @@ function Hud({ firstName, fresh, controls }: { firstName: string; fresh: boolean
       {controls.length > 0 && (
         <div className="pointer-events-auto absolute right-[max(14px,env(safe-area-inset-right))] top-[max(14px,env(safe-area-inset-top))] flex flex-col items-end gap-2">
           {controls.map((c) => (
-            <Link
-              key={c.href}
-              href={c.href}
-              className={`flex h-11 items-center gap-2 rounded-full px-4 font-sora text-[13px] font-black text-white transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${glass}`}
-            >
+            <Link key={c.href} href={c.href} className={`${glassButton()} h-11 rounded-full px-4 text-[13px]`}>
               <LinkBody
                 icon={<SlidersHorizontal size={16} aria-hidden="true" />}
                 label={c.label}
@@ -212,17 +207,15 @@ function Hud({ firstName, fresh, controls }: { firstName: string; fresh: boolean
           ))}
         </div>
       )}
-      <button
-        type="button"
+      <GlassButton
         onClick={honk}
+        tone={honking ? 'active' : 'default'}
         aria-label="Honk your boat's horn on the TV"
-        className={`pointer-events-auto absolute bottom-[max(14px,env(safe-area-inset-bottom))] right-[max(14px,env(safe-area-inset-right))] flex h-12 items-center gap-2 rounded-full px-5 font-sora text-[14px] font-black text-white transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${glass} ${
-          honking ? 'bg-sky-400/30' : ''
-        }`}
+        className="pointer-events-auto absolute bottom-[max(14px,env(safe-area-inset-bottom))] right-[max(14px,env(safe-area-inset-right))] h-12 rounded-full px-5 text-[14px]"
       >
         <Ship size={18} aria-hidden="true" />
         {honking ? 'Toot toot!' : 'Honk'}
-      </button>
+      </GlassButton>
     </div>
   )
 }

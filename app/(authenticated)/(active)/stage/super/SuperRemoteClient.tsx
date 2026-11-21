@@ -49,6 +49,7 @@ import { openElection } from '@/lib/actions/election/openElection'
 import { announceElection } from '@/lib/actions/election/announceElection'
 import { notifyTreasurer } from '@/lib/actions/treasury/notifyTreasurer'
 import { RemoteHarbor } from '@/app/(authenticated)/(active)/stage/_components/RemoteHarbor'
+import { glassPanel } from '@/components/_shared/LiquidGlass'
 import { GlassMenu } from '@/app/(authenticated)/(active)/stage/_components/GlassMenu'
 import type { HarborData } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
 import { PollPicker } from '@/app/(authenticated)/(active)/stage/_components/controls/PollPicker'
@@ -91,8 +92,7 @@ const DECK_CSS = `
 `
 
 /** One smoked-glass panel of the deck over the harbor: stacked in portrait, side by side (each scrolling on its own) held sideways */
-const COLUMN =
-  'flex flex-col gap-4 rounded-2xl border border-cyan-300/20 bg-[#060a12]/55 p-3 shadow-[inset_0_1px_1px_rgba(165,243,252,0.18),0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-xl landscape:min-h-0 landscape:gap-2.5 landscape:overflow-y-auto landscape:overscroll-contain'
+const COLUMN = `${glassPanel} flex flex-col gap-4 p-3 landscape:min-h-0 landscape:gap-2.5 landscape:overflow-y-auto landscape:overscroll-contain lg:min-h-0 lg:overflow-y-auto`
 
 const TILE =
   'group relative flex aspect-square landscape:aspect-[5/4] flex-col items-start justify-between overflow-hidden border p-2.5 text-left transition-colors duration-100 active:translate-y-px disabled:opacity-40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/70'
@@ -257,10 +257,10 @@ export function SuperRemoteClient({
       {/* your boat on the water, like every member's; the deck is a full-screen glass menu from the corner */}
       {harbor && me && <RemoteHarbor harbor={harbor} me={me} />}
 
-      <GlassMenu label="Deck" tone="dark" defaultOpen={!harbor}>
+      <GlassMenu label="Deck" defaultOpen={!harbor}>
         {/* upright the panels stack; held sideways, two side by side: the screens, then the actions with the
           teleprompter and the poll */}
-        <div className="mx-auto flex w-full max-w-md flex-col gap-3 px-4 landscape:grid landscape:min-h-0 landscape:max-w-none landscape:flex-1 landscape:grid-cols-2 landscape:gap-3 landscape:pl-[max(1rem,env(safe-area-inset-left))] landscape:pr-[max(7rem,calc(env(safe-area-inset-right)+6rem))]">
+        <>
           <div className={COLUMN}>
             {/* HUD */}
             <div>
@@ -501,7 +501,7 @@ export function SuperRemoteClient({
               <PollPicker send={send} />
             </div>
           </div>
-        </div>
+        </>
       </GlassMenu>
     </div>
   )
