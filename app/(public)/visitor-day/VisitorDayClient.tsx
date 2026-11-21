@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import { QRCodeSVG } from 'qrcode.react'
+import { SafeSpline } from '@/components/_shared/SafeSpline'
 import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { FloatingEmojiEl } from '@/components/_shared/FloatingEmoji'
 import { FloatingEmoji } from '@/types/attendance.types'
 import { formatCurrency } from '@/lib/utils/currency.utils'
-
-const Spline = dynamic(() => import('@splinetool/react-spline'), { ssr: false })
 
 interface VisitorDayTVProps {
   date?: string
@@ -87,9 +85,10 @@ export default function VisitorDayTV({
       {/* ── Globe ── */}
       <div className="absolute right-[-15%] top-1/2 -translate-y-1/2 z-0 pointer-events-none w-250 h-250 hidden lg:block">
         <div className={`absolute inset-0 z-1 pointer-events-none bg-linear-to-r ${t.fadeFrom}`} />
-        <Spline
+        <SafeSpline
           scene="https://prod.spline.design/nSlEQFeacYQgy4hm/scene.splinecode"
-          style={{ background: 'transparent' }}
+          label="visitor-day-globe"
+          className="h-full w-full"
         />
       </div>
 
