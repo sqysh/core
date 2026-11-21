@@ -14,7 +14,7 @@ import { PlateTracker } from './_components/PlateTracker'
 import { DevHelm } from './_components/DevHelm'
 import { audioSettings, preloadBoatSamples, setAudio } from './_lib/boatAudio'
 import { berthBoat, createLaunches } from './_lib/fleetOps'
-import { identities } from './_lib/identity'
+import { identities, refreshIdentity } from './_lib/identity'
 import { createStore } from './_lib/store'
 import { VIEW } from './_lib/view'
 import { SeaTuningPanel } from './_components/SeaTuningPanel'
@@ -171,8 +171,9 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   useEffect(() => {
     if (!built) return
     const channel = getPusherClient().subscribe('meeting-attendance')
-    const onCheckIn = (data: { userId: string }) => {
+    const onCheckIn = (data: { userId: string; vessel?: unknown }) => {
       if (store.boats.has(data.userId)) return
+      refreshIdentity(who, data.userId, data.vessel)
       realIds.current = [...realIds.current, data.userId]
       addBoat(data.userId, true)
     }

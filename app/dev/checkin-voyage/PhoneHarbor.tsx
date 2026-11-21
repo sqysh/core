@@ -7,7 +7,7 @@ import { getPusherClient, releaseChannel } from '@/lib/pusher/pusherClient'
 import { FollowCamera, type Frame } from './_components/FollowCamera'
 import { HarborStage } from './_components/HarborStage'
 import { berthBoat, createLaunches } from './_lib/fleetOps'
-import { identities } from './_lib/identity'
+import { identities, refreshIdentity } from './_lib/identity'
 import type { HarborData } from './_lib/loadHarbor'
 import { createStore } from './_lib/store'
 import { VIEW } from './_lib/view'
@@ -58,8 +58,10 @@ export default function PhoneHarbor({ members, initialAttendees, vessels, me, sa
   useEffect(() => {
     if (!built) return
     const channel = getPusherClient().subscribe('meeting-attendance')
-    const onCheckIn = (data: { userId: string }) => {
-      if (data.userId !== me) add(data.userId, true)
+    const onCheckIn = (data: { userId: string; vessel?: unknown }) => {
+      if (data.userId === me) return
+      refreshIdentity(who, data.userId, data.vessel)
+      add(data.userId, true)
     }
     channel.bind('check-in', onCheckIn)
     return () => {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
-import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle, Loader2, LucideIcon, Receipt } from 'lucide-react'
+import { Home, LayoutDashboard, LogOut, ShieldCheck, UserCircle, Loader2, LucideIcon, Receipt, Ship } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { getTodayLabel } from '@/lib/utils/date.utils'
@@ -37,6 +37,7 @@ export function Greeting({
   const links: { href: string; label: string; icon: LucideIcon; show: boolean }[] = [
     { href: '/', label: 'Home', icon: Home, show: true },
     { href: '/profile', label: 'Profile', icon: UserCircle, show: true },
+    { href: '/garage', label: 'Garage', icon: Ship, show: true },
     { href: '/billing', label: 'Billing', icon: Receipt, show: showBilling },
     { href: '/admin', label: 'Admin', icon: LayoutDashboard, show: isAdmin || isSuperUser },
     { href: '/super/dashboard', label: 'Super', icon: ShieldCheck, show: isSuperUser }

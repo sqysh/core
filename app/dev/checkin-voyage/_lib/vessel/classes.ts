@@ -1,5 +1,5 @@
 import { VesselClassId } from '@/lib/vessel/catalog'
-import { HullSpec, hullStations } from '../hull'
+import { HullSpec, hullStations } from '../hullLines'
 
 // Each vessel class as data: its hull lines, size, how it handles, how it rides the water, and the points where
 // fittings and accessories attach. The simulation, the anchor, the wakes and the models all read from here, so a new

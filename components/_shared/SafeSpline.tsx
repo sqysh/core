@@ -1,8 +1,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { Component, CSSProperties, ReactNode, useEffect, useRef, useState } from 'react'
+import { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react'
 import { reportError } from '@/lib/utils/reportError'
+import { canRenderWebGL } from '@/lib/utils/webgl'
+import { RenderBoundary } from './RenderBoundary'
 
 // A Spline scene that can't take the page down with it. @splinetool/react-spline rethrows any failure (a WebGL context
 // the device can't create, one lost under memory pressure, the scene or its WebAssembly failing to load) during
@@ -17,37 +19,6 @@ import { reportError } from '@/lib/utils/reportError'
 // The fallback also shows while the scene loads, then fades out under it, so nothing changes once it's up.
 
 const Spline = dynamic(() => import('@splinetool/react-spline'), { ssr: false, loading: () => null })
-
-let webglSupport: boolean | null = null
-/** Whether this device gives us a hardware WebGL context (a software fallback is too slow for a scene) */
-function canRenderWebGL() {
-  if (webglSupport !== null) return webglSupport
-  try {
-    const canvas = document.createElement('canvas')
-    const opts = { failIfMajorPerformanceCaveat: true }
-    const gl = (canvas.getContext('webgl2', opts) ?? canvas.getContext('webgl', opts)) as WebGLRenderingContext | null
-    // hand the test context straight back, so it doesn't count against the page's limit
-    gl?.getExtension('WEBGL_lose_context')?.loseContext()
-    webglSupport = !!gl
-  } catch {
-    webglSupport = false
-  }
-  return webglSupport
-}
-
-class SceneBoundary extends Component<{ label: string; onFail: () => void; children: ReactNode }, { failed: boolean }> {
-  state = { failed: false }
-  static getDerivedStateFromError() {
-    return { failed: true }
-  }
-  componentDidCatch(error: unknown) {
-    reportError(`spline:${this.props.label}`, error)
-    this.props.onFail()
-  }
-  render() {
-    return this.state.failed ? null : this.props.children
-  }
-}
 
 export function SafeSpline({
   scene,
@@ -121,13 +92,13 @@ export function SafeSpline({
         {fallback}
       </div>
       {live && (
-        <SceneBoundary label={label} onFail={() => setFailed(true)}>
+        <RenderBoundary label={`spline:${label}`} onFail={() => setFailed(true)}>
           <Spline
             scene={scene}
             onLoad={onLoad}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent' }}
           />
-        </SceneBoundary>
+        </RenderBoundary>
       )}
     </div>
   )

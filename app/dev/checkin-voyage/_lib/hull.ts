@@ -4,44 +4,15 @@ import { BufferAttribute, BufferGeometry, CanvasTexture, SRGBColorSpace, Vector3
 // a soft V bottom and a forefoot that lifts toward the bow. The paint (bottom, boot stripe, topsides) comes from a
 // texture keyed to height, so the waterline stays crisp however coarse the mesh. Bow points along +x.
 
-export type HullSpec = {
-  length: number
-  beam: number
-  /** Keel depth below the stern's sheer */
-  depth: number
-  /** Sheer height at the stern and how far it climbs at the bow */
-  sheer: number
-  sheerRise: number
-  /** Width of the transom as a fraction of the beam */
-  transom: number
-  /** How far the stem rakes aft at the waterline, as a fraction of length */
-  rake: number
-  /** Section shape: lower is boxier, higher is rounder */
-  fullness: number
-  /** Waterline height (local y) */
-  waterline: number
-}
+import { HullSpec, hullStations } from './hullLines'
+
+export type { HullSpec } from './hullLines'
+export { hullStations } from './hullLines'
 
 export type HullPaint = { topsides: string; stripe: string; bottom: string; sheerLine?: string }
 
 const SEG_L = 44
 const SEG_A = 22
-
-const smooth = (a: number, b: number, x: number) => {
-  const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
-  return t * t * (3 - 2 * t)
-}
-
-export function hullStations(spec: HullSpec) {
-  const halfBeam = (s: number) => {
-    const aft = spec.transom + (1 - spec.transom) * Math.pow(smooth(0, 0.5, s), 0.55)
-    const bow = s < 0.5 ? 1 : Math.pow(Math.max(0, 1 - Math.pow((s - 0.5) / 0.5, 2.1)), 0.62)
-    return (spec.beam / 2) * Math.min(aft, bow)
-  }
-  const sheer = (s: number) => spec.sheer + spec.sheerRise * Math.pow(s, 2.3)
-  const keel = (s: number) => spec.depth * (1 - 0.82 * Math.pow(smooth(0.55, 1, s), 1.3))
-  return { halfBeam, sheer, keel }
-}
 
 /** The hull's outer skin, open at the deck, with its transom */
 export function loftedHull(spec: HullSpec) {

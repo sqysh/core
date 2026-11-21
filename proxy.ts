@@ -40,7 +40,8 @@ export async function proxy(req: NextRequest) {
     nextUrl.pathname.startsWith('/dashboard') ||
     nextUrl.pathname.startsWith('/super/dashboard') ||
     nextUrl.pathname.startsWith('/election') ||
-    nextUrl.pathname.startsWith('/check-in')
+    nextUrl.pathname.startsWith('/check-in') ||
+    nextUrl.pathname.startsWith('/garage')
   const isSuperUserRoute = nextUrl.pathname.startsWith('/super/dashboard')
 
   // ── Logged-in user hitting a public route → redirect to their home ────────

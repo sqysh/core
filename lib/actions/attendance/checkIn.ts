@@ -6,6 +6,7 @@ import { chapterId } from '@/lib/constants/api/chapterId'
 import { pusher } from '@/lib/pusher/pusher'
 import { createLog } from '@/lib/utils/api/createLog'
 import { toDateKey } from '@/lib/utils/date.utils'
+import { VESSEL_SELECT, vesselFromRow } from '@/lib/vessel/persistence'
 
 export async function checkIn({ date }: { date?: string } = {}): Promise<{
   success: boolean
@@ -80,9 +81,17 @@ export async function checkIn({ date }: { date?: string } = {}): Promise<{
       data: { meetingId: meeting.id, userId: user.id }
     })
 
+    // their boat as it is now, so the harbor draws exactly what they chose in the Garage (null: their default; also if
+    // the vessel table isn't there yet, which must never stop a check-in)
+    const vessel = await prisma.memberVessel
+      .findUnique({ where: { userId: user.id }, select: VESSEL_SELECT })
+      .then((row) => (row ? vesselFromRow(row) : null))
+      .catch(() => null)
+
     // Broadcast to TV
     await pusher.trigger('meeting-attendance', 'check-in', {
       userId: user.id,
+      vessel,
       name: user.name,
       company: user.company,
       checkedInAt: new Date().toLocaleTimeString('en-US', {

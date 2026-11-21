@@ -23,6 +23,20 @@ export const ACCESSORY_FITS: Record<AccessoryId, readonly VesselClassId[]> = {
   burgee: ['sloop']
 }
 
+/** How each class is presented to members */
+export const VESSEL_CLASS_INFO: Record<VesselClassId, { name: string; tagline: string }> = {
+  runabout: { name: 'Runabout', tagline: 'Quick, nimble and chrome-trimmed. First into the harbor.' },
+  lobster: { name: 'Lobster Boat', tagline: 'A Maine workboat: steady, roomy and built for any weather.' },
+  sloop: { name: 'Sloop', tagline: 'A classic sailboat with a tall mast and a canvas you can make your own.' }
+}
+
+export const SAIL_PATTERN_NAMES: Record<SailPattern, string> = { plain: 'Plain', band: 'Band', stripes: 'Stripes' }
+
+export const ACCESSORY_INFO: Record<AccessoryId, { name: string; description: string }> = {
+  ensign: { name: 'Stern ensign', description: 'A flag at the stern in your accent colour.' },
+  burgee: { name: 'Masthead burgee', description: 'A long pennant streaming from the top of the mast.' }
+}
+
 /** Every cosmetic by its unlock id. Free ones are open to everyone; the rest need a VesselUnlock row before they can be equipped. */
 export const COSMETICS = {
   'class:runabout': { free: true },
