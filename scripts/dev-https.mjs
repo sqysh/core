@@ -4,8 +4,9 @@
 // Bonjour name into ./certificates (git-ignored), and makes a new one when those change. Nothing is exposed beyond the
 // local network, and no tunnel is used.
 //
-// Database: this never uses the DATABASE_URL in .env (which points at production). It reads the development database
-// from .env.dev-https.local (git-ignored) and refuses to start without it, or if it is the .env database.
+// Database: it reads DATABASE_URL and DIRECT_URL from .env.dev-https.local (git-ignored) and starts only if both are the
+// verified development Neon endpoint; production endpoints, unknown ones and unreadable ones are refused. The same
+// development database may also be the one in .env. Credentials are never printed.
 import { spawn, execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { hostname, networkInterfaces } from "node:os";
@@ -30,24 +31,42 @@ if (!existsSync(dbFile)) {
   );
 }
 process.loadEnvFile(dbFile);
-const hostOf = (url) => {
+
+// Neon endpoints are named ep-<name>-<id>, with "-pooler" on the pooled address: that endpoint id is the identity. Only
+// the verified development endpoint is allowed; the known production endpoints are refused by name; anything else (a
+// different Neon database, another host, a URL that can't be read) is refused too, because it can't be verified.
+const DEV_ENDPOINTS = ["ep-sparkling-hill-attqopw1"];
+const PRODUCTION_ENDPOINTS = ["ep-sparkling-river-apgahow5"];
+
+/** The endpoint id in a Neon connection URL, or null (nothing from the URL's credentials is ever returned or printed) */
+const endpointOf = (url) => {
   try {
-    return new URL(url).hostname;
+    const host = new URL(url).hostname;
+    if (!host.endsWith(".neon.tech")) return null;
+    return host.split(".")[0].replace(/-pooler$/, "") || null;
   } catch {
-    return "";
+    return null;
   }
 };
-const devHost = hostOf(process.env.DATABASE_URL ?? "");
-if (!devHost) stop(".env.dev-https.local needs a valid DATABASE_URL.");
-const envDb = readFileSync(join(root, ".env"), "utf8").match(
-  /^DATABASE_URL=(.*)$/m,
-)?.[1];
-const stripPooler = (h) => h.replace("-pooler", "");
-if (envDb && stripPooler(hostOf(envDb)) === stripPooler(devHost)) {
-  stop(
-    `DATABASE_URL in .env.dev-https.local is the same database as the one active in .env (${devHost}). Refusing.`,
-  );
+
+for (const name of ["DATABASE_URL", "DIRECT_URL"]) {
+  const value = process.env[name] ?? "";
+  if (!value) stop(`${name} is missing from .env.dev-https.local (it needs both DATABASE_URL and DIRECT_URL).`);
+  const endpoint = endpointOf(value);
+  if (!endpoint) stop(`${name} in .env.dev-https.local is not a readable Neon URL, so its database can't be verified. Refusing.`);
+  if (PRODUCTION_ENDPOINTS.includes(endpoint)) stop(`${name} in .env.dev-https.local is a PRODUCTION database (${endpoint}). Refusing.`);
+  if (!DEV_ENDPOINTS.includes(endpoint))
+    stop(`${name} in .env.dev-https.local is not the verified development database (${endpoint}). Refusing.`);
 }
+// The same development database in .env is fine. A production URL in .env is not a problem either, because the two
+// checked above replace it for this server; but it is reported, so it is never a surprise.
+const envFile = readFileSync(join(root, ".env"), "utf8");
+for (const name of ["DATABASE_URL", "DIRECT_URL"]) {
+  const endpoint = endpointOf(envFile.match(new RegExp(`^${name}=(.*)$`, "m"))?.[1] ?? "");
+  if (endpoint && PRODUCTION_ENDPOINTS.includes(endpoint))
+    console.warn(`Note: .env ${name} is a production endpoint; this server uses the development one from .env.dev-https.local.`);
+}
+const devHost = endpointOf(process.env.DATABASE_URL);
 
 // ── the certificate ──
 try {
@@ -107,7 +126,12 @@ const child = spawn(
   {
     cwd: root,
     stdio: "inherit",
-    env: { ...process.env, NODE_OPTIONS: "--no-deprecation" },
+    env: {
+      ...process.env,
+      NODE_OPTIONS: "--no-deprecation",
+      // check-in works outside the meeting window on this server (development only; DEV_SIMULATE_MEETING=0 follows the real schedule)
+      DEV_SIMULATE_MEETING: process.env.DEV_SIMULATE_MEETING ?? "1",
+    },
   },
 );
 child.on("exit", (code) => process.exit(code ?? 0));
