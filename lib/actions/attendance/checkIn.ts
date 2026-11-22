@@ -7,6 +7,8 @@ import { pusher } from '@/lib/pusher/pusher'
 import { createLog } from '@/lib/utils/api/createLog'
 import { toDateKey } from '@/lib/utils/date.utils'
 import { VESSEL_SELECT, vesselFromRow } from '@/lib/vessel/persistence'
+import { MEETING_ATTENDANCE_CHANNEL } from '@/lib/constants/attendance-channel.constants'
+import { simulatedMeetingOpen } from '@/lib/utils/devSimulation'
 
 export async function checkIn({ date }: { date?: string } = {}): Promise<{
   success: boolean
@@ -26,7 +28,8 @@ export async function checkIn({ date }: { date?: string } = {}): Promise<{
 
     const hasDateParam = !!date
 
-    if (!hasDateParam) {
+    // development only (see devSimulation): behave as if check-in is open, so the flow can be tried outside Thursday
+    if (!hasDateParam && !simulatedMeetingOpen()) {
       const now = new Date()
       const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }))
 
@@ -89,7 +92,7 @@ export async function checkIn({ date }: { date?: string } = {}): Promise<{
       .catch(() => null)
 
     // Broadcast to TV
-    await pusher.trigger('meeting-attendance', 'check-in', {
+    await pusher.trigger(MEETING_ATTENDANCE_CHANNEL, 'check-in', {
       userId: user.id,
       vessel,
       name: user.name,
