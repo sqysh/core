@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Check, X } from 'lucide-react'
+import { AlertCircle, Check, Loader2, X } from 'lucide-react'
 import { glassButton } from '@/components/_shared/LiquidGlass'
 import { haptics } from '@/lib/utils/haptics'
 import { DECODE_METHODS, DecodeMethod } from '@/lib/utils/qrDecoder'
 
 type Status = 'starting' | 'live' | { error: string }
+
+/** What became of a scan, as the owner of the overlay decides it (e.g. a check-in), shown under the guide */
+export type ScanOutcome = { tone: 'ok' | 'error'; text: string }
 
 /** Why the camera can't be had, in words a member can act on */
 function explain(e: unknown): string {
@@ -36,8 +39,9 @@ const SCAN_EVERY = 100
  * A fullscreen live camera preview (the rear camera when there is one) with a scanning guide in the middle, reading QR
  * codes from it as they come into view (jsQR, which is plain JavaScript and so works in iOS Safari and installed apps
  * alike). No button is needed: the first code found ends the scan. The camera is released at once, the scan is
- * confirmed with a buzz (where the device has one) and on screen, and `onDetect` gets the text. Nothing decoded is
- * ever opened or acted on here. The camera is requested when the overlay opens and released when it closes or
+ * confirmed with a buzz (where the device has one) and on screen, and `onDetect` gets the text. If `onDetect` returns
+ * an outcome (or a promise of one), the overlay waits for it and shows it: green for ok, amber for an error, with a
+ * matching buzz. Nothing decoded is ever opened or followed here. The camera is requested when the overlay opens and released when it closes or
  * unmounts, and the page underneath is never touched.
  */
 export function CameraOverlay({
@@ -45,14 +49,16 @@ export function CameraOverlay({
   onDetect
 }: {
   onClose: () => void
-  /** Gets the text of the code that was read, once per scan */
-  onDetect?: (text: string) => void
+  /** Gets the text of the code that was read, once per scan; may answer with what became of it */
+  onDetect?: (text: string) => ScanOutcome | void | Promise<ScanOutcome | void>
 }) {
   const video = useRef<HTMLVideoElement>(null)
   const [status, setStatus] = useState<Status>('starting')
   // the text of the code that was read (while this is set the camera is off); Scan Again clears it
   const [result, setResult] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
+  // what became of the scan: undefined while it's being dealt with, null when nobody said
+  const [outcome, setOutcome] = useState<ScanOutcome | null | undefined>(null)
   // TEMPORARY, for testing: which way of reading found it
   // TEMPORARY: which way of reading to use (only that one runs), the camera mode, and what the last read cost
   const [via, setVia] = useState('')
@@ -103,7 +109,14 @@ export function CameraOverlay({
           release()
           setResult(code)
           setVia(m.label)
-          latest.current?.(code)
+          const answer = latest.current?.(code)
+          if (answer instanceof Promise) {
+            setOutcome(undefined)
+            answer.then(
+              (o) => !cancelled && setOutcome(o || null),
+              () => !cancelled && setOutcome({ tone: 'error', text: 'Something went wrong. Please try again.' })
+            )
+          } else setOutcome(answer || null)
           return
         }
       }
@@ -147,9 +160,12 @@ export function CameraOverlay({
   }, [attempt, hiRes])
 
   // a code was read: buzz where the device can, and always show it (many phones can't buzz)
+  // confirm once it's settled: a buzz to match the outcome (where the device can), and always on screen
   useEffect(() => {
-    if (result !== null) haptics.success()
-  }, [result])
+    if (result === null || outcome === undefined) return
+    if (outcome?.tone === 'error') haptics.error()
+    else haptics.success()
+  }, [result, outcome])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -159,6 +175,8 @@ export function CameraOverlay({
 
   const failed = typeof status === 'object'
   const detected = result !== null
+  const pending = detected && outcome === undefined
+  const bad = detected && outcome?.tone === 'error'
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Camera" className="fixed inset-0 z-110 overflow-hidden bg-black">
@@ -168,10 +186,18 @@ export function CameraOverlay({
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden="true">
           <div
             className={`flex aspect-square w-[min(60vmin,320px)] items-center justify-center rounded-3xl border-2 transition-colors duration-300 ${
-              detected ? 'border-emerald-300 bg-emerald-300/15' : 'border-white/60'
+              pending
+                ? 'border-white/80 bg-white/10'
+                : bad
+                  ? 'border-amber-300 bg-amber-300/15'
+                  : detected
+                    ? 'border-emerald-300 bg-emerald-300/15'
+                    : 'border-white/60'
             }`}
           >
-            {detected && <Check size={56} className="text-emerald-200" aria-hidden="true" />}
+            {pending && <Loader2 size={44} className="animate-spin text-white" aria-hidden="true" />}
+            {bad && <AlertCircle size={56} className="text-amber-200" aria-hidden="true" />}
+            {detected && !pending && !bad && <Check size={56} className="text-emerald-200" aria-hidden="true" />}
           </div>
         </div>
       )}
@@ -190,6 +216,16 @@ export function CameraOverlay({
           role="status"
           className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
         >
+          {pending && <p className="m-0 font-nunito text-[15px] text-white">Checking...</p>}
+          {outcome && (
+            <p
+              className={`m-0 max-w-md rounded-2xl px-4 py-2.5 text-center font-nunito text-[15px] font-semibold ${
+                outcome.tone === 'ok' ? 'bg-emerald-500/85 text-white' : 'bg-amber-400/90 text-[#1f1300]'
+              }`}
+            >
+              {outcome.text}
+            </p>
+          )}
           {DEV && (
             <p className="m-0 max-h-[30dvh] w-full max-w-md overflow-y-auto rounded-2xl border border-white/30 bg-[#06182c]/75 px-4 py-3 text-left font-mono text-[12px] break-all text-white select-text">
               {result}
@@ -198,8 +234,10 @@ export function CameraOverlay({
           )}
           <button
             type="button"
+            disabled={pending}
             onClick={() => {
               setResult(null)
+              setOutcome(null)
               setStatus('starting')
               setAttempt((a) => a + 1)
             }}

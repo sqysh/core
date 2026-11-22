@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Camera } from 'lucide-react'
-import { CameraOverlay } from '@/components/_shared/CameraOverlay'
+import { CameraOverlay, ScanOutcome } from '@/components/_shared/CameraOverlay'
+import { checkIn } from '@/lib/actions/attendance/checkIn'
+import { isCheckInQr } from '@/lib/utils/checkInQr'
 import { glassButton } from '@/components/_shared/LiquidGlass'
 
 /** Everywhere: bottom right, above the dashboard's quick-action bar (72px tall with 1rem around it) */
@@ -22,6 +24,22 @@ const GARAGE_SPOT =
  * A floating Liquid Glass camera button, on every page; it opens the camera overlay over whatever page is showing. The glass is
  * tinted dark navy so the white icon reads on light pages and on the bright sea alike.
  */
+/**
+ * What a scanned code does: CORE's meeting check-in code checks the member in to today's meeting through the same
+ * server action as the /check-in page (sign-in, the meeting window, one attendance per meeting and the boat's arrival
+ * on the TV are all decided there). Nothing from the code is passed on, so it always means today's meeting. Any other
+ * code is turned away, and is never opened.
+ */
+async function handleScan(text: string): Promise<ScanOutcome> {
+  // the development server's own address counts too, so a code made for it can be tried on a phone
+  if (!isCheckInQr(text, [window.location.host])) return { tone: 'error', text: 'That isn’t a CORE check-in code.' }
+  const res = await checkIn()
+  if (res.success && res.alreadyCheckedIn) return { tone: 'ok', text: 'You’re already checked in to today’s meeting.' }
+  if (res.success) return { tone: 'ok', text: 'You’re checked in. Your boat is on its way into the harbor.' }
+  if (res.error === 'Unauthorized') return { tone: 'error', text: 'Sign in to CORE to check in.' }
+  return { tone: 'error', text: res.error ?? 'Check-in failed. Please try again.' }
+}
+
 export function CameraButton() {
   const path = usePathname()
   const [open, setOpen] = useState(false)
@@ -37,7 +55,7 @@ export function CameraButton() {
       >
         <Camera size={22} aria-hidden="true" />
       </button>
-      {open && <CameraOverlay onClose={() => setOpen(false)} />}
+      {open && <CameraOverlay onClose={() => setOpen(false)} onDetect={handleScan} />}
     </>
   )
 }
