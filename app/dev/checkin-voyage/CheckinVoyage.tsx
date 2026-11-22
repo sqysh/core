@@ -30,6 +30,7 @@ import { SeaTuningPanel } from './_components/SeaTuningPanel'
 import { LightingGrade } from './_components/LightingGrade'
 import { LightingTuningPanel } from './_components/LightingTuningPanel'
 import { APPROVED_LIGHT, useLight } from './_lib/lightLook'
+import { MEETING_ATTENDANCE_CHANNEL } from '@/lib/constants/attendance-channel.constants'
 
 // The check-in board as a 3D harbor: everyone already checked in today is moored on load (no repeat arrivals),
 // a real check-in (the same Pusher event the TV board listens for) sails that member's boat in, and the temporary
@@ -184,7 +185,7 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
   // live check-ins from members' phones
   useEffect(() => {
     if (!built) return
-    const channel = getPusherClient().subscribe('meeting-attendance')
+    const channel = getPusherClient().subscribe(MEETING_ATTENDANCE_CHANNEL)
     const onCheckIn = (data: { userId: string; vessel?: unknown }) => {
       if (store.boats.has(data.userId)) return
       refreshIdentity(who, data.userId, data.vessel)
@@ -194,7 +195,7 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
     channel.bind('check-in', onCheckIn)
     return () => {
       channel.unbind('check-in', onCheckIn)
-      releaseChannel('meeting-attendance')
+      releaseChannel(MEETING_ATTENDANCE_CHANNEL)
     }
   }, [addBoat, store, built])
 

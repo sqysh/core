@@ -11,6 +11,7 @@ import { identities, refreshIdentity } from './_lib/identity'
 import type { HarborData } from './_lib/loadHarbor'
 import { createStore } from './_lib/store'
 import { VIEW } from './_lib/view'
+import { MEETING_ATTENDANCE_CHANNEL } from '@/lib/constants/attendance-channel.constants'
 
 // A member's phone's small copy of the TV harbor, following their own boat. Everyone already in today lies at anchor
 // in arrival order (so berths match the TV), the member's own boat sails in once `go` is set (when they've turned
@@ -57,7 +58,7 @@ export default function PhoneHarbor({ members, initialAttendees, vessels, me, sa
   // everyone who checks in after them; waits for the build, which blocks the page (a socket opened during it times out)
   useEffect(() => {
     if (!built) return
-    const channel = getPusherClient().subscribe('meeting-attendance')
+    const channel = getPusherClient().subscribe(MEETING_ATTENDANCE_CHANNEL)
     const onCheckIn = (data: { userId: string; vessel?: unknown }) => {
       if (data.userId === me) return
       refreshIdentity(who, data.userId, data.vessel)
@@ -66,7 +67,7 @@ export default function PhoneHarbor({ members, initialAttendees, vessels, me, sa
     channel.bind('check-in', onCheckIn)
     return () => {
       channel.unbind('check-in', onCheckIn)
-      releaseChannel('meeting-attendance')
+      releaseChannel(MEETING_ATTENDANCE_CHANNEL)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [built])

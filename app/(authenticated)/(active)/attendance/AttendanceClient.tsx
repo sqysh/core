@@ -11,6 +11,7 @@ import { playHorn } from './_lib/boatSounds'
 import { HONK_EVENT } from '@/lib/constants/honk.constants'
 import { STORM_EVENT } from '@/lib/constants/storm.constants'
 import { SCENE_W } from './_lib/harborMap'
+import { MEETING_ATTENDANCE_CHANNEL } from '@/lib/constants/attendance-channel.constants'
 
 type Props = {
   members: Member[]
@@ -46,7 +47,7 @@ export default function AttendanceClient({ members, initialAttendees = [] }: Pro
   }
 
   useEffect(() => {
-    const channel = getPusherClient().subscribe('meeting-attendance')
+    const channel = getPusherClient().subscribe(MEETING_ATTENDANCE_CHANNEL)
     const onCheckIn = (data: { userId: string; checkedInAt: string }) => {
       playCheckInTone()
       checkIn(data.userId, data.checkedInAt)
@@ -66,7 +67,7 @@ export default function AttendanceClient({ members, initialAttendees = [] }: Pro
       channel.unbind('check-in', onCheckIn)
       channel.unbind(HONK_EVENT, onHonk)
       channel.unbind(STORM_EVENT, onStorm)
-      releaseChannel('meeting-attendance')
+      releaseChannel(MEETING_ATTENDANCE_CHANNEL)
     }
     // checkIn only touches state setters and the stable arrive, so the first render's copy stays correct
     // eslint-disable-next-line react-hooks/exhaustive-deps
