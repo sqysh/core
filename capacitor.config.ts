@@ -15,7 +15,7 @@ function devServer() {
   if (url.protocol !== 'https:') throw new Error(`CORE_NATIVE_DEV_SERVER must be https (got ${url.protocol})`)
   if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
     throw new Error(`CORE_NATIVE_DEV_SERVER must be this Mac (localhost), not ${url.hostname}`)
-  return { url: url.origin, cleartext: false }
+  return { url: `${url.origin}/mobile/launch`, cleartext: false }
 }
 
 const config: CapacitorConfig = {
@@ -24,6 +24,7 @@ const config: CapacitorConfig = {
   webDir: 'native/www',
   backgroundColor: '#0d1727',
   server: devServer(),
+  appendUserAgent: 'CORENative',
   ios: {
     path: 'native/ios',
     contentInset: 'never',

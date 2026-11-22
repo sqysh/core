@@ -20,6 +20,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
+  // The native app (Capacitor adds CORENative to its user agent) is for members: it never shows the marketing homepage (a presentation hint only, not security)
+  if (nextUrl.pathname === '/' && req.headers.get('user-agent')?.includes('CORENative')) {
+    return NextResponse.redirect(new URL('/mobile/launch', nextUrl))
+  }
+
   const session = await auth()
   const isLoggedIn = !!session?.user
 

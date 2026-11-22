@@ -9,6 +9,7 @@ const hideLink = (path: string) =>
     '/admin',
     '/members',
     '/application',
+    '/mobile',
     '/login',
     '/dashboard',
     '/super',
