@@ -1,8 +1,17 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/prisma/client'
 import { toDateKey } from '@/lib/utils/date.utils'
+import { claimKey, claimRun, parseCampaignFlags, runPeriod } from '@/lib/email/campaign'
+import { prismaClaimStore } from '@/lib/email/campaignStore'
+import { requireCron } from '@/lib/email/requireCron'
 
-export async function GET() {
+// Sends no email, but it reorders the presenter queue: a second delivery of the same cron on the same day would
+// advance it twice. Authorized like the email jobs, ?dryRun=1 shows who would move, and one run per day is claimed.
+export async function GET(req: NextRequest) {
+  const denied = requireCron(req)
+  if (denied) return denied
+  const flags = parseCampaignFlags(req.url)
+  let release = async () => {}
   try {
     const queue = await prisma.presenterQueue.findMany({
       orderBy: { position: 'asc' },
@@ -29,6 +38,17 @@ export async function GET() {
     // Move first person to last position using temp to avoid unique constraint
     const first = queue[0]
 
+    if (flags.dryRun) {
+      return NextResponse.json({ dryRun: true, wouldMoveToEnd: first.user.name, queueLength: queue.length })
+    }
+    if (!flags.force) {
+      const claim = await claimRun(prismaClaimStore, claimKey('advance-queue', runPeriod()))
+      if (!claim.claimed) {
+        return NextResponse.json({ success: true, skipped: true, message: 'Queue already advanced today (add ?force=1 to do it again on purpose)' })
+      }
+      release = claim.release
+    }
+
     const offset = 1000
 
     await prisma.$transaction(async (tx) => {
@@ -52,6 +72,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, message: `${first.user.name} moved to end of queue` })
   } catch (error) {
+    await release() // a run that failed may be tried again
     console.error('advance queue error:', error)
     return NextResponse.json(
       { success: false, error: error instanceof Error ? error.message : String(error) },

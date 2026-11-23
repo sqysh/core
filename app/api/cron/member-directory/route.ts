@@ -2,10 +2,10 @@ import { createLog } from '@/lib/utils/api/createLog'
 import { handleApiError } from '@/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
 import { memberDirectoryTemplate } from '@/lib/email/member-directory.template'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { prepareCampaign } from '@/lib/email/cronCampaign'
+import { requireCron } from '@/lib/email/requireCron'
+import { resend } from '@/lib/resend/resend'
 
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
@@ -14,13 +14,23 @@ function getBaseUrl() {
 }
 
 async function sendDirectoryReminders(req: NextRequest) {
+  const denied = requireCron(req)
+  if (denied) return denied
   const baseUrl = getBaseUrl()
   const normalizedUrl = `${baseUrl}/api/cron/member-directory`
 
+  let release = async () => {}
   try {
-    const users = await prisma.user.findMany({
+    const everyone = await prisma.user.findMany({
       where: { membershipStatus: 'ACTIVE' }
     })
+
+    // authorized, planned (seeded and other undeliverable addresses dropped), and the day's run claimed, or answered here
+    const prep = await prepareCampaign(req, { campaign: 'member-directory', recipients: everyone })
+    if ('response' in prep) return prep.response
+    release = prep.release
+    const { plan } = prep
+    const users = plan.send
 
     const results = []
     const BATCH_SIZE = 2
@@ -36,7 +46,8 @@ async function sendDirectoryReminders(req: NextRequest) {
             to: user.email,
             subject: 'CORE Member Directory — Latest Roster',
             html: memberDirectoryTemplate(user.name.split(' ')[0] || user.email.split('@')[0])
-          })
+          }, { idempotencyKey: prep.keyFor(user.email) })
+          if (result?.error) throw new Error(result.error.message)
           return { success: true, email: user.email, result }
         } catch (error) {
           return {
@@ -97,6 +108,7 @@ async function sendDirectoryReminders(req: NextRequest) {
       failed
     })
   } catch (error: any) {
+    await release() // a run that failed may be tried again
     await createLog('error', `Directory reminder job failed`, {
       location: ['app route - GET /api/cron/member-directory'],
       message: `Fatal error in directory reminders: ${error instanceof Error ? error.message : 'Unknown error'}`,

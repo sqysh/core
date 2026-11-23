@@ -3,9 +3,9 @@ import { createLog } from '@/lib/utils/api/createLog'
 import { handleApiError } from '@/lib/utils/api/handleApiError'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { prepareCampaign } from '@/lib/email/cronCampaign'
+import { requireCron } from '@/lib/email/requireCron'
+import { resend } from '@/lib/resend/resend'
 
 // Helper to get the correct base URL
 function getBaseUrl() {
@@ -20,11 +20,21 @@ function getBaseUrl() {
 }
 
 async function sendCoreReminders(req: NextRequest) {
+  const denied = requireCron(req)
+  if (denied) return denied
   const baseUrl = getBaseUrl()
   const normalizedUrl = `${baseUrl}/api/cron/core`
 
+  let release = async () => {}
   try {
-    const users = await prisma.user.findMany({ where: { membershipStatus: 'ACTIVE' } })
+    const everyone = await prisma.user.findMany({ where: { membershipStatus: 'ACTIVE' } })
+
+    // authorized, planned (seeded and other undeliverable addresses dropped), and the day's run claimed, or answered here
+    const prep = await prepareCampaign(req, { campaign: 'core', recipients: everyone })
+    if ('response' in prep) return prep.response
+    release = prep.release
+    const { plan } = prep
+    const users = plan.send
 
     const weekEndDate = 'tonight (Wednesday at 11:59 PM)'
 
@@ -43,7 +53,8 @@ async function sendCoreReminders(req: NextRequest) {
             to: user.email,
             subject: 'Log Your Activities',
             html: coreTemplate(user.name.split(' ')[0] || user.email.split('@')[0])
-          })
+          }, { idempotencyKey: prep.keyFor(user.email) })
+          if (result?.error) throw new Error(result.error.message)
           return { success: true, email: user.email, result }
         } catch (error) {
           return {
@@ -105,10 +116,12 @@ async function sendCoreReminders(req: NextRequest) {
       success: true,
       message: `Core reminder sent to ${successful}/${users.length} active members`,
       count: users.length,
+      excludedUndeliverable: plan.excluded.length,
       successful,
       failed
     })
   } catch (error: any) {
+    await release() // a run that failed may be tried again
     await createLog('error', `Core reminder job failed`, {
       location: ['app route - POST /api/cron/core'],
       message: `Fatal error in core reminders: ${error instanceof Error ? error.message : 'Unknown error'}`,

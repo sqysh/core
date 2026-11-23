@@ -1,5 +1,7 @@
 import { createLog } from '@/lib/utils/api/createLog'
 import { resend } from '@/lib/resend/resend'
+import { prepareCampaign } from '@/lib/email/cronCampaign'
+import { requireCron } from '@/lib/email/requireCron'
 import prisma from '@/prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { presenterQueueTemplate } from '@/lib/email/presenter-queue.template'
@@ -12,12 +14,15 @@ const BATCH_SIZE = 2
 const DELAY_MS = 1000
 
 async function sendPresenterQueue(req: NextRequest) {
+  const denied = requireCron(req)
+  if (denied) return denied
   const BASE_URL =
     process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
   const normalizedUrl = `${BASE_URL}/api/cron/presenter-queue`
 
+  let release = async () => {}
   try {
-    const [members, queue, cancelledMeetings, visitorDays] = await Promise.all([
+    const [allMembers, queue, cancelledMeetings, visitorDays] = await Promise.all([
       prisma.user.findMany({
         where: { chapterId, membershipStatus: 'ACTIVE' },
         select: { id: true, name: true, email: true }
@@ -35,6 +40,13 @@ async function sendPresenterQueue(req: NextRequest) {
       prisma.cancelledMeeting.findMany({ where: { chapterId }, select: { date: true } }),
       prisma.visitorDay.findMany({ where: { chapterId }, select: { date: true } })
     ])
+
+    // authorized, planned (seeded and other undeliverable addresses dropped), and the day's run claimed, or answered here
+    const prep = await prepareCampaign(req, { campaign: 'presenter-queue', recipients: allMembers })
+    if ('response' in prep) return prep.response
+    release = prep.release
+    const { plan } = prep
+    const members = plan.send
 
     const cancelledDates = cancelledMeetings.map((m) => m.date.toISOString())
     const visitorDates = visitorDays.map((v) => v.date.toISOString())
@@ -101,7 +113,8 @@ async function sendPresenterQueue(req: NextRequest) {
                 schedule,
                 `${BASE_URL}/dashboard`
               )
-            })
+            }, { idempotencyKey: prep.keyFor(member.email) })
+            if (result?.error) throw new Error(result.error.message)
 
             return { success: true, email: member.email, result }
           } catch (error) {
@@ -142,8 +155,9 @@ async function sendPresenterQueue(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({ success: true, sent: successful, failed }) // ← was missing
+    return NextResponse.json({ success: true, sent: successful, failed, excludedUndeliverable: plan.excluded.length })
   } catch (error) {
+    await release() // a run that failed may be tried again
     await createLog('error', `Presenter queue cron failed`, {
       location: ['app route - GET /api/cron/presenter-queue'],
       name: 'PresenterQueueCronError',
