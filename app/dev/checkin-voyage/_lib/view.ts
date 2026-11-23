@@ -40,21 +40,6 @@ export function groundAt(cam: OrthographicCamera, nx: number, ny: number, h = 0)
   return { x: a.x + dir.x * t, z: a.z + dir.z * t }
 }
 
-/**
- * The approved blueprint image (1881 px wide) mapped onto the TV frame: scaled to the full 1920 width, and set 30 px
- * down so the taller 16:9 frame gains open water at the bottom. Level design is authored in blueprint pixels.
- */
-export const BLUEPRINT = { scale: SCREEN.w / 1881, dy: 30 }
-let planCam: OrthographicCamera | null = null
-/** World (x, z) of a blueprint pixel, for a point standing at height `h` */
-export function fromBlueprint(bx: number, by: number, h = 0): [number, number] {
-  planCam ??= viewCamera()
-  const sx = bx * BLUEPRINT.scale
-  const sy = by * BLUEPRINT.scale + BLUEPRINT.dy
-  const p = groundAt(planCam, (sx / SCREEN.w) * 2 - 1, 1 - (sy / SCREEN.h) * 2, h)
-  return [p.x, p.z]
-}
-
 const v = new Vector3()
 /** World point → reference-screen pixels */
 export function toScreen(cam: OrthographicCamera, x: number, y: number, z: number) {

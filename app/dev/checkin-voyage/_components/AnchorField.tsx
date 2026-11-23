@@ -6,7 +6,6 @@ import { BoxGeometry, BufferGeometry, CylinderGeometry, InstancedMesh, Object3D,
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { HarborStore } from '../_lib/store'
 import { hullToWorld } from '../_lib/vessel/anchor'
-import { VESSEL_CLASS_SPECS } from '../_lib/vessel/classes'
 import { submerged, SUBMERGED_ORDER } from '../_lib/vessel/submerged'
 import { seaAt } from '../_lib/waves'
 import { kit } from './boats/kit'

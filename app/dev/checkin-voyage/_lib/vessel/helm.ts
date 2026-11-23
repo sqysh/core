@@ -3,7 +3,6 @@ import { plateRect } from '../berths'
 import { FWD } from '../harbor'
 import type { BoatRuntime } from '../store'
 import { hullToWorld, letGo, SCOPE, weigh } from './anchor'
-import { VESSEL_CLASS_SPECS } from './classes'
 
 // Handing a vessel between the autopilot and a player, and the player's anchor command. A boat lying to its anchor
 // weighs it before it can make way; letting go brings it to a stop, and once the anchor bites it's moored again

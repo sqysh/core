@@ -2,7 +2,7 @@
 // bought with real money (or any ability) bears on treasure.
 import assert from 'node:assert/strict'
 import { defaultVesselConfig, STAGE_IDS, STAGES, StageId, VesselConfig } from '@/lib/vessel/catalog'
-import { ABILITIES, ACCESSORY_IDS, effectsOf, ITEM_IDS, itemDef, ItemId, setStage } from '@/lib/vessel/items'
+import { ABILITIES, ACCESSORY_IDS, effectsOf, ITEM_IDS, itemDef, setStage } from '@/lib/vessel/items'
 import { statChanges, vesselStats } from '@/lib/vessel/stats'
 import { specOf } from '@/app/dev/checkin-voyage/_lib/vessel/modular'
 

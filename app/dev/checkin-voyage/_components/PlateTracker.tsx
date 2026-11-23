@@ -3,9 +3,8 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useRef } from 'react'
 import { Vector3 } from 'three'
-import { damp } from '../../voyage/_lib/fleet'
+import { damp } from '../_lib/damp'
 import { HarborStore } from '../_lib/store'
-import { VESSEL_CLASS_SPECS } from '../_lib/vessel/classes'
 
 // Keeps every nameplate (plain DOM, sized for across-the-room reading) pinned above its boat: projects the boat's
 // masthead to the screen each frame, stacks plates that would collide, and eases them so they never jitter. A thin

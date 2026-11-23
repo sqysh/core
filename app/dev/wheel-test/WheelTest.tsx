@@ -7,18 +7,19 @@ import { wedgeLabel, WHEEL } from '@/types/_wheel.types'
 // and spins it to a random wedge each click so you can eyeball the animation and
 // the landing. Delete this page (or leave it) once you're happy with the look.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 
-export default function WheelTestPage() {
+/** Nothing to subscribe to: only tells React this is the client (false while rendering on the server) */
+const subscribeNever = () => () => {}
+
+export default function WheelTest() {
   const [nonce, setNonce] = useState(0)
   const [target, setTarget] = useState<number | null>(null)
   const [result, setResult] = useState<string>('')
   const [spinning, setSpinning] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false)
   const [spinSize, setSpinSize] = useState(680)
   const { play } = useSounds()
-
-  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     const compute = () => setSpinSize(Math.min(window.innerWidth, window.innerHeight) * 0.82)

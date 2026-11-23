@@ -25,7 +25,7 @@ import { Vec3 } from '../../_lib/vessel/classes'
 import { VesselLook } from '../../_lib/vessel/look'
 import { layoutOf, ModularLayout, Zone } from '../../_lib/vessel/modular'
 import { Burgee, Flag } from './accessories'
-import { Buoy, Fenders, fin, Hull, NavLights, sailGeometry, Trap } from './Boats'
+import { Buoy, fin, Hull, NavLights, sailGeometry, Trap } from './Boats'
 import { BowRoller, Cleat, Crew, enamel, Fender, kit, LifeRing, Propeller, Rail, Rod, Wet } from './kit'
 
 // The modular boat: every fitted part a real piece of the model, standing where its layout (vessel/modular.ts) puts

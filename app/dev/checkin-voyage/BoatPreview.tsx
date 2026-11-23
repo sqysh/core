@@ -55,8 +55,6 @@ extend(THREE as unknown as Record<string, never>)
 
 /** Sails up and fenders in, as it sails; propeller still */
 const SHOWROOM_RIG: Rig = { hoist: 1, moored: false, prop: 0 }
-/** Height the boat is held at, clear of the waterline (and of the deepest keel) */
-const RAISE = 1.15
 
 /**
  * What to ask the browser for, richest first: each attempt is on a fresh canvas. All WebGL 2: three.js dropped WebGL 1

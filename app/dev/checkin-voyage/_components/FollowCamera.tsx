@@ -3,7 +3,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { OrthographicCamera, Vector3 } from 'three'
-import { damp } from '../../voyage/_lib/fleet'
+import { damp } from '../_lib/damp'
 import { HarborStore } from '../_lib/store'
 import { VIEW } from '../_lib/view'
 

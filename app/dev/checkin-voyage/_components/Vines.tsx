@@ -14,8 +14,6 @@ import { vine, vineMaterial } from '../_lib/vegetationKit'
 // its own (see QrSign.tsx) from the same kit.
 
 const R = Math.SQRT1_2
-/** The direction rock faces toward the viewer: +v in the diorama's frame (a horizontal vector toward the camera) */
-const TOWARD = new Vector3(R, 0, R)
 
 export const vineTime = { value: 0 }
 

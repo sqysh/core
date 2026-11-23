@@ -1,4 +1,4 @@
-import { angleDelta, damp } from '../../../voyage/_lib/fleet'
+import { angleDelta, damp } from '../damp'
 import { playArrival } from '../boatAudio'
 import { seabed } from '../coast'
 import { FIELD_CENTER, harborShore, MOOR_HEADING, pathAt } from '../harbor'
@@ -6,7 +6,7 @@ import type { BoatRuntime, HarborStore } from '../store'
 import { VIEW } from '../view'
 import { seaAt, swellMask } from '../waves'
 import { anchorRest, letGo, SCOPE, stepAnchor } from './anchor'
-import { VESSEL_CLASS_SPECS, VesselClassSpec } from './classes'
+import { VesselClassSpec } from './classes'
 
 // One movement system for every vessel, whoever has the helm. Each frame a boat is driven by one of:
 //   autopilot  a check-in arrival following its planned route in (the speed and heading response it always had)

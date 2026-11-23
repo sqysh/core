@@ -3,10 +3,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import { AdditiveBlending, Color, InstancedMesh, MeshBasicMaterial, Object3D, PlaneGeometry } from 'three'
-import { foamTexture } from '../../voyage/_components/Wakes'
+import { foamTexture } from '../_lib/foam'
 import { HarborStore } from '../_lib/store'
 import { seaAt, swellMask } from '../_lib/waves'
-import { VESSEL_CLASS_SPECS } from '../_lib/vessel/classes'
 
 // Readable wakes for every boat making way (an arrival, or a player at the helm), in one instanced draw: a spreading
 // V of foam from the stern, a churn of prop wash, and bow waves peeling off both sides, plus a ring of spray wherever
@@ -38,7 +37,6 @@ export function WakeField({ store }: { store: HarborStore }) {
     const m = mesh.current
     if (!m) return
     const dt = Math.min(rawDt, 0.05)
-    const t = clock.elapsedTime
     const list = puffs.current
 
     // splashes: a burst of spray thrown outward in a ring, and a churn where it went in

@@ -369,7 +369,6 @@ function Lobster({ p, rig, showroom }: { p: VesselLook; rig: Rig; showroom?: boo
   // painted in the member's finish; fittings take their equipment colour when they've chosen one
   const painted = (hex: string) => enamel(hex, p.finish)
   const metal = (original: Material) => (p.equipment ? enamel(p.equipment, p.finish) : original)
-  const deckMat = p.deck ? enamel(p.deck, p.finish) : null
   const k = kit()
   const at = useStations(LOBSTER)
   const paint = useMemo<HullPaint>(
