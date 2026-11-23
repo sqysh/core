@@ -1,11 +1,13 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { CylinderGeometry, ExtrudeGeometry, Shape, SphereGeometry, TorusGeometry } from 'three'
 import { archPath } from '../_lib/geometry'
 import { ArchedWindow, OnWall } from './Parts'
 import { materials } from '../_lib/materials'
 import { TOWER, towerRadius } from '../_lib/lighthouseTile'
+import { LanternStyle } from '../_lib/lanternStyle'
+import { FresnelOptics, lanternGlazing } from './FresnelOptics'
 
 // The striped tower: dressed-stone foundation, five painted bands, a corbelled gallery with a railing, the lantern
 // room and a copper-rimmed teal dome. Local origin is the centre of its foundation, on the rock.
@@ -14,6 +16,7 @@ const LANTERN = { r: 1.08, h: 1.42 }
 
 export function Lighthouse({ position }: { position: [number, number, number] }) {
   const m = materials()
+  const fresnel = useContext(LanternStyle) === 'fresnel'
 
   const bands = useMemo(
     () =>
@@ -39,6 +42,7 @@ export function Lighthouse({ position }: { position: [number, number, number] })
   }, [])
 
   const posts = useMemo(() => Array.from({ length: 30 }, (_, i) => (i / 30) * Math.PI * 2), [])
+  const mullions = useMemo(() => Array.from({ length: 10 }, (_, i) => (i / 10) * Math.PI * 2 + 0.2), [])
   const lanternPanes = useMemo(() => Array.from({ length: 8 }, (_, i) => (i / 8) * Math.PI * 2 + 0.2), [])
   const footWindows = useMemo(() => Array.from({ length: 7 }, (_, i) => (i / 7) * Math.PI * 2 + 0.35), [])
   const domeGeo = useMemo(() => new SphereGeometry(1.22, 64, 24, 0, Math.PI * 2, 0, Math.PI / 2), [])
@@ -146,14 +150,48 @@ export function Lighthouse({ position }: { position: [number, number, number] })
         <mesh material={m.cream} position={[0, 0.16, 0]} castShadow>
           <cylinderGeometry args={[LANTERN.r + 0.06, LANTERN.r + 0.08, 0.32, 64]} />
         </mesh>
-        <mesh material={m.cream} position={[0, LANTERN.h / 2 + 0.2, 0]} castShadow receiveShadow>
-          <cylinderGeometry args={[LANTERN.r, LANTERN.r, LANTERN.h - 0.1, 64]} />
-        </mesh>
-        {lanternPanes.map((a, i) => (
-          <OnWall key={i} a={a} y={0.42} r={LANTERN.r}>
-            <ArchedWindow w={0.36} h={0.86} glow />
-          </OnWall>
-        ))}
+        {fresnel ? (
+          <>
+            {/* glazed: clear glass all round, lit from inside, held by slim straight mullions, a sill and a head rail,
+                with one fine glazing bar across; a narrow band above */}
+            <mesh material={lanternGlazing()} position={[0, 0.84, 0]} renderOrder={1}>
+              <cylinderGeometry args={[LANTERN.r - 0.01, LANTERN.r - 0.01, 1.04, 48, 1, true]} />
+            </mesh>
+            <mesh material={m.cream} position={[0, (1.36 + LANTERN.h + 0.1) / 2, 0]} castShadow>
+              <cylinderGeometry args={[LANTERN.r, LANTERN.r, LANTERN.h + 0.1 - 1.36, 64]} />
+            </mesh>
+            {mullions.map((a, i) => (
+              <OnWall key={i} a={a} y={0.84} r={LANTERN.r}>
+                <mesh material={m.cream} castShadow>
+                  <boxGeometry args={[0.055, 1.04, 0.05]} />
+                </mesh>
+              </OnWall>
+            ))}
+            {[
+              { y: 0.34, t: 0.035 },
+              { y: 1.35, t: 0.035 },
+              { y: 0.86, t: 0.014 }
+            ].map((rail, i) => (
+              <mesh key={i} material={m.cream} position={[0, rail.y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                <torusGeometry args={[LANTERN.r + 0.005, rail.t, 6, 64]} />
+              </mesh>
+            ))}
+            <group position={[0, 0.32, 0]}>
+              <FresnelOptics />
+            </group>
+          </>
+        ) : (
+          <>
+            <mesh material={m.cream} position={[0, LANTERN.h / 2 + 0.2, 0]} castShadow receiveShadow>
+              <cylinderGeometry args={[LANTERN.r, LANTERN.r, LANTERN.h - 0.1, 64]} />
+            </mesh>
+            {lanternPanes.map((a, i) => (
+              <OnWall key={i} a={a} y={0.42} r={LANTERN.r}>
+                <ArchedWindow w={0.36} h={0.86} glow />
+              </OnWall>
+            ))}
+          </>
+        )}
         {/* copper rim and cornice under the dome */}
         <mesh material={m.copper} position={[0, LANTERN.h + 0.14, 0]} castShadow>
           <cylinderGeometry args={[1.3, 1.16, 0.16, 64]} />
