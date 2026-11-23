@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react'
+import { CSSProperties, ReactNode, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { reportError } from '@/lib/utils/reportError'
 import { canRenderWebGL } from '@/lib/utils/webgl'
 import { RenderBoundary } from './RenderBoundary'
@@ -17,6 +17,9 @@ import { RenderBoundary } from './RenderBoundary'
 //     never holds more than one at a time
 //   - falls back to a lightweight still (`fallback`) if it fails or its context is lost, and reports why
 // The fallback also shows while the scene loads, then fades out under it, so nothing changes once it's up.
+
+/** Nothing to subscribe to: the answer doesn't change once it's been checked */
+const subscribeNever = () => () => {}
 
 const Spline = dynamic(() => import('@splinetool/react-spline'), { ssr: false, loading: () => null })
 
@@ -36,23 +39,20 @@ export function SafeSpline({
   style?: CSSProperties
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [capable, setCapable] = useState(false)
-  const [near, setNear] = useState(false)
+  // checked on the client only (false while rendering on the server and hydrating)
+  const capable = useSyncExternalStore(subscribeNever, canRenderWebGL, () => false)
+  const [seenNear, setNear] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
 
-  useEffect(() => {
-    setCapable(canRenderWebGL())
-  }, [])
+  // without an IntersectionObserver there's nothing to wait for: it's near as soon as it can run
+  const near = seenNear || (capable && typeof IntersectionObserver === 'undefined')
 
   // load it as it comes near; on a touch device, let it go again once it's well out of view
   useEffect(() => {
     const el = ref.current
     if (!el || !capable) return
-    if (typeof IntersectionObserver === 'undefined') {
-      setNear(true)
-      return
-    }
+    if (typeof IntersectionObserver === 'undefined') return
     const touch = window.matchMedia('(pointer: coarse)').matches
     const io = new IntersectionObserver(
       ([entry]) => {

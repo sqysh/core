@@ -9,15 +9,16 @@ import { useEffect, useState } from 'react'
 import { pct } from '@/lib/utils/math.utils'
 
 export function PollStage({ pollId }: { pollId: string }) {
-  const [poll, setPoll] = useState<PollView | null>(null)
+  // the poll is kept with the id it was fetched for, so a new pollId shows nothing until its own poll arrives
+  const [loaded, setLoaded] = useState<{ pollId: string; poll: PollView } | null>(null)
+  const poll = loaded?.pollId === pollId ? loaded.poll : null
   const [live, setLive] = usePollResults(poll)
 
   useEffect(() => {
     let cancelled = false
-    setPoll(null)
     getPoll(pollId).then((res) => {
       if (cancelled || !res.success) return
-      setPoll(res.data)
+      setLoaded({ pollId, poll: res.data })
       setLive({
         pollId: res.data.id,
         status: res.data.status,

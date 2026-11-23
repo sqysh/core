@@ -92,12 +92,11 @@ function Tile({ label, value, sub, accent }: { label: string; value: string; sub
 export function TreasurerStage() {
   const [board, setBoard] = useState<TreasurerBoard | null>(null)
 
-  async function load() {
-    const res = await getTreasurerBoard()
-    if (res.success) setBoard(res.data)
-  }
-
   useEffect(() => {
+    const load = () =>
+      getTreasurerBoard().then((res) => {
+        if (res.success) setBoard(res.data)
+      })
     // the board sweeping onto the TV
     playSfx('treasury-reveal', 0.5)
     load()

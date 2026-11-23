@@ -6,6 +6,8 @@ import { sendStageReaction } from '@/lib/actions/stage/sendStageReaction'
 import { REACTION_COOLDOWN_MS, REACTION_EMOJIS } from '@/lib/constants/reactions.constants'
 import { LIFT, delay } from '@/app/(authenticated)/(active)/check-in/_lib/motion'
 
+const currentTime = () => Date.now()
+
 // Tap one and it floats up the TV
 export function ReactionBar({ settle }: { settle: number }) {
   const [popped, setPopped] = useState<string | null>(null)
@@ -13,7 +15,7 @@ export function ReactionBar({ settle }: { settle: number }) {
   const { play } = useSounds({ volume: 0.5 })
 
   function react(emoji: string) {
-    const now = Date.now()
+    const now = currentTime()
     if (now - lastTap.current < REACTION_COOLDOWN_MS) return
     lastTap.current = now
 

@@ -47,28 +47,26 @@ export function AnchorField({ store }: { store: HarborStore }) {
   const rodes = useRef<InstancedMesh>(null)
   const wetAnchors = useRef<InstancedMesh>(null)
   const wetRodes = useRef<InstancedMesh>(null)
-  const anchorGeo = useMemo(anchorGeometry, [])
+  const anchorGeo = useMemo(() => anchorGeometry(), [])
   const rodeGeo = useMemo(() => {
     const g = new CylinderGeometry(1, 1, 1, 5, 1, true)
     g.translate(0, 0.5, 0)
     return g
   }, [])
   const k = kit()
-  const tmp = useMemo(
-    () => ({
-      o: new Object3D(),
-      roller: new Vector3(),
-      shackle: new Vector3(),
-      water: new Vector3(),
-      hull: new Quaternion(),
-      q: new Quaternion(),
-      hang: new Quaternion(),
-      dir: new Vector3()
-    }),
-    []
-  )
+  const tmpRef = useRef({
+    o: new Object3D(),
+    roller: new Vector3(),
+    shackle: new Vector3(),
+    water: new Vector3(),
+    hull: new Quaternion(),
+    q: new Quaternion(),
+    hang: new Quaternion(),
+    dir: new Vector3()
+  })
 
   useFrame(({ clock }) => {
+    const tmp = tmpRef.current
     const am = anchors.current
     const rm = rodes.current
     if (!am || !rm) return

@@ -28,14 +28,18 @@ const cameraPosition: [number, number, number] = [
   FOCUS[2] + DISTANCE * Math.cos(ELEVATION) * Math.SQRT1_2
 ]
 
+function zoomTo(camera: OrthographicCamera, zoom: number) {
+  camera.zoom = zoom
+  camera.updateProjectionMatrix()
+}
+
 /** Fit the diorama to the window, and keep zoom limits relative to that fit */
 function FitToView() {
   const camera = useThree((s) => s.camera) as OrthographicCamera
   const size = useThree((s) => s.size)
   const fit = useMemo(() => Math.min(size.height / FRAME_H, size.width / FRAME_W), [size])
   useLayoutEffect(() => {
-    camera.zoom = fit
-    camera.updateProjectionMatrix()
+    zoomTo(camera, fit)
   }, [camera, fit])
   return (
     <OrbitControls

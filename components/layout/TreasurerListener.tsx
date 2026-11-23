@@ -15,9 +15,12 @@ export default function TreasurerListener() {
   const { data: session } = useSession()
 
   const userIdRef = useRef<string | undefined>(undefined)
-  userIdRef.current = session?.user?.id
   const pathRef = useRef(pathname)
-  pathRef.current = pathname
+  const sessionUserId = session?.user?.id
+  useEffect(() => {
+    userIdRef.current = sessionUserId
+    pathRef.current = pathname
+  }, [sessionUserId, pathname])
 
   useEffect(() => {
     const channel = getPusherClient().subscribe(TREASURY_CHANNEL)

@@ -70,9 +70,7 @@ export function BoatArrival({
     return () => window.clearTimeout(t)
   }, [])
   // turned sideways (or asked to see it as it is): on to the boat, and it stays there whichever way they hold it
-  useEffect(() => {
-    if (stage === 'rotate' && (landscape || upright)) setStage('boat')
-  }, [stage, landscape, upright])
+  if (stage === 'rotate' && (landscape || upright)) setStage('boat')
 
   const showing = stage === 'boat' && ready
   return (

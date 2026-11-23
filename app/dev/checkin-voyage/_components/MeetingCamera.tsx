@@ -16,18 +16,21 @@ const BIAS = 0.05
 const MAX_BIAS = 1.2
 
 export function MeetingCamera({ store }: { store: HarborStore }) {
-  const camera = useThree((s) => s.camera) as OrthographicCamera
+  const get = useThree((s) => s.get)
   const size = useThree((s) => s.size)
   const bias = useRef(new Vector3())
   const goal = useRef(new Vector3())
   const target = useRef(new Vector3())
 
   useEffect(() => {
+    const camera = get().camera
     camera.near = 0.5
     camera.far = 500
-  }, [camera])
+  }, [get])
 
-  useFrame(({ clock }, rawDt) => {
+  useFrame((state, rawDt) => {
+    const { clock } = state
+    const camera = state.camera as OrthographicCamera
     const dt = Math.min(rawDt, 0.05)
     const t = clock.elapsedTime
     // the frame is laid out for 1920×1080; other screens scale it to fit whichever side is tighter

@@ -1,7 +1,7 @@
 'use client'
 
 import { useFrame } from '@react-three/fiber'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { BufferAttribute, Color, MeshStandardMaterial, OrthographicCamera, PlaneGeometry } from 'three'
 import { fbm3, smoothstep } from '../../lighthouse/_lib/noise'
 import { PALETTE } from '../../lighthouse/_lib/materials'
@@ -117,11 +117,18 @@ export function HarborWater() {
     g.rotateX(-Math.PI / 2)
     return g
   }, [])
-  const floorGeo = useMemo(seabedGeometry, [])
+  const floorGeo = useMemo(() => seabedGeometry(), [])
   const { water, floor } = useMemo(() => ({ water: seaSurfaceMaterial(bakeSeabed(), time, px), floor: seabedMaterial(time) }), [time, px])
+  // the uniforms are shared with the materials above; the frame loop reaches them through a ref
+  const uniforms = useRef<{ time: { value: number }; px: { value: number } } | null>(null)
+  useEffect(() => {
+    uniforms.current = { time, px }
+  }, [time, px])
   useFrame(({ clock, camera }) => {
-    time.value = clock.elapsedTime
-    px.value = 1 / (camera as OrthographicCamera).zoom
+    const u = uniforms.current
+    if (!u) return
+    u.time.value = clock.elapsedTime
+    u.px.value = 1 / (camera as OrthographicCamera).zoom
   })
   return (
     <group>

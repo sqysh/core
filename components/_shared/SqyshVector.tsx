@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useReducedMotion } from 'framer-motion'
 
 // Vector Sqysh, traced from the measured silhouette of sqysh.webp so the parts
@@ -183,6 +183,19 @@ export function SqyshVector({
 
 export const TYPE_MS = 34
 
+/** Nothing to subscribe to: only tells React this is the client (false while rendering on the server) */
+const subscribeNever = () => () => {}
+
+/** Whether this browser has already finished the guide for `storageKey` (storage that's blocked counts as not) */
+function seenBefore(storageKey?: string) {
+  if (!storageKey) return false
+  try {
+    return !!localStorage.getItem(storageKey)
+  } catch {
+    return false
+  }
+}
+
 export function TypeText({
   text,
   startAt = 0,
@@ -199,7 +212,9 @@ export function TypeText({
 
   // Latest onDone without making it an effect dep; callers pass inline functions
   const onDoneRef = useRef(onDone)
-  onDoneRef.current = onDone
+  useEffect(() => {
+    onDoneRef.current = onDone
+  }, [onDone])
 
   useEffect(() => {
     if (reduce) return
@@ -257,28 +272,20 @@ export function SqyshGuide({
   accent?: string
 }) {
   const reduce = !!useReducedMotion()
-  const [open, setOpen] = useState(false)
+  // the guide is only ever shown on the client, once mounted (false while rendering on the server and hydrating)
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false)
+  // the key it was last finished or skipped for
+  const [closed, setClosed] = useState<{ key: string | undefined } | null>(null)
   const [step, setStep] = useState(0)
   const [typed, setTyped] = useState(false)
-  const [mode, setMode] = useState<SqyshMode>('wave')
+  // he never opens mid-wave: he's already settled by the time the guide shows
+  const [mode, setMode] = useState<SqyshMode>('idle')
 
-  // Mount check: skip if this guide has already been seen
-  useEffect(() => {
-    if (storageKey) {
-      try {
-        if (localStorage.getItem(storageKey)) return
-      } catch {
-        // storage blocked; just show it
-      }
-    }
-    setOpen(true)
-  }, [storageKey])
+  // Skip if this guide has already been seen
+  const open = mounted && !(closed && closed.key === storageKey) && !seenBefore(storageKey)
 
   useEffect(() => {
-    if (!open || reduce) {
-      setMode('idle')
-      return
-    }
+    if (!open || reduce) return
     const id = setTimeout(() => setMode('idle'), 1900)
     return () => clearTimeout(id)
   }, [open, reduce])
@@ -291,7 +298,7 @@ export function SqyshGuide({
         // fine
       }
     }
-    setOpen(false)
+    setClosed({ key: storageKey })
     onDone?.()
   }
 

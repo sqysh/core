@@ -2,7 +2,7 @@
 
 import { RoundedBox } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import {
   BoxGeometry,
   BufferAttribute,
@@ -52,9 +52,10 @@ export function Modular({ p, rig, name, showroom }: { p: VesselLook; rig: Rig; n
   const ps: Paints = { p, k, lay, painted, metal, wood }
   const { has, at, stern, bow } = lay
   // without striping the boot stripe is simply painted in the hull colour
+  const striped = (p.parts ?? []).includes('decor:stripe')
   const paint = useMemo<HullPaint>(
-    () => ({ topsides: p.hull, stripe: has('decor:stripe') ? p.accent : p.hull, bottom: p.bottom, sheerLine: p.trim }),
-    [p.hull, p.accent, p.bottom, p.trim, has]
+    () => ({ topsides: p.hull, stripe: striped ? p.accent : p.hull, bottom: p.bottom, sheerLine: p.trim }),
+    [p.hull, p.accent, p.bottom, p.trim, striped]
   )
   return (
     <group position={[0, lay.spec.lift, 0]}>
@@ -447,7 +448,7 @@ const lowerUnit = () => ({
 
 /** An outboard on the transom: the small one is old and a little tilted; on a tiller boat it's steered by its arm */
 function Outboard({ at, rig, lay, p, k, painted, metal }: Paints & { at: Vec3; rig: Rig }) {
-  const lower = useMemo(lowerUnit, [])
+  const lower = useMemo(() => lowerUnit(), [])
   const { has } = lay
   const small = has('engine:small')
   const cowl = painted(p.equipment ?? (small ? '#6f7f78' : '#2a2f36'))
@@ -1042,9 +1043,14 @@ function Lantern({ at, metal }: { at: Vec3; metal: Material }) {
     () => new MeshStandardMaterial({ color: '#ffcf7a', emissive: '#ffb347', emissiveIntensity: 1.6 }),
     []
   )
+  // the frame loop reaches the material through a ref
+  const flameRef = useRef(flame)
+  useEffect(() => {
+    flameRef.current = flame
+  }, [flame])
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
-    flame.emissiveIntensity = 1.3 + Math.sin(t * 13) * 0.25 + Math.sin(t * 7.3) * 0.2
+    flameRef.current.emissiveIntensity = 1.3 + Math.sin(t * 13) * 0.25 + Math.sin(t * 7.3) * 0.2
   })
   return (
     <group position={at}>
@@ -1094,10 +1100,16 @@ function Dressing({ lines, kind }: { lines: [Vec3, Vec3][]; kind: 'flags' | 'lig
     return g
   }, [])
   const wave = useRef<Group>(null)
+  // the frame loop reaches the bulbs through a ref
+  const bulbsRef = useRef(bulbs)
+  useEffect(() => {
+    bulbsRef.current = bulbs
+  }, [bulbs])
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
-    bulbs[0].emissiveIntensity = 1.1 + Math.sin(t * 2.1) * 0.5
-    bulbs[1].emissiveIntensity = 1.1 + Math.sin(t * 2.1 + Math.PI) * 0.5
+    const lit = bulbsRef.current
+    lit[0].emissiveIntensity = 1.1 + Math.sin(t * 2.1) * 0.5
+    lit[1].emissiveIntensity = 1.1 + Math.sin(t * 2.1 + Math.PI) * 0.5
     if (wave.current) wave.current.children.forEach((c, i) => (c.rotation.y = Math.sin(t * 6 + i) * 0.35))
   })
   if (kind === 'lights')
@@ -1421,7 +1433,7 @@ const WATER = () =>
 
 /** A round hot tub with bubbling water */
 function HotTub({ at, d, shell }: { at: Vec3; d: number; shell: Material }) {
-  const water = useMemo(WATER, [])
+  const water = useMemo(() => WATER(), [])
   const bubbles = useRef<Group>(null)
   useFrame(({ clock }) => {
     bubbles.current?.children.forEach((b, i) => {
@@ -1468,7 +1480,7 @@ function Pool({
   rim: Material
   metal: Material
 }) {
-  const water = useMemo(WATER, [])
+  const water = useMemo(() => WATER(), [])
   const t = 0.035
   return (
     <group position={at}>
@@ -1546,8 +1558,13 @@ function Grill({ at }: { at: Vec3 }) {
     () => new MeshStandardMaterial({ color: '#ff7a2f', emissive: '#ff5a1a', emissiveIntensity: 1.4 }),
     []
   )
+  // the frame loop reaches the material through a ref
+  const coalsRef = useRef(coals)
+  useEffect(() => {
+    coalsRef.current = coals
+  }, [coals])
   useFrame(({ clock }) => {
-    coals.emissiveIntensity = 1.2 + Math.sin(clock.elapsedTime * 3.1) * 0.3
+    coalsRef.current.emissiveIntensity = 1.2 + Math.sin(clock.elapsedTime * 3.1) * 0.3
   })
   const black = enamel('#222326', 'satin')
   return (

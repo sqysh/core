@@ -1,6 +1,6 @@
 'use client'
 
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { DirectionalLight, HemisphereLight } from 'three'
 import { getLight, lightVersion, sunDirection } from '../_lib/lightLook'
@@ -11,12 +11,11 @@ import { getLight, lightVersion, sunDirection } from '../_lib/lightLook'
  * settling in and might otherwise be left with the rig's own values.
  */
 export function LightingGrade() {
-  const scene = useThree((s) => s.scene)
   const applied = useRef(-1)
   const frames = useRef(0)
   const sunDistance = useRef(0)
 
-  useFrame(() => {
+  useFrame(({ scene }) => {
     const v = lightVersion()
     if (v === applied.current && frames.current++ > 120) return
     applied.current = v

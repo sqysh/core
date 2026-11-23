@@ -12,7 +12,7 @@
     "env:optimize": "node scripts/environment/optimize-glb.mjs",
     "build": "npm run generate && next build",
     "start": "next start",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint .",
     "generate": "prisma generate",
     "send-changelog": "node scripts/send-changelog.js",
     "show-users": "node scripts/show-users.js",
@@ -26,7 +26,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node tests/run.mjs",
     "test:db": "node tests/run.mjs --integration",
-    "check": "npm run typecheck && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

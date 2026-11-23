@@ -98,10 +98,7 @@ export default function ResultsReveal({
   const ties = results.filter((r) => r.tied && !resolved[r.position])
 
   // Seed the editable roster from the vote once, after ties are settled
-  useEffect(() => {
-    if (!finished || roster) return
-    if (ties.length) return
-
+  if (finished && !roster && !ties.length) {
     const seeded: Roster = {}
     for (const r of results) {
       const pick = resolved[r.position]
@@ -114,7 +111,7 @@ export default function ResultsReveal({
       }))
     }
     setRoster(seeded)
-  }, [finished, ties.length, results, resolved, roster])
+  }
 
   useEffect(() => {
     const timeouts = timeoutsRef.current

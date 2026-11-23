@@ -3,11 +3,15 @@
 import { Environment, Lightformer } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import { useEffect, useMemo } from 'react'
-import { Object3D } from 'three'
+import { Object3D, Scene } from 'three'
 import { studioBackdrop } from '../_lib/textures'
 
 // The world's single lighting rig: a warm key from the upper left, a cool sky fill, a faint cool rim, and a soft studio
 // environment for gentle reflections on paint, glass and copper. Every tile is lit by this, never by its own lights.
+
+function setBackground(scene: Scene, background: Scene['background']) {
+  scene.background = background
+}
 
 export function StudioLighting({
   focus = [0, 0, 0],
@@ -29,9 +33,9 @@ export function StudioLighting({
   const scene = useThree((s) => s.scene)
   useEffect(() => {
     if (!backdrop) return
-    scene.background = studioBackdrop()
+    setBackground(scene, studioBackdrop())
     return () => {
-      scene.background = null
+      setBackground(scene, null)
     }
   }, [scene, backdrop])
 

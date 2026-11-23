@@ -66,9 +66,11 @@ export function CameraOverlay({
   const [hiRes, setHiRes] = useState(false)
   const [stats, setStats] = useState({ camera: '-', decoding: '-', ms: 0 })
   const methodRef = useRef(method)
-  methodRef.current = method
   const latest = useRef(onDetect)
-  latest.current = onDetect
+  useEffect(() => {
+    methodRef.current = method
+    latest.current = onDetect
+  }, [method, onDetect])
 
   useEffect(() => {
     let stream: MediaStream | null = null

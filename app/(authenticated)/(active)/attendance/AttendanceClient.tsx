@@ -22,6 +22,11 @@ type Props = {
 const CHECK_IN_URL = 'https://coastalreferralxchange.com/check-in'
 const COMBO_WINDOW = 1800 // ms; scans closer than this climb the ladder
 
+/** Removes and returns a random entry (kept outside the component: it is an event-time helper, not render logic) */
+function takeRandom<T>(list: T[]): T {
+  return list.splice(Math.floor(Math.random() * list.length), 1)[0]
+}
+
 export default function AttendanceClient({ members, initialAttendees = [] }: Props) {
   const [checkedIn, setCheckedIn] = useState<Map<string, string>>(() => new Map(initialAttendees.map((id) => [id, ''])))
   const { fleet, arrive } = useHarbor(members, initialAttendees)
@@ -30,7 +35,9 @@ export default function AttendanceClient({ members, initialAttendees = [] }: Pro
   const [swellKey, setSwellKey] = useState(0)
   const [honks, setHonks] = useState<Record<string, number>>({})
   const fleetRef = useRef(fleet)
-  fleetRef.current = fleet
+  useEffect(() => {
+    fleetRef.current = fleet
+  })
 
   function playCheckInTone() {
     const now = Date.now()
@@ -79,7 +86,7 @@ export default function AttendanceClient({ members, initialAttendees = [] }: Pro
   function simulate(count = 1) {
     const unchecked = sorted.filter((m) => !checkedIn.has(m.id))
     for (let i = 0; i < count && unchecked.length; i++) {
-      const pick = unchecked.splice(Math.floor(Math.random() * unchecked.length), 1)[0]
+      const pick = takeRandom(unchecked)
       playCheckInTone()
       checkIn(pick.id, new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }))
     }

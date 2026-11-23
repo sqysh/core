@@ -15,26 +15,37 @@ const PAD = 8
 
 type Placed = { id: string; ax: number; ay: number; w: number; h: number; top: number; opacity: number }
 
+/** The plates are plain DOM nodes owned by the store, styled straight from the frame loop */
+function hide(el: HTMLElement) {
+  el.style.opacity = '0'
+}
+
+function showPlate(el: HTMLElement, p: Placed, top: number) {
+  el.style.opacity = p.opacity.toFixed(3)
+  el.style.transform = `translate3d(${(p.ax - p.w / 2).toFixed(1)}px, ${top.toFixed(1)}px, 0)`
+  const line = el.querySelector<HTMLElement>('[data-line]')
+  if (line) line.style.height = `${Math.max(0, p.ay - (top + p.h)).toFixed(1)}px`
+}
+
 export function PlateTracker({ store }: { store: HarborStore }) {
-  const camera = useThree((s) => s.camera)
   const size = useThree((s) => s.size)
   const v = useRef(new Vector3())
   const tops = useRef(new Map<string, number>())
   const dims = useRef(new WeakMap<HTMLElement, { w: number; h: number }>())
 
-  useFrame((_, rawDt) => {
+  useFrame(({ camera }, rawDt) => {
     const dt = Math.min(rawDt, 0.05)
     const list: Placed[] = []
     for (const [id, el] of store.plates) {
       const b = store.boats.get(id)
       if (!b || b.phase === 'waiting') {
-        el.style.opacity = '0'
+        hide(el)
         continue
       }
       v.current.set(b.x, b.y + b.who.spec.dims.top + 0.12, b.z)
       v.current.project(camera)
       if (v.current.z > 1) {
-        el.style.opacity = '0'
+        hide(el)
         continue
       }
       let d = dims.current.get(el)
@@ -71,10 +82,7 @@ export function PlateTracker({ store }: { store: HarborStore }) {
       const prev = tops.current.get(p.id)
       const top = prev === undefined ? p.top : prev + (p.top - prev) * damp(7, dt)
       tops.current.set(p.id, top)
-      el.style.opacity = p.opacity.toFixed(3)
-      el.style.transform = `translate3d(${(p.ax - p.w / 2).toFixed(1)}px, ${top.toFixed(1)}px, 0)`
-      const line = el.querySelector<HTMLElement>('[data-line]')
-      if (line) line.style.height = `${Math.max(0, p.ay - (top + p.h)).toFixed(1)}px`
+      showPlate(el, p, top)
     }
   })
   return null

@@ -17,28 +17,31 @@ function loadPdfjs() {
 }
 
 export function usePdf(url: string | null) {
-  const [doc, setDoc] = useState<PDFDocumentProxy | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  // what was loaded (or failed) and for which url: anything for another url is dropped, as it was when the url changed
+  const [loaded, setLoaded] = useState<{ url: string | null; doc: PDFDocumentProxy | null; error: string | null }>({
+    url: null,
+    doc: null,
+    error: null
+  })
 
   useEffect(() => {
     let cancelled = false
-    setDoc(null)
-    setError(null)
     if (!url) return
     loadPdfjs()
       .then((pdfjs) => pdfjs.getDocument({ url }).promise)
       .then((d) => {
-        if (!cancelled) setDoc(d)
+        if (!cancelled) setLoaded({ url, doc: d, error: null })
       })
       .catch(() => {
-        if (!cancelled) setError('Could not open the slides')
+        if (!cancelled) setLoaded({ url, doc: null, error: 'Could not open the slides' })
       })
     return () => {
       cancelled = true
     }
   }, [url])
 
-  return { doc, error }
+  const current = url !== null && loaded.url === url
+  return { doc: current ? loaded.doc : null, error: current ? loaded.error : null }
 }
 
 /** Renders one page into a canvas, fitted inside maxW x maxH, device-pixel aware. */

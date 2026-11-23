@@ -66,14 +66,13 @@ function Flap({
 }) {
   const final = target.toUpperCase()
   const blank = final === ' '
-  const [ch, setCh] = useState(reduce || blank ? final : ' ')
+  const [spinCh, setCh] = useState(reduce || blank ? final : ' ')
+  // reduced motion (and blank tiles) show the letter straight away; otherwise the spinning glyph until it settles
+  const ch = reduce || blank ? final : spinCh
   const [frame, setFrame] = useState(0)
 
   useEffect(() => {
-    if (reduce || blank) {
-      setCh(final)
-      return
-    }
+    if (reduce || blank) return
     let steps = 5 + Math.floor(Math.random() * 7)
     let iv: ReturnType<typeof setInterval>
     const start = setTimeout(() => {
@@ -182,7 +181,7 @@ export default function MatchupsStage({
   autoStart?: boolean
 }) {
   const reduce = !!useReducedMotion()
-  const [phase, setPhase] = useState<Phase>('ready')
+  const [phase, setPhase] = useState<Phase>(() => (autoStart && pairs.length > 0 ? 'set' : 'ready'))
   const [count, setCount] = useState(3)
   const firedRef = useRef(false)
 
@@ -216,17 +215,18 @@ export default function MatchupsStage({
     setPhase('set')
   }, [])
 
-  useEffect(() => {
+  // the board can start itself: on mount (the initial phase above) or whenever autoStart changes
+  const [seenAutoStart, setSeenAutoStart] = useState(autoStart)
+  if (seenAutoStart !== autoStart) {
+    setSeenAutoStart(autoStart)
     if (autoStart && phase === 'ready' && pairs.length > 0) begin()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoStart])
+  }
+
+  // the countdown reached "Go": on to the reveal
+  if (phase === 'set' && count <= 0) setPhase('reveal')
 
   useEffect(() => {
-    if (phase !== 'set') return
-    if (count <= 0) {
-      setPhase('reveal')
-      return
-    }
+    if (phase !== 'set' || count <= 0) return
     const t = setTimeout(() => setCount((c) => c - 1), SET_TICK_MS)
     return () => clearTimeout(t)
   }, [phase, count])

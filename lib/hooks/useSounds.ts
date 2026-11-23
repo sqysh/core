@@ -46,6 +46,34 @@ interface UseSoundsOptions {
   volume?: number // 0 to 1
 }
 
+/** Plays one sound from the cache, creating it on first use */
+function playSound(
+  cache: Partial<Record<SoundKey, HTMLAudioElement>>,
+  key: SoundKey,
+  volume: number
+) {
+  let audio = cache[key]
+
+  // Lazy-create on first play
+  if (!audio) {
+    audio = new Audio(SOUND_PATHS[key])
+    audio.preload = 'auto'
+    cache[key] = audio
+  }
+
+  // Update volume in case it changed since last play
+  audio.volume = volume
+
+  // Reset to start — allows rapid retriggering without waiting for the previous play to end
+  audio.currentTime = 0
+
+  // play() returns a Promise that rejects if the browser blocks autoplay
+  audio.play().catch(() => {
+    // Silently ignore — usually means the user hasn't interacted with the page yet
+    // and the browser is blocking autoplay. Sounds will work after first user gesture.
+  })
+}
+
 export const useSounds = ({ enabled = true, volume = 1 }: UseSoundsOptions = {}) => {
   const soundsRef = useRef<Partial<Record<SoundKey, HTMLAudioElement>>>({})
 
@@ -64,26 +92,7 @@ export const useSounds = ({ enabled = true, volume = 1 }: UseSoundsOptions = {})
     (key: SoundKey) => {
       if (!enabled) return
 
-      let audio = soundsRef.current[key]
-
-      // Lazy-create on first play
-      if (!audio) {
-        audio = new Audio(SOUND_PATHS[key])
-        audio.preload = 'auto'
-        soundsRef.current[key] = audio
-      }
-
-      // Update volume in case it changed since last play
-      audio.volume = volume
-
-      // Reset to start — allows rapid retriggering without waiting for the previous play to end
-      audio.currentTime = 0
-
-      // play() returns a Promise that rejects if the browser blocks autoplay
-      audio.play().catch(() => {
-        // Silently ignore — usually means the user hasn't interacted with the page yet
-        // and the browser is blocking autoplay. Sounds will work after first user gesture.
-      })
+      playSound(soundsRef.current, key, volume)
     },
     [enabled, volume]
   )

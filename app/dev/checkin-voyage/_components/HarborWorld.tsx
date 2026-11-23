@@ -21,14 +21,15 @@ export const SEA = '#1a8ea3'
 const OPEN: TileSides = { north: false, south: false, east: false, west: false }
 
 export function HarborWorld({ checkInUrl }: { checkInUrl: string }) {
-  const scene = useThree((s) => s.scene)
+  const get = useThree((s) => s.get)
   useEffect(() => {
+    const scene = get().scene
     scene.background = new Color(SEA)
     scene.fog = null
     return () => {
       scene.background = null
     }
-  }, [scene])
+  }, [get])
 
   return (
     <>

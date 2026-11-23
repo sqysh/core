@@ -52,6 +52,11 @@ function spawnPuff(layer: HTMLElement, at: Point, L: number) {
   layer.appendChild(el)
 }
 
+/** Moves a DOM element straight from the animation loop, bypassing React */
+function setTransform(el: HTMLElement, transform: string) {
+  el.style.transform = transform
+}
+
 interface HarborBoatProps {
   boat: FleetBoat
   /** The depth-sorted layer the boat lives in; wakes go here too */
@@ -83,7 +88,7 @@ export function HarborBoat({ boat, depthLayer, plateEl }: HarborBoatProps) {
       const len = lengthAt(p.y) * kind.size
       node!.style.transform = boatTransform(p, len)
       node!.style.zIndex = String(Math.round(p.y))
-      if (plateEl) plateEl.style.transform = plateTransform(boatTop(kind, p, len), boat.plate.w, boat.plate.h)
+      if (plateEl) setTransform(plateEl, plateTransform(boatTop(kind, p, len), boat.plate.w, boat.plate.h))
       return len
     }
 

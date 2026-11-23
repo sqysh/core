@@ -1,7 +1,7 @@
 'use client'
 
 import { createRoot, extend, useFrame, useThree } from '@react-three/fiber'
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { RefObject, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Group, NeutralToneMapping, OrthographicCamera, PCFShadowMap, Vector3, WebGLRenderer } from 'three'
 import { RenderBoundary } from '@/components/_shared/RenderBoundary'
@@ -246,23 +246,25 @@ function Afloat({
   look,
   spec,
   name,
-  turn,
+  turnRef,
   spot
 }: {
   config: VesselConfig
   look: ReturnType<typeof lookOf>
   spec: VesselClassSpec
   name?: string
-  turn: Turn
+  turnRef: RefObject<Turn>
   spot: Spot
 }) {
   const outer = useRef<Group>(null)
   const inner = useRef<Group>(null)
   // one floating boat for the whole visit; a change of build only changes how it rides
-  const boat = useMemo(() => floater(config, spec), []) // eslint-disable-line react-hooks/exhaustive-deps
-  boat.who = { ...boat.who, boat: config.vesselClass, spec }
+  const boatRef = useRef(floater(config, spec))
   const dims = spec.dims
   useFrame(({ clock }, rawDt) => {
+    const boat = boatRef.current
+    const turn = turnRef.current
+    boat.who = { ...boat.who, boat: config.vesselClass, spec }
     const t = clock.elapsedTime
     const dt = Math.min(rawDt, 0.05)
     // a flick keeps her turning a moment; reset turns her back the short way to the moored heading
@@ -302,30 +304,31 @@ function Afloat({
  * every boat; a view offset puts the boat in its part of the screen. Nothing the member does moves it.
  */
 function Framing({ frame, dims, spot }: { frame: PreviewFrame; dims: VesselClassSpec['dims']; spot: Spot }) {
-  const camera = useThree((s) => s.camera) as OrthographicCamera
+  const get = useThree((s) => s.get)
   const width = useThree((s) => Math.round(s.size.width))
   const height = useThree((s) => Math.round(s.size.height))
   useEffect(() => {
     if (width < 2 || height < 2) return
+    const camera = get().camera as OrthographicCamera
     camera.setViewOffset(width, height, (0.5 - frame.x) * width, (0.5 - frame.y) * height, width, height)
     const target = new Vector3(spot.x, aimY(dims), spot.z)
     camera.position.copy(target).addScaledVector(VIEW_DIRECTION, CAM_DISTANCE)
     camera.lookAt(target)
     camera.zoom = garageZoom(dims, frame, width, height)
     camera.updateProjectionMatrix()
-  }, [camera, dims, spot, frame.x, frame.y, frame.width, frame.height, width, height])
+  }, [get, dims, spot, frame.x, frame.y, frame.width, frame.height, width, height])
   return null
 }
 
 function Stage({
   config,
   frame,
-  turn,
+  turnRef,
   name
 }: {
   config: VesselConfig
   frame: PreviewFrame
-  turn: Turn
+  turnRef: RefObject<Turn>
   name?: string
 }) {
   const look = useMemo(() => lookOf(config), [config])
@@ -344,7 +347,7 @@ function Stage({
       {/* the harbor's own world and sea, exactly as the TV and the phones draw them */}
       <HarborWorld checkInUrl={CHECK_IN_URL} />
       <SeaClock />
-      <Afloat config={config} look={look} spec={spec} name={name} turn={turn} spot={spot} />
+      <Afloat config={config} look={look} spec={spec} name={name} turnRef={turnRef} spot={spot} />
       <Framing frame={frame} dims={spec.dims} spot={spot} />
     </>
   )
@@ -405,7 +408,9 @@ export default function BoatPreview({
   const host = useRef<HTMLDivElement>(null)
   const [root, setRoot] = useState<Root | null>(null)
   const latest = useRef({ onReady, onLoad, onUnsupported })
-  latest.current = { onReady, onLoad, onUnsupported }
+  useEffect(() => {
+    latest.current = { onReady, onLoad, onUnsupported }
+  })
   // files fetched through three's loaders, as they are (the default manager counts every loader that isn't given its own)
   useEffect(() => {
     const m = THREE.DefaultLoadingManager
@@ -428,13 +433,13 @@ export default function BoatPreview({
     }
   }, [])
   // the member turns the boat by dragging across her (one finger or the mouse); nothing zooms or pans
-  const turn = useRef<Turn>({ yaw: 0, spin: 0, dragging: false, home: false }).current
+  const turnRef = useRef<Turn>({ yaw: 0, spin: 0, dragging: false, home: false })
   const drag = useRef<{ id: number; x: number; t: number } | null>(null)
   const fingers = useRef(new Set<number>())
   const firstHome = useRef(home)
   useEffect(() => {
-    if (home !== firstHome.current) turn.home = true
-  }, [home, turn])
+    if (home !== firstHome.current) turnRef.current.home = true
+  }, [home])
 
   // make the canvas, the context and the renderer: once, after a tick, torn down completely when it unmounts
   useEffect(() => {
@@ -538,7 +543,7 @@ export default function BoatPreview({
     root.render(
       <RenderBoundary label="garage:scene" onFail={() => latest.current.onUnsupported?.()}>
         <Suspense fallback={null}>
-          <Stage config={config} frame={frame} turn={turn} name={name} />
+          <Stage config={config} frame={frame} turnRef={turnRef} name={name} />
           <FirstFrame
             onBuilt={() => latest.current.onLoad?.({ built: true })}
             onReady={() => latest.current.onReady?.()}
@@ -546,7 +551,7 @@ export default function BoatPreview({
         </Suspense>
       </RenderBoundary>
     )
-  }, [root, config, frame, turn, name])
+  }, [root, config, frame, name])
 
   // a full turn for a drag across about half the screen; a second finger (a pinch) is ignored
   const RADIANS_PER_PX = 0.012
@@ -559,18 +564,19 @@ export default function BoatPreview({
         // a second finger (a pinch) stops the turn: pinching does nothing here
         if (fingers.current.size > 1) {
           drag.current = null
-          Object.assign(turn, { dragging: false, spin: 0 })
+          Object.assign(turnRef.current, { dragging: false, spin: 0 })
           return
         }
         drag.current = { id: e.pointerId, x: e.clientX, t: performance.now() }
         e.currentTarget.setPointerCapture(e.pointerId)
-        Object.assign(turn, { dragging: true, home: false, spin: 0 })
+        Object.assign(turnRef.current, { dragging: true, home: false, spin: 0 })
       }}
       onPointerMove={(e) => {
         const d = drag.current
         if (!d || d.id !== e.pointerId || fingers.current.size > 1) return
         const now = performance.now()
         const dyaw = (e.clientX - d.x) * RADIANS_PER_PX
+        const turn = turnRef.current
         turn.yaw += dyaw
         turn.spin = dyaw / Math.max((now - d.t) / 1000, 1 / 120)
         drag.current = { ...d, x: e.clientX, t: now }
@@ -580,6 +586,7 @@ export default function BoatPreview({
         const d = drag.current
         if (!d || d.id !== e.pointerId) return
         drag.current = null
+        const turn = turnRef.current
         turn.dragging = false
         // only a flick that was still moving when the finger lifted carries on
         if (performance.now() - d.t > 80) turn.spin = 0
@@ -587,7 +594,7 @@ export default function BoatPreview({
       onPointerCancel={(e) => {
         fingers.current.delete(e.pointerId)
         drag.current = null
-        Object.assign(turn, { dragging: false, spin: 0 })
+        Object.assign(turnRef.current, { dragging: false, spin: 0 })
       }}
     />
   )

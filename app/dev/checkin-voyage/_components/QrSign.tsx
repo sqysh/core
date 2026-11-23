@@ -93,7 +93,7 @@ function Billboard({ position, children }: { position: Vector3; children: ReactN
 
 /** Sandstone stepping stones: three irregular stone shapes, instanced, each bedded into the sand */
 function TrailStones() {
-  const { stones, tufts } = useMemo(trailStones, [])
+  const { stones, tufts } = useMemo(() => trailStones(), [])
   const geos = useMemo(() => [0, 1, 2].map((k) => boulder({ r: 1, seed: 1500 + k, squash: 0.35 })), [])
   const mat = useMemo(() => new MeshStandardMaterial({ vertexColors: true, roughness: 0.9, flatShading: true }), [])
   const groups = useMemo(() => [0, 1, 2].map((k) => stones.filter((s) => s.k === k)), [stones])
@@ -156,7 +156,7 @@ function Wildflowers({ list }: { list: { pos: Vector3; s: number; hue: number }[
 export function QrTrailSign({ url }: { url: string }) {
   const m = materials()
   const qr = useQrMaterial(url)
-  const plan = useMemo(planSign, [])
+  const plan = useMemo(() => planSign(), [])
   const growth = useMemo(() => growSign(plan), [plan])
   const vineMat = useMemo(() => vineMaterial(vineTime), [])
   // weathered: grey-brown, a little rough, like driftwood

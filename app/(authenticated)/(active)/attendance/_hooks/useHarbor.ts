@@ -124,15 +124,17 @@ function moor(
  * back where it was. Each new check-in sails in; a repeat check-in is ignored.
  */
 export function useHarbor(members: Member[], initialIds: string[]) {
-  const byId = useRef(new Map(members.map((m) => [m.id, m])))
+  const [byId] = useState(() => new Map(members.map((m) => [m.id, m])))
   // each member's place on the roster, by id so it doesn't shuffle when names change, picks their boat's voice
-  const voiceIndex = useRef(new Map([...members].sort((a, b) => a.id.localeCompare(b.id)).map((m, i) => [m.id, i])))
+  const [voiceIndex] = useState(
+    () => new Map([...members].sort((a, b) => a.id.localeCompare(b.id)).map((m, i) => [m.id, i]))
+  )
   const [fleet, setFleet] = useState<FleetBoat[]>(() => {
     const out: FleetBoat[] = []
     for (const id of initialIds) {
-      const m = byId.current.get(id)
+      const m = byId.get(id)
       if (!m || out.some((b) => b.id === id)) continue
-      const boat = moor(out, m, false, 0, voiceIndex.current.get(id) ?? 0)
+      const boat = moor(out, m, false, 0, voiceIndex.get(id) ?? 0)
       if (boat) out.push(boat)
     }
     return out
@@ -141,18 +143,18 @@ export function useHarbor(members: Member[], initialIds: string[]) {
   const lastLaunch = useRef(0)
 
   const arrive = useCallback((userId: string) => {
-    const member = byId.current.get(userId)
+    const member = byId.get(userId)
     if (!member || fleetRef.current.some((b) => b.id === userId)) return
 
     const now = performance.now()
     const launchAt = Math.max(now, lastLaunch.current + LAUNCH_GAP_MS)
-    const boat = moor(fleetRef.current, member, true, launchAt, voiceIndex.current.get(userId) ?? 0)
+    const boat = moor(fleetRef.current, member, true, launchAt, voiceIndex.get(userId) ?? 0)
     if (!boat) return
 
     lastLaunch.current = launchAt
     fleetRef.current = [...fleetRef.current, boat]
     setFleet(fleetRef.current)
-  }, [])
+  }, [byId, voiceIndex])
 
   return { fleet, arrive }
 }

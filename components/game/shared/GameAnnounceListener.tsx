@@ -12,7 +12,9 @@ export default function GameAnnounceListener() {
   // Keep the latest pathname in a ref so the handler reads it live, without
   // resubscribing on every navigation (which would thrash the socket).
   const pathnameRef = useRef(pathname)
-  pathnameRef.current = pathname
+  useEffect(() => {
+    pathnameRef.current = pathname
+  }, [pathname])
 
   useEffect(() => {
     const channel = getPusherClient().subscribe(GAME_REGISTRY.WHEEL.channel)

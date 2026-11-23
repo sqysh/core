@@ -20,19 +20,22 @@ export type Frame = { landscape: [number, number]; portrait: [number, number] }
 const CENTRE: Frame = { landscape: [0.5, 0.5], portrait: [0.5, 0.5] }
 
 export function FollowCamera({ store, follow, frame = CENTRE }: { store: HarborStore; follow: string; frame?: Frame }) {
-  const camera = useThree((s) => s.camera) as OrthographicCamera
+  const get = useThree((s) => s.get)
   const size = useThree((s) => s.size)
   const target = useRef(new Vector3(VIEW.target.x, VIEW.target.y, VIEW.target.z))
   const placed = useRef(false)
 
   useEffect(() => {
+    const camera = get().camera as OrthographicCamera
     camera.near = 0.5
     camera.far = 500
     camera.zoom = size.width / (size.width > size.height ? SPAN_LANDSCAPE : SPAN_PORTRAIT)
     camera.updateProjectionMatrix()
-  }, [camera, size])
+  }, [get, size])
 
-  useFrame(({ clock }, rawDt) => {
+  useFrame((state, rawDt) => {
+    const { clock } = state
+    const camera = state.camera as OrthographicCamera
     const dt = Math.min(rawDt, 0.05)
     const b = store.boats.get(follow)
     if (b) {

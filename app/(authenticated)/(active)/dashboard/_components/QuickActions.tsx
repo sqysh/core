@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Member, ModalKey } from '@/types/dashboard.types'
@@ -15,20 +15,28 @@ export interface QuickActionsProps {
   onModalClose: () => void
 }
 
+function modalFromAction(searchParams: ReturnType<typeof useSearchParams>): ModalKey | null {
+  const action = searchParams.get('action')
+  return action === 'f2f' || action === 'referral' || action === 'closed' ? action : null
+}
+
 export default function QuickActions({ members, variant, initialModal, onModalClose }: QuickActionsProps) {
-  const [activeModal, setActiveModal] = useState<ModalKey>(initialModal ?? null)
   const router = useRouter()
-
   const searchParams = useSearchParams()
+  const [activeModal, setActiveModal] = useState<ModalKey>(
+    () => initialModal || modalFromAction(searchParams) || (initialModal ?? null)
+  )
 
-  useEffect(() => {
-    const action = searchParams.get('action')
-    if (action === 'f2f' || action === 'referral' || action === 'closed') setActiveModal(action)
-  }, [searchParams])
-
-  useEffect(() => {
-    if (initialModal) setActiveModal(initialModal)
-  }, [initialModal])
+  // A new ?action= in the URL or a new initialModal from the parent opens that modal (the parent's wins)
+  const [seen, setSeen] = useState({ searchParams, initialModal })
+  if (seen.searchParams !== searchParams || seen.initialModal !== initialModal) {
+    setSeen({ searchParams, initialModal })
+    const next =
+      (seen.initialModal !== initialModal && initialModal) ||
+      (seen.searchParams !== searchParams && modalFromAction(searchParams)) ||
+      activeModal
+    if (next !== activeModal) setActiveModal(next)
+  }
 
   function closeModal() {
     setActiveModal(null)

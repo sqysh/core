@@ -51,6 +51,40 @@ export default function SixtyStageClient({ members, judgeName, initialWinner = n
     return { cw, ch: cw * 1.18, R }
   }
 
+  const partsRef = useRef<
+    {
+      x: number
+      y: number
+      vx: number
+      vy: number
+      g: number
+      s: number
+      rot: number
+      vr: number
+      col: string
+      life: number
+    }[]
+  >([])
+
+  function fireConfetti() {
+    if (reduce.current) return
+    const CC = ['#f5c542', '#ffffff', '#3be0ff', '#ff9e2c', '#9dff5e']
+    for (let i = 0; i < 150; i++) {
+      partsRef.current.push({
+        x: window.innerWidth / 2 + (Math.random() - 0.5) * 260,
+        y: window.innerHeight * 0.42,
+        vx: (Math.random() - 0.5) * 16,
+        vy: -Math.random() * 16 - 4,
+        g: 0.35 + Math.random() * 0.25,
+        s: 5 + Math.random() * 7,
+        rot: Math.random() * 6.28,
+        vr: (Math.random() - 0.5) * 0.4,
+        col: CC[(Math.random() * CC.length) | 0],
+        life: 1
+      })
+    }
+  }
+
   useEffect(() => {
     reduce.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     rollRef.current = new Audio('/sound-effects/gl-drumroll.mp3')
@@ -173,23 +207,14 @@ export default function SixtyStageClient({ members, judgeName, initialWinner = n
     }
   }, [startSpin])
 
-  useEffect(() => setJudgedByName(judgeName), [judgeName])
+  // a new judge from the server replaces whoever the page last showed
+  const [seenJudgeName, setSeenJudgeName] = useState(judgeName)
+  if (seenJudgeName !== judgeName) {
+    setSeenJudgeName(judgeName)
+    setJudgedByName(judgeName)
+  }
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const partsRef = useRef<
-    {
-      x: number
-      y: number
-      vx: number
-      vy: number
-      g: number
-      s: number
-      rot: number
-      vr: number
-      col: string
-      life: number
-    }[]
-  >([])
   useEffect(() => {
     const cv = canvasRef.current
     if (!cv) return
@@ -227,24 +252,6 @@ export default function SixtyStageClient({ members, judgeName, initialWinner = n
       window.removeEventListener('resize', size)
     }
   }, [])
-  function fireConfetti() {
-    if (reduce.current) return
-    const CC = ['#f5c542', '#ffffff', '#3be0ff', '#ff9e2c', '#9dff5e']
-    for (let i = 0; i < 150; i++) {
-      partsRef.current.push({
-        x: window.innerWidth / 2 + (Math.random() - 0.5) * 260,
-        y: window.innerHeight * 0.42,
-        vx: (Math.random() - 0.5) * 16,
-        vy: -Math.random() * 16 - 4,
-        g: 0.35 + Math.random() * 0.25,
-        s: 5 + Math.random() * 7,
-        rot: Math.random() * 6.28,
-        vr: (Math.random() - 0.5) * 0.4,
-        col: CC[(Math.random() * CC.length) | 0],
-        life: 1
-      })
-    }
-  }
 
   const hairline = "before:content-[''] before:h-px after:content-[''] after:h-px"
 

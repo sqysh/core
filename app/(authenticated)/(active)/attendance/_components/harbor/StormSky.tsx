@@ -290,7 +290,7 @@ export function StormSky({ skyRef }: { skyRef: MutableRefObject<SkyRenderer | nu
         height: SKY_H,
         visibility: 'hidden',
         // only the sky (and the sea at the horizon): the island, house and tower stay as drawn, darkened by the
-        // scene's own storm tint rather than painted over (built by scripts/build-harbor-sky-mask.cjs)
+        // scene's own storm tint rather than painted over (built by scripts/build-harbor-sky-mask.mjs)
         maskImage: 'url(/images/harbor/sky-mask.png)',
         maskSize: '100% 100%',
         WebkitMaskImage: 'url(/images/harbor/sky-mask.png)',

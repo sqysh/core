@@ -10,7 +10,10 @@ export default function ElectionListener() {
   const { data: session } = useSession()
 
   const userIdRef = useRef<string | undefined>(undefined)
-  userIdRef.current = session?.user?.id
+  const userId = session?.user?.id
+  useEffect(() => {
+    userIdRef.current = userId
+  }, [userId])
 
   useEffect(() => {
     const channel = getPusherClient().subscribe('election')

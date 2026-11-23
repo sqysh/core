@@ -49,11 +49,14 @@ export function PhonePrompter({
   // a poll covers whatever's up; if that was the script, it comes back when the poll ends
   const upBeforePoll = useRef(false)
   const upRef = useRef(false)
-  upRef.current = up
+  const onStateRef = useRef(onState)
+  // the latest values, for the channel handler and the state report below (refs are only written after a render commits)
+  useEffect(() => {
+    upRef.current = up
+    onStateRef.current = onState
+  })
 
   useWakeLock(up)
-  const onStateRef = useRef(onState)
-  onStateRef.current = onState
   useEffect(() => {
     onStateRef.current?.({ up, playing, speed })
   }, [up, playing, speed])

@@ -7,7 +7,7 @@
  server-side) is shown — phones unlock for the consonant guess if it was a value.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LobbyMember, SerializedGame } from '@/types/game.types'
 import { Wedge, WheelState } from '@/types/_wheel.types'
@@ -28,6 +28,9 @@ import { skipTurn } from '@/lib/actions/games/wheel/skipTurn'
 import { useSession } from 'next-auth/react'
 
 type WheelGame = SerializedGame<WheelState>
+
+/** Nothing to subscribe to: only tells React this is the client (false while rendering on the server) */
+const subscribeNever = () => () => {}
 
 interface Props {
   initialGame: WheelGame | null
@@ -57,10 +60,8 @@ export default function WheelTVClient({ initialGame, initialLobby }: Props) {
   // Wheel size for the fullscreen overlay. Computed after mount (never during
   // render) so server and client markup match — avoids hydration mismatch.
   const [spinSize, setSpinSize] = useState(680)
-  const [mounted, setMounted] = useState(false)
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false)
   const { play } = useSounds()
-
-  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     const compute = () => setSpinSize(Math.min(window.innerWidth, window.innerHeight) * 0.82)

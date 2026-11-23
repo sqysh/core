@@ -2,8 +2,8 @@
 // storm sky may draw (sky, and sea down to just past the horizon), clear over the island, house and lighthouse, so
 // the storm never paints over land. Covers the picture's top 1000 rows, matching the storm sky canvas (SKY_H).
 // Run from the repo root after changing the picture:
-//   node scripts/build-harbor-sky-mask.cjs [preview.png]
-const sharp = require("sharp");
+//   node scripts/build-harbor-sky-mask.mjs [preview.png]
+import sharp from "sharp";
 const ROOT = process.cwd();
 const SRC = ROOT + "/public/images/lighthouse-harbor.jpg";
 const OUT = ROOT + "/public/images/harbor/sky-mask.png";

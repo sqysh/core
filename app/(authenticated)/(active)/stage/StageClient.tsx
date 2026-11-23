@@ -92,7 +92,9 @@ export default function StageClient({
   // the poll overlays whatever's up, so remember the current screen (and the one
   // from before the poll) to return to when the host ends it
   const modeRef = useRef<Mode>('holding')
-  modeRef.current = mode
+  useEffect(() => {
+    modeRef.current = mode
+  })
   const prePollModeRef = useRef<Mode>('holding')
   const [pollId, setPollId] = useState<string | null>(null)
 

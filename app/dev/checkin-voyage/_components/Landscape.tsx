@@ -17,7 +17,7 @@ import { SEA_LOOK } from '../_lib/seaLook'
 import { NOISE } from '../_lib/seaSurface'
 import { groundHeight, groundSlope, shelter, terrainNoise } from '../_lib/terrain'
 
-import { BufferAttribute, BufferGeometry, Color, IcosahedronGeometry, PlaneGeometry } from 'three'
+import { BufferAttribute, Color, IcosahedronGeometry, PlaneGeometry } from 'three'
 import { grainBump } from '../../lighthouse/_lib/textures'
 import { noise3, smoothstep } from '../../lighthouse/_lib/noise'
 import { PALETTE } from '../../lighthouse/_lib/materials'
@@ -100,6 +100,18 @@ const SHRUBS = [
 const GROUND = 0.12
 const sinkOf = (s: Slab) => (s.y <= GROUND ? 0.45 : 0.18)
 
+/** The widest skirt of the stone's rock that the sand around it allows, or none */
+function skirtOf(s: Slab, skirt: boolean, x: number, z: number) {
+  if (!skirt || s.y > GROUND || groundHeight(x, z) > seabed(x, z) + 0.3) return null
+  for (const f of [1.32, 1.22, 1.12]) {
+    const reach = (Math.max(s.w, s.d) * f) / 2
+    let worst = -Infinity
+    for (let a = 0; a < Math.PI * 2; a += 0.35) worst = Math.max(worst, coastShore(x + Math.cos(a) * reach, z + Math.sin(a) * reach))
+    if (worst < -0.15) return rockSlab({ w: s.w * f, d: s.d * f, h: 0.7, seed: s.seed + 7, bevel: 0.16, tilt: 0.02 })
+  }
+  return null
+}
+
 function SlabMesh({ s, skirt = true, seat = false }: { s: Slab; skirt?: boolean; seat?: boolean }) {
   const m = materials()
   const [x, z] = at(s.u, s.v)
@@ -115,16 +127,7 @@ function SlabMesh({ s, skirt = true, seat = false }: { s: Slab; skirt?: boolean;
   const nudge = useMemo(() => (s.y > GROUND && !seat ? settle(s.seed, Math.min(s.w, s.d)) : { dx: 0, dz: 0, rx: 0, rz: 0, ry: 0 }), [s, seat])
   // a low, wider skirt of the same stone round a stone standing alone on the sand (the mainland's stones rise out of
   // the ground itself and need none) — only as wide as the sand allows, left off where the stone stands in the surf
-  const talus = useMemo(() => {
-    if (!skirt || s.y > GROUND || groundHeight(x, z) > seabed(x, z) + 0.3) return null
-    for (const f of [1.32, 1.22, 1.12]) {
-      const reach = (Math.max(s.w, s.d) * f) / 2
-      let worst = -Infinity
-      for (let a = 0; a < Math.PI * 2; a += 0.35) worst = Math.max(worst, coastShore(x + Math.cos(a) * reach, z + Math.sin(a) * reach))
-      if (worst < -0.15) return rockSlab({ w: s.w * f, d: s.d * f, h: 0.7, seed: s.seed + 7, bevel: 0.16, tilt: 0.02 })
-    }
-    return null
-  }, [s, skirt, x, z])
+  const talus = useMemo(() => skirtOf(s, skirt, x, z), [s, skirt, x, z])
   const rot: [number, number, number] = [nudge.rx, Math.PI / 4 + (s.rot ?? 0) + nudge.ry * 0.3, nudge.rz]
   return (
     <group>

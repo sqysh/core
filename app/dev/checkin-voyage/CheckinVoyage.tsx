@@ -232,9 +232,9 @@ export default function CheckinVoyage({ members: realMembers, initialAttendees, 
 
   const welcomeWho = welcome ? who.get(welcome.id) : null
   // kept after it goes, so the panel still has its name while it slides away
-  const lastWho = useRef(welcomeWho)
-  if (welcomeWho) lastWho.current = welcomeWho
-  const shownWho = welcomeWho ?? lastWho.current
+  const [lastWho, setLastWho] = useState(welcomeWho)
+  if (welcomeWho && welcomeWho !== lastWho) setLastWho(welcomeWho)
+  const shownWho = welcomeWho ?? lastWho
 
   return (
     <div className="fixed inset-0 z-9999 overflow-hidden bg-[#1a8ea3]">

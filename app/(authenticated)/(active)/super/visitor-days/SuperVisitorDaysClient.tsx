@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, X, ChevronDown, ChevronUp } from 'lucide-react'
@@ -108,9 +108,12 @@ export function SuperVisitorDaysClient({ visitorDays: initial, cancelledDates }:
   const [editingId, setEditingId] = useState<string | null>(null)
   const router = useRouter()
 
-  useEffect(() => {
+  // a fresh list from the server replaces the local copy
+  const [syncedInitial, setSyncedInitial] = useState(initial)
+  if (syncedInitial !== initial) {
+    setSyncedInitial(initial)
     setVisitorDays(initial)
-  }, [initial])
+  }
 
   const visitorSet = new Set(
     visitorDays.map((v) => {

@@ -239,24 +239,23 @@ export function Rail({
   material: Material
   closed?: boolean
 }) {
-  const geo = useMemo(
-    () =>
-      new TubeGeometry(
-        new CatmullRomCurve3(
-          points.map((p) => new Vector3(...p)),
-          closed,
-          'catmullrom',
-          0.1
-        ),
-        Math.max(8, points.length * 6),
-        r,
-        6,
-        closed
+  // points are literals built per render; their JSON is a stable key
+  const key = JSON.stringify(points)
+  const geo = useMemo(() => {
+    const pts = JSON.parse(key) as [number, number, number][]
+    return new TubeGeometry(
+      new CatmullRomCurve3(
+        pts.map((p) => new Vector3(...p)),
+        closed,
+        'catmullrom',
+        0.1
       ),
-    // points are literals built per render; their JSON is a stable key
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(points), r, closed]
-  )
+      Math.max(8, pts.length * 6),
+      r,
+      6,
+      closed
+    )
+  }, [key, r, closed])
   return <mesh geometry={geo} material={material} castShadow />
 }
 
@@ -272,15 +271,18 @@ export function Rod({
   r?: number
   material: Material
 }) {
+  const aKey = a.join()
+  const bKey = b.join()
   const { mid, len, quat } = useMemo(() => {
-    const va = new Vector3(...a)
-    const vb = new Vector3(...b)
+    const [ax, ay, az] = aKey.split(',').map(Number)
+    const [bx, by, bz] = bKey.split(',').map(Number)
+    const va = new Vector3(ax, ay, az)
+    const vb = new Vector3(bx, by, bz)
     const dir = vb.clone().sub(va)
     const q = new Vector3(0, 1, 0)
     const quat = new Quaternion().setFromUnitVectors(q, dir.clone().normalize())
     return { mid: va.add(vb).multiplyScalar(0.5), len: dir.length(), quat }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [a.join(), b.join()])
+  }, [aKey, bKey])
   return (
     <mesh position={mid} quaternion={quat} material={material} castShadow>
       <cylinderGeometry args={[r, r, len, 6]} />

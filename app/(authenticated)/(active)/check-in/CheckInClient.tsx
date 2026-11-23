@@ -55,15 +55,15 @@ export default function CheckInClient({
   const roleUi = role ? ROLE_UI[role] : null
   const exit = exitFor({ isSuper, isHost, isTreasurer })
 
-  const stage = useSqyshStage()
+  const { riserRef, slotRef, sq, spot, setSpot, corner, jumpToCorner } = useSqyshStage()
   const { mode, setMode, reduce } = useSqyshAct(script)
   const sendOff = useRoundSendOff({
     active: role === 'gl',
     previewOpen,
     settle: S,
-    setSpot: stage.setSpot,
+    setSpot,
     setMode,
-    jumpToCorner: stage.jumpToCorner
+    jumpToCorner
   })
   useWakeLock(role === 'gl')
 
@@ -72,9 +72,9 @@ export default function CheckInClient({
   const [tour, setTour] = useIntro({
     hasTour,
     settle: S,
-    setSpot: stage.setSpot,
+    setSpot,
     setMode,
-    jumpToCorner: stage.jumpToCorner
+    jumpToCorner
   })
 
   const numRef = useCountUp(pct, S)
@@ -102,7 +102,7 @@ export default function CheckInClient({
       {/* Stage: takes whatever height is left and centres the badge in it */}
       <div className="relative flex min-h-0 flex-1 items-center justify-center px-4">
         <div
-          ref={stage.riserRef}
+          ref={riserRef}
           className="relative translate-y-22 animate-[ciUp_0.85s_cubic-bezier(0.65,0,0.35,1)_forwards]"
           style={delay(S)}
         >
@@ -113,10 +113,10 @@ export default function CheckInClient({
             <div className="h-full w-full rounded-full bg-[radial-gradient(circle,var(--key-soft)_0%,transparent_62%)] opacity-0 animate-[ciHalo_5.4s_ease_forwards]" />
           </div>
 
-          <SpeechBubbles bubbles={bubbles} firstName={firstName} settle={S} reduce={reduce.current} sendOff={sendOff} />
+          <SpeechBubbles bubbles={bubbles} firstName={firstName} settle={S} reduce={reduce} sendOff={sendOff} />
           <AttendanceRing pct={pct} settle={S} numRef={numRef} />
-          {stage.sq && (
-            <SqyshActor sq={stage.sq} spot={stage.spot} corner={stage.corner} mode={mode} reduce={reduce.current} />
+          {sq && (
+            <SqyshActor sq={sq} spot={spot} corner={corner} mode={mode} reduce={reduce} />
           )}
         </div>
       </div>
@@ -160,11 +160,11 @@ export default function CheckInClient({
 
       {/* Top bar: Sqysh lands at the right edge, the bubble gets everything to his left */}
       <div
-        ref={stage.slotRef}
+        ref={slotRef}
         className="pointer-events-none absolute left-4 z-6 right-[calc(1rem+64px+12px)] top-[calc(env(safe-area-inset-top)+16px)] xs:right-[calc(1rem+72px+12px)]"
       >
         {tour === 'ask' && (
-          <TourBubble reduce={reduce.current} onShow={() => setTour('open')} onDismiss={() => setTour('dismissed')} />
+          <TourBubble reduce={reduce} onShow={() => setTour('open')} onDismiss={() => setTour('dismissed')} />
         )}
       </div>
       {tour === 'open' && <UpdatesPanel updates={updates} onClose={() => setTour('dismissed')} />}
