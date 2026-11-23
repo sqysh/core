@@ -1,0 +1,370 @@
+{
+  "version": 1,
+  "name": "new-1",
+  "reference": "/images/references/core-harbor-master.png",
+  "camera": {
+    "azimuth": 45,
+    "elevation": 35,
+    "target": [
+      0,
+      0,
+      0
+    ],
+    "width": 60,
+    "aspect": 1.7747
+  },
+  "objects": [
+    {
+      "id": "terrain-concave-shore-1",
+      "name": "Kit: concave shoreline",
+      "model": "terrain-concave-shore",
+      "group": "Other",
+      "position": [
+        11.345,
+        -0.143,
+        -42.951
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "granite-cliff-stepped-tall-1",
+      "name": "Stepped cliff (tall)",
+      "model": "granite-cliff-stepped-tall",
+      "group": "Other",
+      "position": [
+        -12.134,
+        0,
+        -3.83
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "sheer-granite-cliff-tall-1",
+      "name": "Sheer cliff, flat top",
+      "model": "sheer-granite-cliff-tall",
+      "group": "Other",
+      "position": [
+        -10.463,
+        0,
+        -17.664
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "granite-cliff-overhang-1",
+      "name": "Cliff overhang",
+      "model": "granite-cliff-overhang",
+      "group": "Other",
+      "position": [
+        -8.22,
+        0,
+        11.625
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "granite-cliff-shoreline-low-1",
+      "name": "Cliff with beach cove",
+      "model": "granite-cliff-shoreline-low",
+      "group": "Other",
+      "position": [
+        12.039,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "granite-shoreline-wall-long-1",
+      "name": "Shoreline cliff and beach",
+      "model": "granite-shoreline-wall-long",
+      "group": "Other",
+      "position": [
+        25.285,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "granite-ridge-long-1",
+      "name": "Granite ridge (long)",
+      "model": "granite-ridge-long",
+      "group": "Other",
+      "position": [
+        -24.861,
+        0,
+        -4.591
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "shoreline-spit-1",
+      "name": "Shoreline spit",
+      "model": "shoreline-spit",
+      "group": "Other",
+      "position": [
+        0,
+        0,
+        7.632
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terraced-pine-cliff-islet-1",
+      "name": "Cliff with plaza and stairs",
+      "model": "terraced-pine-cliff-islet",
+      "group": "Other",
+      "position": [
+        2.575,
+        0,
+        -17.942
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrain-plateau-1",
+      "name": "Kit: large square plateau",
+      "model": "terrain-plateau",
+      "group": "Other",
+      "position": [
+        12.973,
+        0,
+        -29.782
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrain-l-terrace-1",
+      "name": "Kit: raised L terrace",
+      "model": "terrain-l-terrace",
+      "group": "Other",
+      "position": [
+        25.27,
+        0,
+        -38.79
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrain-stepped-cliff-1",
+      "name": "Kit: tall stepped cliff",
+      "model": "terrain-stepped-cliff",
+      "group": "Other",
+      "position": [
+        31.366,
+        0,
+        -25.809
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "granite-rock-islet-bare-1",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Other",
+      "position": [
+        0.719,
+        0,
+        -0.836
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-flower-islet-1",
+      "name": "Islet: pines and flowers",
+      "model": "pine-flower-islet",
+      "group": "Other",
+      "position": [
+        0.436,
+        -0.031,
+        -6.151
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "mixed-trees-islet-1",
+      "name": "Islet: oak and pine",
+      "model": "mixed-trees-islet",
+      "group": "Other",
+      "position": [
+        6.521,
+        0,
+        -6.973
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "wooded-granite-islet-1",
+      "name": "Islet: wooded granite",
+      "model": "wooded-granite-islet",
+      "group": "Other",
+      "position": [
+        11.55,
+        0,
+        -14.317
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,1007 @@
+{
+  "version": 1,
+  "reference": "/images/references/core-harbor-master.png",
+  "camera": {
+    "azimuth": 45,
+    "elevation": 35,
+    "target": [
+      0,
+      0,
+      0
+    ],
+    "width": 60,
+    "aspect": 1.7747
+  },
+  "objects": [
+    {
+      "id": "lower-stairs",
+      "name": "Stairs to the low shelf",
+      "model": "stone-stairs-wide",
+      "group": "Left island",
+      "position": [
+        -6.914,
+        2,
+        18.491
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1.6,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "fence-1",
+      "name": "Fence 1",
+      "model": "fence-straight",
+      "group": "Left island",
+      "position": [
+        -9.106,
+        8.241,
+        19.602
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8667,
+        0.8667,
+        0.8667
+      ],
+      "visible": true
+    },
+    {
+      "id": "fence-2",
+      "name": "Fence 2",
+      "model": "fence-straight",
+      "group": "Left island",
+      "position": [
+        -6.77,
+        6.128,
+        17.873
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8667,
+        0.8667,
+        0.8667
+      ],
+      "visible": true
+    },
+    {
+      "id": "fence-3",
+      "name": "Fence 3",
+      "model": "fence-straight",
+      "group": "Left island",
+      "position": [
+        -3.687,
+        8.517,
+        17.399
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.8667,
+        0.8667,
+        0.8667
+      ],
+      "visible": true
+    },
+    {
+      "id": "fence-4",
+      "name": "Fence 4",
+      "model": "fence-straight",
+      "group": "Left island",
+      "position": [
+        -8.384,
+        5.13,
+        18.799
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.8667,
+        0.8667,
+        0.8667
+      ],
+      "visible": true
+    },
+    {
+      "id": "fence-5",
+      "name": "Fence 5",
+      "model": "fence-straight",
+      "group": "Left island",
+      "position": [
+        -5.399,
+        3.881,
+        17.719
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8667,
+        0.8667,
+        0.8667
+      ],
+      "visible": true
+    },
+    {
+      "id": "peak-oak-1",
+      "name": "Peak oak 1",
+      "model": "coastal-oak-rounded",
+      "group": "Left island",
+      "position": [
+        -16.585,
+        10.343,
+        18.22
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.0952,
+        1.0952,
+        1.0952
+      ],
+      "visible": true
+    },
+    {
+      "id": "peak-oak-2",
+      "name": "Peak oak 2",
+      "model": "coastal-oak-leaning",
+      "group": "Left island",
+      "position": [
+        -15.86,
+        7.002,
+        22.24
+      ],
+      "rotation": [
+        0,
+        255,
+        0
+      ],
+      "scale": [
+        0.9524,
+        0.9524,
+        0.9524
+      ],
+      "visible": true
+    },
+    {
+      "id": "peak-pine-1",
+      "name": "Peak pine 1",
+      "model": "white-pine-tall",
+      "group": "Left island",
+      "position": [
+        -13.94,
+        10.405,
+        17.563
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.0385,
+        1.0385,
+        1.0385
+      ],
+      "visible": true
+    },
+    {
+      "id": "peak-pine-2",
+      "name": "Peak pine 2",
+      "model": "white-pine-medium",
+      "group": "Left island",
+      "position": [
+        -12.259,
+        10.886,
+        15.433
+      ],
+      "rotation": [
+        0,
+        30,
+        0
+      ],
+      "scale": [
+        1.0455,
+        1.0455,
+        1.0455
+      ],
+      "visible": true
+    },
+    {
+      "id": "peak-pine-3",
+      "name": "Peak pine 3",
+      "model": "white-pine-small",
+      "group": "Left island",
+      "position": [
+        -12.165,
+        10.58,
+        17.559
+      ],
+      "rotation": [
+        0,
+        70,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "mid-pine-1",
+      "name": "Mid pine 1",
+      "model": "white-pine-medium",
+      "group": "Left island",
+      "position": [
+        -8.777,
+        10.484,
+        15.103
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9545,
+        0.9545,
+        0.9545
+      ],
+      "visible": true
+    },
+    {
+      "id": "mid-pine-2",
+      "name": "Mid pine 2",
+      "model": "white-pine-small",
+      "group": "Left island",
+      "position": [
+        -13.18,
+        8.206,
+        18.83
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9412,
+        0.9412,
+        0.9412
+      ],
+      "visible": true
+    },
+    {
+      "id": "mid-oak",
+      "name": "Mid oak",
+      "model": "coastal-oak-rounded",
+      "group": "Left island",
+      "position": [
+        -10.019,
+        8.5,
+        12.083
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.9048,
+        0.9048,
+        0.9048
+      ],
+      "visible": true
+    },
+    {
+      "id": "mid-pine-3",
+      "name": "Mid pine 3",
+      "model": "white-pine-small",
+      "group": "Left island",
+      "position": [
+        -6.94,
+        7.325,
+        15.67
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8824,
+        0.8824,
+        0.8824
+      ],
+      "visible": true
+    },
+    {
+      "id": "low-pine",
+      "name": "Low pine",
+      "model": "white-pine-small",
+      "group": "Left island",
+      "position": [
+        -12.446,
+        2.155,
+        20.936
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9412,
+        0.9412,
+        0.9412
+      ],
+      "visible": true
+    },
+    {
+      "id": "low-flowers",
+      "name": "Low flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Left island",
+      "position": [
+        -11.038,
+        1.668,
+        22.497
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8889,
+        0.8889,
+        0.8889
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-1",
+      "name": "Beach grass 1",
+      "model": "beach-grass-plumes",
+      "group": "Left island",
+      "position": [
+        -13.444,
+        1.215,
+        24.156
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8889,
+        0.8889,
+        0.8889
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-2",
+      "name": "Beach grass 2",
+      "model": "beach-grass-green",
+      "group": "Left island",
+      "position": [
+        -15.998,
+        2.227,
+        23.379
+      ],
+      "rotation": [
+        0,
+        60,
+        0
+      ],
+      "scale": [
+        0.8333,
+        0.8333,
+        0.8333
+      ],
+      "visible": true
+    },
+    {
+      "id": "peak-flowers",
+      "name": "Peak flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Left island",
+      "position": [
+        -12.611,
+        8.226,
+        18.891
+      ],
+      "rotation": [
+        0,
+        50,
+        0
+      ],
+      "scale": [
+        0.7778,
+        0.7778,
+        0.7778
+      ],
+      "visible": true
+    },
+    {
+      "id": "bridge",
+      "name": "Arched bridge",
+      "model": "arched-bridge",
+      "group": "Bridge",
+      "position": [
+        -2.335,
+        -0.6,
+        11.79
+      ],
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        1,
+        1.5,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "lighthouse",
+      "name": "Lighthouse",
+      "model": "lighthouse",
+      "group": "Right island",
+      "position": [
+        9.122,
+        5.194,
+        5.819
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.1481,
+        1.3089,
+        1.1481
+      ],
+      "visible": true
+    },
+    {
+      "id": "cottage",
+      "name": "Keeper's cottage",
+      "model": "keepers-cottage",
+      "group": "Right island",
+      "position": [
+        5.588,
+        5.949,
+        8.282
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.037,
+        1.037,
+        1.037
+      ],
+      "visible": true
+    },
+    {
+      "id": "ri-oak",
+      "name": "Ri oak",
+      "model": "coastal-oak-rounded",
+      "group": "Right island",
+      "position": [
+        4.946,
+        4.415,
+        5.962
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.1905,
+        1.1905,
+        1.1905
+      ],
+      "visible": true
+    },
+    {
+      "id": "ri-pine-1",
+      "name": "Ri pine 1",
+      "model": "white-pine-tall",
+      "group": "Right island",
+      "position": [
+        2.302,
+        6.3,
+        9.669
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.0769,
+        1.0769,
+        1.0769
+      ],
+      "visible": true
+    },
+    {
+      "id": "ri-pine-2",
+      "name": "Ri pine 2",
+      "model": "white-pine-medium",
+      "group": "Right island",
+      "position": [
+        2.825,
+        6.3,
+        7.906
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.0909,
+        1.0909,
+        1.0909
+      ],
+      "visible": true
+    },
+    {
+      "id": "ri-flowers",
+      "name": "Ri flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Right island",
+      "position": [
+        8.825,
+        4.894,
+        11.365
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8889,
+        0.8889,
+        0.8889
+      ],
+      "visible": true
+    },
+    {
+      "id": "islet-top-left",
+      "name": "Islet top left",
+      "model": "mixed-trees-islet",
+      "group": "Islets and rocks",
+      "position": [
+        -34.226,
+        -0.2,
+        1.849
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.1667,
+        1.1667,
+        1.1667
+      ],
+      "visible": true
+    },
+    {
+      "id": "islet-top",
+      "name": "Islet top",
+      "model": "wooded-granite-islet",
+      "group": "Islets and rocks",
+      "position": [
+        -17.868,
+        -0.2,
+        -6.537
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.7143,
+        0.7143,
+        0.7143
+      ],
+      "visible": true
+    },
+    {
+      "id": "islet-bottom-left",
+      "name": "Islet bottom left",
+      "model": "pine-flower-islet",
+      "group": "Islets and rocks",
+      "position": [
+        -3.157,
+        -0.2,
+        31.902
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "visible": true
+    },
+    {
+      "id": "islet-bottom",
+      "name": "Islet bottom",
+      "model": "mixed-trees-islet",
+      "group": "Islets and rocks",
+      "position": [
+        5.608,
+        -0.2,
+        23.138
+      ],
+      "rotation": [
+        0,
+        60,
+        0
+      ],
+      "scale": [
+        0.8333,
+        0.8333,
+        0.8333
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-1",
+      "name": "Boulder 1",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -23.194,
+        -0.25,
+        -2.717
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-2",
+      "name": "Boulder 2",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -16.01,
+        -0.25,
+        -6.712
+      ],
+      "rotation": [
+        0,
+        47,
+        0
+      ],
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-3",
+      "name": "Boulder 3",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        9.074,
+        -0.25,
+        -30.202
+      ],
+      "rotation": [
+        0,
+        94,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-4",
+      "name": "Boulder 4",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        12.593,
+        -0.25,
+        6.851
+      ],
+      "rotation": [
+        0,
+        141,
+        0
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-5",
+      "name": "Boulder 5",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        6.147,
+        -0.25,
+        16.309
+      ],
+      "rotation": [
+        0,
+        188,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-6",
+      "name": "Boulder 6",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        32.441,
+        -0.25,
+        -6.175
+      ],
+      "rotation": [
+        0,
+        235,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-7",
+      "name": "Boulder 7",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -2.935,
+        -0.25,
+        18.659
+      ],
+      "rotation": [
+        0,
+        282,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-8",
+      "name": "Boulder 8",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -11.015,
+        -0.25,
+        27.448
+      ],
+      "rotation": [
+        0,
+        329,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-9",
+      "name": "Boulder 9",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -25.756,
+        -0.25,
+        14.638
+      ],
+      "rotation": [
+        0,
+        16,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-10",
+      "name": "Boulder 10",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        8.761,
+        -0.25,
+        -1.452
+      ],
+      "rotation": [
+        0,
+        63,
+        0
+      ],
+      "scale": [
+        0.95,
+        0.95,
+        0.95
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-11",
+      "name": "Boulder 11",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -4.873,
+        -0.25,
+        34.505
+      ],
+      "rotation": [
+        0,
+        110,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-12",
+      "name": "Boulder 12",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        7.442,
+        -0.25,
+        22.278
+      ],
+      "rotation": [
+        0,
+        157,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-13",
+      "name": "Boulder 13",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -23.86,
+        -0.25,
+        18.058
+      ],
+      "rotation": [
+        0,
+        204,
+        0
+      ],
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "visible": true
+    },
+    {
+      "id": "rock-14",
+      "name": "Boulder 14",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -7.481,
+        -0.25,
+        22.497
+      ],
+      "rotation": [
+        0,
+        251,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,5455 @@
+{
+  "version": 1,
+  "reference": "",
+  "camera": {
+    "azimuth": 45,
+    "elevation": 35,
+    "target": [
+      -6.364,
+      0,
+      -15.192
+    ],
+    "width": 128,
+    "aspect": 1.7747
+  },
+  "generated": {
+    "by": "scripts/environment/harbor/generate.mjs",
+    "seed": 20261123
+  },
+  "objects": [
+    {
+      "id": "mountain",
+      "name": "The mountain",
+      "model": "mountain-rounded",
+      "group": "Terrain",
+      "position": [
+        -27.577,
+        -0.35,
+        -22.263
+      ],
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        2.6,
+        2.6,
+        2.6
+      ],
+      "visible": true
+    },
+    {
+      "id": "west-upland",
+      "name": "West upland",
+      "model": "rock-steps",
+      "group": "Terrain",
+      "position": [
+        -29.698,
+        -0.35,
+        10.971
+      ],
+      "rotation": [
+        0,
+        345,
+        0
+      ],
+      "scale": [
+        2.4,
+        2.4,
+        2.4
+      ],
+      "visible": true
+    },
+    {
+      "id": "village-terrace",
+      "name": "Village terrace",
+      "model": "cliff-plateau",
+      "group": "Terrain",
+      "position": [
+        -26.163,
+        -0.35,
+        -1.05
+      ],
+      "rotation": [
+        0,
+        145,
+        0
+      ],
+      "scale": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "visible": true
+    },
+    {
+      "id": "village-shore",
+      "name": "Village shore",
+      "model": "ridge-long",
+      "group": "Terrain",
+      "position": [
+        -12.728,
+        -0.35,
+        -0.343
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        3.4,
+        3.4,
+        3.4
+      ],
+      "visible": true
+    },
+    {
+      "id": "cove",
+      "name": "The cove",
+      "model": "cliff-concave",
+      "group": "Terrain",
+      "position": [
+        2.121,
+        -0.35,
+        -27.92
+      ],
+      "rotation": [
+        0,
+        15,
+        0
+      ],
+      "scale": [
+        3,
+        3,
+        3
+      ],
+      "visible": true
+    },
+    {
+      "id": "lighthouse-head",
+      "name": "Lighthouse head",
+      "model": "cliff-plateau",
+      "group": "Terrain",
+      "position": [
+        27.577,
+        -0.35,
+        -36.406
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        2.4,
+        2.4,
+        2.4
+      ],
+      "visible": true
+    },
+    {
+      "id": "east-point",
+      "name": "East point",
+      "model": "shore-rock-islet",
+      "group": "Terrain",
+      "position": [
+        40.305,
+        -0.35,
+        -18.021
+      ],
+      "rotation": [
+        0,
+        335,
+        0
+      ],
+      "scale": [
+        2.2,
+        2.2,
+        2.2
+      ],
+      "visible": true
+    },
+    {
+      "id": "east-mole",
+      "name": "East mole",
+      "model": "ridge-long",
+      "group": "Terrain",
+      "position": [
+        36.062,
+        -0.35,
+        0.364
+      ],
+      "rotation": [
+        0,
+        70,
+        0
+      ],
+      "scale": [
+        2.6,
+        2.6,
+        2.6
+      ],
+      "visible": true
+    },
+    {
+      "id": "sea-arch",
+      "name": "The sea arch",
+      "model": "cliff-arch",
+      "group": "Terrain",
+      "position": [
+        -7.071,
+        -0.35,
+        32.184
+      ],
+      "rotation": [
+        0,
+        60,
+        0
+      ],
+      "scale": [
+        2.4,
+        2.4,
+        2.4
+      ],
+      "visible": true
+    },
+    {
+      "id": "lighthouse",
+      "name": "Lighthouse",
+      "model": "lighthouse",
+      "group": "Lighthouse head",
+      "position": [
+        31.466,
+        11.206,
+        -36.052
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ],
+      "visible": true
+    },
+    {
+      "id": "keepers-cottage",
+      "name": "Keeper's cottage",
+      "model": "keepers-cottage",
+      "group": "Lighthouse head",
+      "position": [
+        26.87,
+        11.136,
+        -32.87
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "harbor-house",
+      "name": "Harbor house",
+      "model": "stone-house",
+      "group": "Village",
+      "position": [
+        -12.657,
+        2.851,
+        14.153
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "shelf-cabin",
+      "name": "Shelf cabin",
+      "model": "stone-cabin",
+      "group": "Village",
+      "position": [
+        -14.071,
+        5.442,
+        -6.354
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "net-cabin",
+      "name": "Cabin at the head of the shore",
+      "model": "stone-cabin",
+      "group": "Village",
+      "position": [
+        -13.718,
+        5.071,
+        -15.899
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrace-cottage",
+      "name": "Terrace cottage",
+      "model": "keepers-cottage",
+      "group": "Village",
+      "position": [
+        -27.931,
+        8.375,
+        -3.525
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "cove-house",
+      "name": "House above the cove",
+      "model": "stone-house",
+      "group": "The cove",
+      "position": [
+        -1.909,
+        7.508,
+        -36.759
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "point-cabin",
+      "name": "Cabin on the east point",
+      "model": "stone-cabin",
+      "group": "East shore",
+      "position": [
+        36.699,
+        9.296,
+        -20.496
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "mole-cabin",
+      "name": "Cabin on the mole",
+      "model": "stone-cabin",
+      "group": "East shore",
+      "position": [
+        35.426,
+        3.946,
+        4.253
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "shore-stairs",
+      "name": "Stairs to the low shore",
+      "model": "cliff-stairs",
+      "group": "Paths and stairs",
+      "position": [
+        -11.622,
+        3.261,
+        7.833
+      ],
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        0.86,
+        0.86,
+        0.86
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrace-stairs",
+      "name": "Stairs to the terrace",
+      "model": "cliff-stairs",
+      "group": "Paths and stairs",
+      "position": [
+        -19.229,
+        5.431,
+        -6.57
+      ],
+      "rotation": [
+        0,
+        135,
+        0
+      ],
+      "scale": [
+        1.169,
+        1.169,
+        1.169
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-stairs",
+      "name": "Stairs to the beach",
+      "model": "stone-stairs-wide",
+      "group": "Paths and stairs",
+      "position": [
+        -2.283,
+        0.457,
+        -22.179
+      ],
+      "rotation": [
+        0,
+        165,
+        0
+      ],
+      "scale": [
+        1.055,
+        1.055,
+        1.055
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrace-path",
+      "name": "Path on the terrace",
+      "model": "path-straight",
+      "group": "Paths and stairs",
+      "position": [
+        -25.456,
+        8.228,
+        -3.172
+      ],
+      "rotation": [
+        0,
+        65,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "shelf-path",
+      "name": "Path on the shelf",
+      "model": "path-straight",
+      "group": "Paths and stairs",
+      "position": [
+        -12.021,
+        5.213,
+        3.899
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-path",
+      "name": "Path to the lighthouse",
+      "model": "path-curve-left",
+      "group": "Paths and stairs",
+      "position": [
+        31.466,
+        11.134,
+        -32.517
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "mole-lookout",
+      "name": "Lookout on the mole",
+      "model": "fence-corner",
+      "group": "East shore",
+      "position": [
+        32.244,
+        1.685,
+        11.678
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "shelf-wall",
+      "name": "Wall on the shelf",
+      "model": "stone-retaining-wall",
+      "group": "Village",
+      "position": [
+        -12.374,
+        4.641,
+        -3.525
+      ],
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-fence-01",
+      "name": "Fence on the head 1",
+      "model": "fence-straight",
+      "group": "Lighthouse head",
+      "position": [
+        35.221,
+        11.369,
+        -34.884
+      ],
+      "rotation": [
+        0,
+        65.01,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-fence-02",
+      "name": "Fence on the head 2",
+      "model": "fence-straight",
+      "group": "Lighthouse head",
+      "position": [
+        34.67,
+        11.363,
+        -36.796
+      ],
+      "rotation": [
+        0,
+        136.5,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-fence-03",
+      "name": "Fence on the head 3",
+      "model": "fence-straight",
+      "group": "Lighthouse head",
+      "position": [
+        32.889,
+        11.225,
+        -41.24
+      ],
+      "rotation": [
+        0,
+        83.32,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-fence-04",
+      "name": "Fence on the head 4",
+      "model": "fence-straight",
+      "group": "Lighthouse head",
+      "position": [
+        32.209,
+        11.459,
+        -43.705
+      ],
+      "rotation": [
+        0,
+        128.41,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-fence-05",
+      "name": "Fence on the head 5",
+      "model": "fence-straight",
+      "group": "Lighthouse head",
+      "position": [
+        29.977,
+        11.47,
+        -44.77
+      ],
+      "rotation": [
+        0,
+        179.97,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "head-fence-06",
+      "name": "Fence on the head 6",
+      "model": "fence-straight",
+      "group": "Lighthouse head",
+      "position": [
+        27.467,
+        11.439,
+        -44.108
+      ],
+      "rotation": [
+        0,
+        210.58,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrace-fence-01",
+      "name": "Fence on the terrace 1",
+      "model": "fence-straight",
+      "group": "Village",
+      "position": [
+        -29.539,
+        8.462,
+        3.269
+      ],
+      "rotation": [
+        0,
+        1.07,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "terrace-fence-02",
+      "name": "Fence on the terrace 2",
+      "model": "fence-straight",
+      "group": "Village",
+      "position": [
+        -22.673,
+        8.339,
+        -2.101
+      ],
+      "rotation": [
+        0,
+        150.16,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "cove-fence-01",
+      "name": "Fence above the cove 1",
+      "model": "fence-straight",
+      "group": "The cove",
+      "position": [
+        8.211,
+        7.777,
+        -35.333
+      ],
+      "rotation": [
+        0,
+        17.49,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "cove-fence-02",
+      "name": "Fence above the cove 2",
+      "model": "fence-straight",
+      "group": "The cove",
+      "position": [
+        8.682,
+        7.722,
+        -36.966
+      ],
+      "rotation": [
+        0,
+        110.03,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-narrow-spire-01",
+      "name": "Pine (narrow spire)",
+      "model": "pine-narrow-spire",
+      "group": "Woodland",
+      "position": [
+        -23.849,
+        20.792,
+        -20.718
+      ],
+      "rotation": [
+        0,
+        166.3,
+        0
+      ],
+      "scale": [
+        1.069,
+        1.069,
+        1.069
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-01",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -22.78,
+        21.712,
+        -30.049
+      ],
+      "rotation": [
+        0,
+        182.4,
+        0
+      ],
+      "scale": [
+        1.013,
+        1.013,
+        1.013
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-01",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -18.314,
+        5.995,
+        -21.042
+      ],
+      "rotation": [
+        0,
+        69.8,
+        0
+      ],
+      "scale": [
+        1.01,
+        1.01,
+        1.01
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-02",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -21.279,
+        21.391,
+        -26.387
+      ],
+      "rotation": [
+        0,
+        25.3,
+        0
+      ],
+      "scale": [
+        0.953,
+        0.953,
+        0.953
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-03",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -28.224,
+        20.265,
+        -24.98
+      ],
+      "rotation": [
+        0,
+        28.4,
+        0
+      ],
+      "scale": [
+        1.053,
+        1.053,
+        1.053
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-04",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -25.57,
+        20.564,
+        -22.138
+      ],
+      "rotation": [
+        0,
+        36.8,
+        0
+      ],
+      "scale": [
+        1.078,
+        1.078,
+        1.078
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-01",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -36.606,
+        6.68,
+        -12.925
+      ],
+      "rotation": [
+        0,
+        187.4,
+        0
+      ],
+      "scale": [
+        1.17,
+        1.17,
+        1.17
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-02",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -31.991,
+        19.611,
+        -21.155
+      ],
+      "rotation": [
+        0,
+        0.9,
+        0
+      ],
+      "scale": [
+        0.985,
+        0.985,
+        0.985
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-02",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -28.085,
+        19.702,
+        -15.473
+      ],
+      "rotation": [
+        0,
+        240.2,
+        0
+      ],
+      "scale": [
+        1.057,
+        1.057,
+        1.057
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-03",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -20.31,
+        21.546,
+        -29.109
+      ],
+      "rotation": [
+        0,
+        178.6,
+        0
+      ],
+      "scale": [
+        1.056,
+        1.056,
+        1.056
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-03",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -25.082,
+        20.848,
+        -26.918
+      ],
+      "rotation": [
+        0,
+        120.6,
+        0
+      ],
+      "scale": [
+        0.992,
+        0.992,
+        0.992
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-04",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -25.665,
+        20.411,
+        -24.592
+      ],
+      "rotation": [
+        0,
+        333.2,
+        0
+      ],
+      "scale": [
+        1.277,
+        1.277,
+        1.277
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-narrow-spire-02",
+      "name": "Pine (narrow spire)",
+      "model": "pine-narrow-spire",
+      "group": "Woodland",
+      "position": [
+        -18.764,
+        5.745,
+        -18.839
+      ],
+      "rotation": [
+        0,
+        12.9,
+        0
+      ],
+      "scale": [
+        0.956,
+        0.956,
+        0.956
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-05",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -28.245,
+        19.943,
+        -19.599
+      ],
+      "rotation": [
+        0,
+        10.2,
+        0
+      ],
+      "scale": [
+        1.239,
+        1.239,
+        1.239
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-06",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -36.71,
+        7.753,
+        -22.638
+      ],
+      "rotation": [
+        0,
+        268.1,
+        0
+      ],
+      "scale": [
+        0.965,
+        0.965,
+        0.965
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-narrow-spire-03",
+      "name": "Pine (narrow spire)",
+      "model": "pine-narrow-spire",
+      "group": "Woodland",
+      "position": [
+        -30.562,
+        19.67,
+        -22.942
+      ],
+      "rotation": [
+        0,
+        220.1,
+        0
+      ],
+      "scale": [
+        0.964,
+        0.964,
+        0.964
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-04",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -23.204,
+        20.911,
+        -22.877
+      ],
+      "rotation": [
+        0,
+        218.6,
+        0
+      ],
+      "scale": [
+        1.214,
+        1.214,
+        1.214
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-07",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -32.748,
+        6.042,
+        -9.542
+      ],
+      "rotation": [
+        0,
+        208,
+        0
+      ],
+      "scale": [
+        1.241,
+        1.241,
+        1.241
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-08",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -31.548,
+        19.129,
+        -16.139
+      ],
+      "rotation": [
+        0,
+        230.7,
+        0
+      ],
+      "scale": [
+        1.245,
+        1.245,
+        1.245
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-09",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -26.609,
+        20.48,
+        -18.131
+      ],
+      "rotation": [
+        0,
+        265.2,
+        0
+      ],
+      "scale": [
+        1.137,
+        1.137,
+        1.137
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-10",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -30.145,
+        19.256,
+        -12.815
+      ],
+      "rotation": [
+        0,
+        238.6,
+        0
+      ],
+      "scale": [
+        1.073,
+        1.073,
+        1.073
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-11",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -25.274,
+        11.491,
+        -14.681
+      ],
+      "rotation": [
+        0,
+        2.1,
+        0
+      ],
+      "scale": [
+        0.99,
+        0.99,
+        0.99
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-05",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -34.048,
+        19.329,
+        -19.222
+      ],
+      "rotation": [
+        0,
+        133.8,
+        0
+      ],
+      "scale": [
+        0.909,
+        0.909,
+        0.909
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-12",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -34.335,
+        6.794,
+        -11.584
+      ],
+      "rotation": [
+        0,
+        208.3,
+        0
+      ],
+      "scale": [
+        1.118,
+        1.118,
+        1.118
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-13",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -18.872,
+        7.143,
+        -32.082
+      ],
+      "rotation": [
+        0,
+        354.2,
+        0
+      ],
+      "scale": [
+        0.965,
+        0.965,
+        0.965
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-05",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -37.963,
+        6.499,
+        -15.166
+      ],
+      "rotation": [
+        0,
+        350.4,
+        0
+      ],
+      "scale": [
+        1.02,
+        1.02,
+        1.02
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-06",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -31.848,
+        19.526,
+        -18.517
+      ],
+      "rotation": [
+        0,
+        293.6,
+        0
+      ],
+      "scale": [
+        1.009,
+        1.009,
+        1.009
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-06",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -28.12,
+        19.971,
+        -22.132
+      ],
+      "rotation": [
+        0,
+        114.8,
+        0
+      ],
+      "scale": [
+        1.056,
+        1.056,
+        1.056
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-07",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -21.044,
+        21.378,
+        -23.553
+      ],
+      "rotation": [
+        0,
+        167,
+        0
+      ],
+      "scale": [
+        1.074,
+        1.074,
+        1.074
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-14",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -16.443,
+        5.736,
+        -22.402
+      ],
+      "rotation": [
+        0,
+        155.3,
+        0
+      ],
+      "scale": [
+        1.215,
+        1.215,
+        1.215
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-07",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -29.304,
+        19.927,
+        -17.507
+      ],
+      "rotation": [
+        0,
+        229.3,
+        0
+      ],
+      "scale": [
+        1.084,
+        1.084,
+        1.084
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-15",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -34.204,
+        7.533,
+        -25.515
+      ],
+      "rotation": [
+        0,
+        35.5,
+        0
+      ],
+      "scale": [
+        0.918,
+        0.918,
+        0.918
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-08",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -19.08,
+        21.586,
+        -27.289
+      ],
+      "rotation": [
+        0,
+        2.3,
+        0
+      ],
+      "scale": [
+        1.024,
+        1.024,
+        1.024
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-16",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -37.967,
+        7.675,
+        -20.761
+      ],
+      "rotation": [
+        0,
+        3.1,
+        0
+      ],
+      "scale": [
+        0.931,
+        0.931,
+        0.931
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-09",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -27.285,
+        20.746,
+        -27.264
+      ],
+      "rotation": [
+        0,
+        145.3,
+        0
+      ],
+      "scale": [
+        1.045,
+        1.045,
+        1.045
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-17",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -23.134,
+        20.946,
+        -25.178
+      ],
+      "rotation": [
+        0,
+        32.7,
+        0
+      ],
+      "scale": [
+        0.92,
+        0.92,
+        0.92
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-narrow-spire-04",
+      "name": "Pine (narrow spire)",
+      "model": "pine-narrow-spire",
+      "group": "Woodland",
+      "position": [
+        -25.003,
+        20.766,
+        -29.195
+      ],
+      "rotation": [
+        0,
+        72.6,
+        0
+      ],
+      "scale": [
+        1.024,
+        1.024,
+        1.024
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-18",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -29.186,
+        11.773,
+        12.932
+      ],
+      "rotation": [
+        0,
+        219.8,
+        0
+      ],
+      "scale": [
+        1.051,
+        1.051,
+        1.051
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-08",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -34.316,
+        12.248,
+        12.692
+      ],
+      "rotation": [
+        0,
+        159.7,
+        0
+      ],
+      "scale": [
+        1.115,
+        1.115,
+        1.115
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-19",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -29.175,
+        12.054,
+        10.255
+      ],
+      "rotation": [
+        0,
+        38.5,
+        0
+      ],
+      "scale": [
+        1.178,
+        1.178,
+        1.178
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-09",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -37.476,
+        12.932,
+        10.663
+      ],
+      "rotation": [
+        0,
+        22.8,
+        0
+      ],
+      "scale": [
+        1.206,
+        1.206,
+        1.206
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-20",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -26.446,
+        12.159,
+        13.094
+      ],
+      "rotation": [
+        0,
+        167.5,
+        0
+      ],
+      "scale": [
+        1.116,
+        1.116,
+        1.116
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-10",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -31.547,
+        12.664,
+        11.025
+      ],
+      "rotation": [
+        0,
+        118.9,
+        0
+      ],
+      "scale": [
+        1.114,
+        1.114,
+        1.114
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-11",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -36.472,
+        12.556,
+        7.796
+      ],
+      "rotation": [
+        0,
+        137.8,
+        0
+      ],
+      "scale": [
+        0.966,
+        0.966,
+        0.966
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-10",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -28.724,
+        11.997,
+        7.859
+      ],
+      "rotation": [
+        0,
+        133.7,
+        0
+      ],
+      "scale": [
+        1.177,
+        1.177,
+        1.177
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-11",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Woodland",
+      "position": [
+        -33.575,
+        12.396,
+        8.337
+      ],
+      "rotation": [
+        0,
+        188,
+        0
+      ],
+      "scale": [
+        1.09,
+        1.09,
+        1.09
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-12",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -25.492,
+        11.95,
+        10.931
+      ],
+      "rotation": [
+        0,
+        34.8,
+        0
+      ],
+      "scale": [
+        0.92,
+        0.92,
+        0.92
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-13",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -38.744,
+        12.324,
+        8.389
+      ],
+      "rotation": [
+        0,
+        276.3,
+        0
+      ],
+      "scale": [
+        1.035,
+        1.035,
+        1.035
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-21",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -32.081,
+        12.026,
+        13.372
+      ],
+      "rotation": [
+        0,
+        220.1,
+        0
+      ],
+      "scale": [
+        0.908,
+        0.908,
+        0.908
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-tall-22",
+      "name": "White pine (tall)",
+      "model": "white-pine-tall",
+      "group": "Woodland",
+      "position": [
+        -31.31,
+        12.197,
+        8.699
+      ],
+      "rotation": [
+        0,
+        317.2,
+        0
+      ],
+      "scale": [
+        0.954,
+        0.954,
+        0.954
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-01",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "Woodland",
+      "position": [
+        -35.042,
+        12.355,
+        10.041
+      ],
+      "rotation": [
+        0,
+        133.3,
+        0
+      ],
+      "scale": [
+        1.131,
+        1.131,
+        1.131
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-14",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Woodland",
+      "position": [
+        -31.094,
+        7.478,
+        5.222
+      ],
+      "rotation": [
+        0,
+        33.3,
+        0
+      ],
+      "scale": [
+        1.207,
+        1.207,
+        1.207
+      ],
+      "visible": true
+    },
+    {
+      "id": "oak-twin-trunk-01",
+      "name": "Oak (twin trunk)",
+      "model": "oak-twin-trunk",
+      "group": "Village",
+      "position": [
+        -24.145,
+        3.049,
+        2.434
+      ],
+      "rotation": [
+        0,
+        298.9,
+        0
+      ],
+      "scale": [
+        0.901,
+        0.901,
+        0.901
+      ],
+      "visible": true
+    },
+    {
+      "id": "oak-twin-trunk-02",
+      "name": "Oak (twin trunk)",
+      "model": "oak-twin-trunk",
+      "group": "Village",
+      "position": [
+        -25.793,
+        5.016,
+        -9.299
+      ],
+      "rotation": [
+        0,
+        141.5,
+        0
+      ],
+      "scale": [
+        0.893,
+        0.893,
+        0.893
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-12",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Village",
+      "position": [
+        -27.617,
+        8.431,
+        1.149
+      ],
+      "rotation": [
+        0,
+        321.3,
+        0
+      ],
+      "scale": [
+        0.944,
+        0.944,
+        0.944
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-13",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Village",
+      "position": [
+        -17.285,
+        2.582,
+        -2.097
+      ],
+      "rotation": [
+        0,
+        332.1,
+        0
+      ],
+      "scale": [
+        1.077,
+        1.077,
+        1.077
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-02",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "Village",
+      "position": [
+        -32.202,
+        8.411,
+        1.287
+      ],
+      "rotation": [
+        0,
+        354.4,
+        0
+      ],
+      "scale": [
+        1.089,
+        1.089,
+        1.089
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-14",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Village",
+      "position": [
+        -21.361,
+        3.125,
+        1.521
+      ],
+      "rotation": [
+        0,
+        98.6,
+        0
+      ],
+      "scale": [
+        0.944,
+        0.944,
+        0.944
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-01",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "Village",
+      "position": [
+        -13.859,
+        5.019,
+        -11.348
+      ],
+      "rotation": [
+        0,
+        156.2,
+        0
+      ],
+      "scale": [
+        0.823,
+        0.823,
+        0.823
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-02",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "Village",
+      "position": [
+        -8.62,
+        2.811,
+        -10.681
+      ],
+      "rotation": [
+        0,
+        36.4,
+        0
+      ],
+      "scale": [
+        0.808,
+        0.808,
+        0.808
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-15",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Village",
+      "position": [
+        -14.901,
+        2.507,
+        0.049
+      ],
+      "rotation": [
+        0,
+        41.5,
+        0
+      ],
+      "scale": [
+        1.024,
+        1.024,
+        1.024
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-16",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "Village",
+      "position": [
+        -9.571,
+        2.844,
+        -6.142
+      ],
+      "rotation": [
+        0,
+        249.1,
+        0
+      ],
+      "scale": [
+        1.052,
+        1.052,
+        1.052
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-15",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "The cove",
+      "position": [
+        -3.406,
+        2.828,
+        -15.674
+      ],
+      "rotation": [
+        0,
+        116.5,
+        0
+      ],
+      "scale": [
+        1.134,
+        1.134,
+        1.134
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-03",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "The cove",
+      "position": [
+        -5.422,
+        7.702,
+        -29.227
+      ],
+      "rotation": [
+        0,
+        219.8,
+        0
+      ],
+      "scale": [
+        1.036,
+        1.036,
+        1.036
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-03",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "The cove",
+      "position": [
+        -5.625,
+        4.382,
+        -17.423
+      ],
+      "rotation": [
+        0,
+        106.4,
+        0
+      ],
+      "scale": [
+        0.917,
+        0.917,
+        0.917
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-04",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "The cove",
+      "position": [
+        11.595,
+        4.027,
+        -32.801
+      ],
+      "rotation": [
+        0,
+        45.2,
+        0
+      ],
+      "scale": [
+        1.087,
+        1.087,
+        1.087
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-04",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "The cove",
+      "position": [
+        -7.899,
+        4.24,
+        -20.873
+      ],
+      "rotation": [
+        0,
+        319.1,
+        0
+      ],
+      "scale": [
+        1.063,
+        1.063,
+        1.063
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-05",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "The cove",
+      "position": [
+        6.156,
+        7.703,
+        -36.412
+      ],
+      "rotation": [
+        0,
+        263.9,
+        0
+      ],
+      "scale": [
+        1.057,
+        1.057,
+        1.057
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-06",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "The cove",
+      "position": [
+        -4.013,
+        5.798,
+        -26.135
+      ],
+      "rotation": [
+        0,
+        338.7,
+        0
+      ],
+      "scale": [
+        0.951,
+        0.951,
+        0.951
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-05",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "The cove",
+      "position": [
+        -8.218,
+        5.717,
+        -28.81
+      ],
+      "rotation": [
+        0,
+        346.3,
+        0
+      ],
+      "scale": [
+        1.094,
+        1.094,
+        1.094
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-07",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "The cove",
+      "position": [
+        10.991,
+        4.122,
+        -31.362
+      ],
+      "rotation": [
+        0,
+        227.7,
+        0
+      ],
+      "scale": [
+        1.062,
+        1.062,
+        1.062
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-06",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "The cove",
+      "position": [
+        -8.597,
+        5.849,
+        -24.388
+      ],
+      "rotation": [
+        0,
+        296.4,
+        0
+      ],
+      "scale": [
+        1.181,
+        1.181,
+        1.181
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-leaning-08",
+      "name": "Coastal oak (leaning)",
+      "model": "coastal-oak-leaning",
+      "group": "The cove",
+      "position": [
+        4.299,
+        4.223,
+        -34.077
+      ],
+      "rotation": [
+        0,
+        107.9,
+        0
+      ],
+      "scale": [
+        0.891,
+        0.891,
+        0.891
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-16",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Lighthouse head",
+      "position": [
+        34.189,
+        3.465,
+        -24.599
+      ],
+      "rotation": [
+        0,
+        127.2,
+        0
+      ],
+      "scale": [
+        0.967,
+        0.967,
+        0.967
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-17",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Lighthouse head",
+      "position": [
+        30.053,
+        11.391,
+        -40.248
+      ],
+      "rotation": [
+        0,
+        76.9,
+        0
+      ],
+      "scale": [
+        1.039,
+        1.039,
+        1.039
+      ],
+      "visible": true
+    },
+    {
+      "id": "coastal-oak-rounded-07",
+      "name": "Coastal oak (rounded)",
+      "model": "coastal-oak-rounded",
+      "group": "Lighthouse head",
+      "position": [
+        21.241,
+        4.259,
+        -37.067
+      ],
+      "rotation": [
+        0,
+        3.1,
+        0
+      ],
+      "scale": [
+        1.045,
+        1.045,
+        1.045
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-01",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "Lighthouse head",
+      "position": [
+        25.577,
+        11.38,
+        -39.318
+      ],
+      "rotation": [
+        0,
+        13.9,
+        0
+      ],
+      "scale": [
+        1.075,
+        1.075,
+        1.075
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-02",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "Lighthouse head",
+      "position": [
+        30.334,
+        6.809,
+        -28.025
+      ],
+      "rotation": [
+        0,
+        296.1,
+        0
+      ],
+      "scale": [
+        1.017,
+        1.017,
+        1.017
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-03",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "Lighthouse head",
+      "position": [
+        36.585,
+        6.685,
+        -29.368
+      ],
+      "rotation": [
+        0,
+        204.6,
+        0
+      ],
+      "scale": [
+        1.106,
+        1.106,
+        1.106
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-18",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "Lighthouse head",
+      "position": [
+        23.44,
+        3.983,
+        -39.804
+      ],
+      "rotation": [
+        0,
+        293.1,
+        0
+      ],
+      "scale": [
+        0.931,
+        0.931,
+        0.931
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-04",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "East shore",
+      "position": [
+        36.48,
+        3.925,
+        1.528
+      ],
+      "rotation": [
+        0,
+        47.7,
+        0
+      ],
+      "scale": [
+        1.245,
+        1.245,
+        1.245
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-17",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "East shore",
+      "position": [
+        36.723,
+        4.147,
+        -5.522
+      ],
+      "rotation": [
+        0,
+        347.5,
+        0
+      ],
+      "scale": [
+        1.032,
+        1.032,
+        1.032
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-05",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "East shore",
+      "position": [
+        42.537,
+        9.292,
+        -20.752
+      ],
+      "rotation": [
+        0,
+        194.5,
+        0
+      ],
+      "scale": [
+        1.192,
+        1.192,
+        1.192
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-18",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "East shore",
+      "position": [
+        38.65,
+        3.612,
+        -9.477
+      ],
+      "rotation": [
+        0,
+        104.9,
+        0
+      ],
+      "scale": [
+        1.078,
+        1.078,
+        1.078
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-small-19",
+      "name": "White pine (small)",
+      "model": "white-pine-small",
+      "group": "East shore",
+      "position": [
+        45.026,
+        4.398,
+        -16.112
+      ],
+      "rotation": [
+        0,
+        349.9,
+        0
+      ],
+      "scale": [
+        1.098,
+        1.098,
+        1.098
+      ],
+      "visible": true
+    },
+    {
+      "id": "white-pine-medium-19",
+      "name": "White pine (medium)",
+      "model": "white-pine-medium",
+      "group": "East shore",
+      "position": [
+        33.323,
+        2.269,
+        8.326
+      ],
+      "rotation": [
+        0,
+        215.1,
+        0
+      ],
+      "scale": [
+        1.006,
+        1.006,
+        1.006
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-06",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "East shore",
+      "position": [
+        40.725,
+        9.347,
+        -16.679
+      ],
+      "rotation": [
+        0,
+        160.5,
+        0
+      ],
+      "scale": [
+        1.006,
+        1.006,
+        1.006
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-07",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "East shore",
+      "position": [
+        41.416,
+        3.783,
+        -12.357
+      ],
+      "rotation": [
+        0,
+        249.1,
+        0
+      ],
+      "scale": [
+        1.099,
+        1.099,
+        1.099
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-08",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "East shore",
+      "position": [
+        38.326,
+        2.056,
+        -3.275
+      ],
+      "rotation": [
+        0,
+        328.6,
+        0
+      ],
+      "scale": [
+        1.054,
+        1.054,
+        1.054
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-09",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "Islets and rocks",
+      "position": [
+        -10.859,
+        7.533,
+        37.831
+      ],
+      "rotation": [
+        0,
+        355.7,
+        0
+      ],
+      "scale": [
+        1.113,
+        1.113,
+        1.113
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-10",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "Islets and rocks",
+      "position": [
+        -3.668,
+        6.648,
+        30.895
+      ],
+      "rotation": [
+        0,
+        221.6,
+        0
+      ],
+      "scale": [
+        1.174,
+        1.174,
+        1.174
+      ],
+      "visible": true
+    },
+    {
+      "id": "pine-windswept-11",
+      "name": "Windswept pine",
+      "model": "pine-windswept",
+      "group": "Islets and rocks",
+      "position": [
+        -9.993,
+        7.548,
+        32.788
+      ],
+      "rotation": [
+        0,
+        1.6,
+        0
+      ],
+      "scale": [
+        1.091,
+        1.091,
+        1.091
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-01",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        2.784,
+        7.742,
+        -37.689
+      ],
+      "rotation": [
+        0,
+        359.5,
+        0
+      ],
+      "scale": [
+        1.045,
+        1.045,
+        1.045
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-02",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        13.292,
+        2.406,
+        -30.172
+      ],
+      "rotation": [
+        0,
+        211,
+        0
+      ],
+      "scale": [
+        0.995,
+        0.995,
+        0.995
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-03",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -30.125,
+        20.127,
+        -25.172
+      ],
+      "rotation": [
+        0,
+        247.7,
+        0
+      ],
+      "scale": [
+        1.051,
+        1.051,
+        1.051
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-04",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        6.935,
+        7.762,
+        -36.612
+      ],
+      "rotation": [
+        0,
+        146,
+        0
+      ],
+      "scale": [
+        0.827,
+        0.827,
+        0.827
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-05",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        4.616,
+        7.74,
+        -36.364
+      ],
+      "rotation": [
+        0,
+        340.5,
+        0
+      ],
+      "scale": [
+        1.069,
+        1.069,
+        1.069
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-06",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -14.575,
+        3.775,
+        -11.63
+      ],
+      "rotation": [
+        0,
+        193.8,
+        0
+      ],
+      "scale": [
+        1.149,
+        1.149,
+        1.149
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-07",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -23.139,
+        21.099,
+        -27.082
+      ],
+      "rotation": [
+        0,
+        157.3,
+        0
+      ],
+      "scale": [
+        0.936,
+        0.936,
+        0.936
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-08",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        28.499,
+        11.434,
+        -42.98
+      ],
+      "rotation": [
+        0,
+        342.5,
+        0
+      ],
+      "scale": [
+        1.11,
+        1.11,
+        1.11
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-09",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        42.851,
+        9.266,
+        -17.415
+      ],
+      "rotation": [
+        0,
+        130.7,
+        0
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-10",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        8.879,
+        7.677,
+        -34.087
+      ],
+      "rotation": [
+        0,
+        178.8,
+        0
+      ],
+      "scale": [
+        1.113,
+        1.113,
+        1.113
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-11",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        31.395,
+        10.68,
+        -46.09
+      ],
+      "rotation": [
+        0,
+        21.3,
+        0
+      ],
+      "scale": [
+        1.114,
+        1.114,
+        1.114
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-12",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        7.895,
+        4.167,
+        -31.93
+      ],
+      "rotation": [
+        0,
+        308.6,
+        0
+      ],
+      "scale": [
+        0.927,
+        0.927,
+        0.927
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-13",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -11.372,
+        5.305,
+        -0.649
+      ],
+      "rotation": [
+        0,
+        121,
+        0
+      ],
+      "scale": [
+        1.062,
+        1.062,
+        1.062
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-14",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        11.245,
+        4.022,
+        -35.918
+      ],
+      "rotation": [
+        0,
+        63.9,
+        0
+      ],
+      "scale": [
+        1.14,
+        1.14,
+        1.14
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-15",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -16.612,
+        7.643,
+        -26.843
+      ],
+      "rotation": [
+        0,
+        173.3,
+        0
+      ],
+      "scale": [
+        0.987,
+        0.987,
+        0.987
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-16",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -18.423,
+        2.438,
+        0.638
+      ],
+      "rotation": [
+        0,
+        288.3,
+        0
+      ],
+      "scale": [
+        0.924,
+        0.924,
+        0.924
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-17",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -23.92,
+        11.777,
+        12.193
+      ],
+      "rotation": [
+        0,
+        75.4,
+        0
+      ],
+      "scale": [
+        1.111,
+        1.111,
+        1.111
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-18",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -22.236,
+        7.148,
+        -34.232
+      ],
+      "rotation": [
+        0,
+        274.3,
+        0
+      ],
+      "scale": [
+        0.908,
+        0.908,
+        0.908
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-19",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -9.313,
+        5.512,
+        3.018
+      ],
+      "rotation": [
+        0,
+        141.6,
+        0
+      ],
+      "scale": [
+        0.896,
+        0.896,
+        0.896
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-20",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -30.295,
+        19.776,
+        -20.072
+      ],
+      "rotation": [
+        0,
+        121.9,
+        0
+      ],
+      "scale": [
+        1.135,
+        1.135,
+        1.135
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-21",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -9.923,
+        5.366,
+        1.41
+      ],
+      "rotation": [
+        0,
+        244.9,
+        0
+      ],
+      "scale": [
+        0.882,
+        0.882,
+        0.882
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-22",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -26.859,
+        12.013,
+        9.224
+      ],
+      "rotation": [
+        0,
+        134.4,
+        0
+      ],
+      "scale": [
+        0.987,
+        0.987,
+        0.987
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-23",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        36.653,
+        9.517,
+        -17.251
+      ],
+      "rotation": [
+        0,
+        310.9,
+        0
+      ],
+      "scale": [
+        1.049,
+        1.049,
+        1.049
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-24",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        19.796,
+        4.245,
+        -34.811
+      ],
+      "rotation": [
+        0,
+        327.2,
+        0
+      ],
+      "scale": [
+        1.002,
+        1.002,
+        1.002
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-25",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -22.705,
+        9.635,
+        14.279
+      ],
+      "rotation": [
+        0,
+        199.9,
+        0
+      ],
+      "scale": [
+        1.114,
+        1.114,
+        1.114
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-26",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        30.032,
+        11.443,
+        -43.097
+      ],
+      "rotation": [
+        0,
+        68.8,
+        0
+      ],
+      "scale": [
+        0.95,
+        0.95,
+        0.95
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-27",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        23.686,
+        4.271,
+        -37.238
+      ],
+      "rotation": [
+        0,
+        133.1,
+        0
+      ],
+      "scale": [
+        1.135,
+        1.135,
+        1.135
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-28",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -39.326,
+        3.821,
+        -18.009
+      ],
+      "rotation": [
+        0,
+        310.9,
+        0
+      ],
+      "scale": [
+        1.126,
+        1.126,
+        1.126
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-29",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -36.664,
+        12.431,
+        12.434
+      ],
+      "rotation": [
+        0,
+        346.3,
+        0
+      ],
+      "scale": [
+        0.935,
+        0.935,
+        0.935
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-30",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -14.017,
+        5.414,
+        -9.997
+      ],
+      "rotation": [
+        0,
+        351.2,
+        0
+      ],
+      "scale": [
+        0.933,
+        0.933,
+        0.933
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-31",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        35.766,
+        4.203,
+        -3.466
+      ],
+      "rotation": [
+        0,
+        196.3,
+        0
+      ],
+      "scale": [
+        1.106,
+        1.106,
+        1.106
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-32",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        31.588,
+        11.438,
+        -42.256
+      ],
+      "rotation": [
+        0,
+        34.4,
+        0
+      ],
+      "scale": [
+        0.994,
+        0.994,
+        0.994
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-33",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -29.878,
+        8.469,
+        1.598
+      ],
+      "rotation": [
+        0,
+        199.7,
+        0
+      ],
+      "scale": [
+        0.982,
+        0.982,
+        0.982
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-34",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -8.904,
+        5.363,
+        5.451
+      ],
+      "rotation": [
+        0,
+        2.1,
+        0
+      ],
+      "scale": [
+        0.974,
+        0.974,
+        0.974
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-35",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        36.67,
+        2.513,
+        -25.037
+      ],
+      "rotation": [
+        0,
+        43.8,
+        0
+      ],
+      "scale": [
+        0.828,
+        0.828,
+        0.828
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-36",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -22.053,
+        21.74,
+        -28.218
+      ],
+      "rotation": [
+        0,
+        73.3,
+        0
+      ],
+      "scale": [
+        1.115,
+        1.115,
+        1.115
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-37",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        5.83,
+        7.748,
+        -35.269
+      ],
+      "rotation": [
+        0,
+        157,
+        0
+      ],
+      "scale": [
+        1.099,
+        1.099,
+        1.099
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-38",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -22.378,
+        21.613,
+        -31.863
+      ],
+      "rotation": [
+        0,
+        121.6,
+        0
+      ],
+      "scale": [
+        1.113,
+        1.113,
+        1.113
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-39",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -17.821,
+        8.041,
+        -30.13
+      ],
+      "rotation": [
+        0,
+        163.2,
+        0
+      ],
+      "scale": [
+        0.985,
+        0.985,
+        0.985
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-40",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        22.731,
+        11.351,
+        -31.811
+      ],
+      "rotation": [
+        0,
+        145.7,
+        0
+      ],
+      "scale": [
+        1.101,
+        1.101,
+        1.101
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-41",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -10.807,
+        5.107,
+        -17.056
+      ],
+      "rotation": [
+        0,
+        187,
+        0
+      ],
+      "scale": [
+        1.075,
+        1.075,
+        1.075
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-42",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -27.579,
+        11.913,
+        11.43
+      ],
+      "rotation": [
+        0,
+        312.2,
+        0
+      ],
+      "scale": [
+        1.031,
+        1.031,
+        1.031
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-43",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -29.363,
+        3.27,
+        -31.816
+      ],
+      "rotation": [
+        0,
+        53,
+        0
+      ],
+      "scale": [
+        1.046,
+        1.046,
+        1.046
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-44",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -24.672,
+        11.895,
+        14.048
+      ],
+      "rotation": [
+        0,
+        54,
+        0
+      ],
+      "scale": [
+        0.873,
+        0.873,
+        0.873
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-45",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        -35.693,
+        7.771,
+        -24.244
+      ],
+      "rotation": [
+        0,
+        321.3,
+        0
+      ],
+      "scale": [
+        1.004,
+        1.004,
+        1.004
+      ],
+      "visible": true
+    },
+    {
+      "id": "purple-coastal-flowers-46",
+      "name": "Purple coastal flowers",
+      "model": "purple-coastal-flowers",
+      "group": "Flowers and grasses",
+      "position": [
+        3.003,
+        7.738,
+        -36.069
+      ],
+      "rotation": [
+        0,
+        254.4,
+        0
+      ],
+      "scale": [
+        1.088,
+        1.088,
+        1.088
+      ],
+      "visible": true
+    },
+    {
+      "id": "hanging-moss-01",
+      "name": "Hanging moss",
+      "model": "hanging-moss",
+      "group": "Flowers and grasses",
+      "position": [
+        15.122,
+        2.413,
+        -31.249
+      ],
+      "rotation": [
+        0,
+        336.9,
+        0
+      ],
+      "scale": [
+        0.975,
+        0.975,
+        0.975
+      ],
+      "visible": true
+    },
+    {
+      "id": "hanging-moss-02",
+      "name": "Hanging moss",
+      "model": "hanging-moss",
+      "group": "Flowers and grasses",
+      "position": [
+        -21.221,
+        5.198,
+        10.904
+      ],
+      "rotation": [
+        0,
+        128.7,
+        0
+      ],
+      "scale": [
+        1.117,
+        1.117,
+        1.117
+      ],
+      "visible": true
+    },
+    {
+      "id": "hanging-moss-03",
+      "name": "Hanging moss",
+      "model": "hanging-moss",
+      "group": "Flowers and grasses",
+      "position": [
+        -35.029,
+        2.205,
+        -9.008
+      ],
+      "rotation": [
+        0,
+        17,
+        0
+      ],
+      "scale": [
+        0.925,
+        0.925,
+        0.925
+      ],
+      "visible": true
+    },
+    {
+      "id": "hanging-moss-04",
+      "name": "Hanging moss",
+      "model": "hanging-moss",
+      "group": "Flowers and grasses",
+      "position": [
+        17.01,
+        3.275,
+        -30.224
+      ],
+      "rotation": [
+        0,
+        245.3,
+        0
+      ],
+      "scale": [
+        0.801,
+        0.801,
+        0.801
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-01",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        0.902,
+        0.247,
+        -31.857
+      ],
+      "rotation": [
+        0,
+        153.3,
+        0
+      ],
+      "scale": [
+        0.887,
+        0.887,
+        0.887
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-01",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        12.967,
+        1.327,
+        -28.603
+      ],
+      "rotation": [
+        0,
+        281.5,
+        0
+      ],
+      "scale": [
+        0.819,
+        0.819,
+        0.819
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-02",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        -0.723,
+        0.503,
+        -29.82
+      ],
+      "rotation": [
+        0,
+        183.3,
+        0
+      ],
+      "scale": [
+        0.954,
+        0.954,
+        0.954
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-02",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        -1.804,
+        0.495,
+        -27.684
+      ],
+      "rotation": [
+        0,
+        299.5,
+        0
+      ],
+      "scale": [
+        1.051,
+        1.051,
+        1.051
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-03",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        13.397,
+        0.677,
+        -27.253
+      ],
+      "rotation": [
+        0,
+        200.1,
+        0
+      ],
+      "scale": [
+        0.864,
+        0.864,
+        0.864
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-04",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        9.616,
+        0.832,
+        -28.917
+      ],
+      "rotation": [
+        0,
+        246.4,
+        0
+      ],
+      "scale": [
+        0.886,
+        0.886,
+        0.886
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-03",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        2.224,
+        0.366,
+        -13.699
+      ],
+      "rotation": [
+        0,
+        277.5,
+        0
+      ],
+      "scale": [
+        1.086,
+        1.086,
+        1.086
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-04",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        -0.373,
+        0.727,
+        -31.15
+      ],
+      "rotation": [
+        0,
+        294.1,
+        0
+      ],
+      "scale": [
+        1.056,
+        1.056,
+        1.056
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-05",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        2.458,
+        1.077,
+        -32.078
+      ],
+      "rotation": [
+        0,
+        207.2,
+        0
+      ],
+      "scale": [
+        1.149,
+        1.149,
+        1.149
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-06",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        -0.642,
+        0.302,
+        -26.602
+      ],
+      "rotation": [
+        0,
+        288.7,
+        0
+      ],
+      "scale": [
+        1.078,
+        1.078,
+        1.078
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-07",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        -0.219,
+        0.359,
+        -28.413
+      ],
+      "rotation": [
+        0,
+        100.9,
+        0
+      ],
+      "scale": [
+        0.966,
+        0.966,
+        0.966
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-05",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        0.128,
+        1.123,
+        -13.905
+      ],
+      "rotation": [
+        0,
+        219.5,
+        0
+      ],
+      "scale": [
+        0.925,
+        0.925,
+        0.925
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-06",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        37.925,
+        3.8,
+        -29.065
+      ],
+      "rotation": [
+        0,
+        277.5,
+        0
+      ],
+      "scale": [
+        0.875,
+        0.875,
+        0.875
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-07",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        -9.385,
+        2.99,
+        -16.376
+      ],
+      "rotation": [
+        0,
+        15.2,
+        0
+      ],
+      "scale": [
+        1.133,
+        1.133,
+        1.133
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-08",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        -14.943,
+        2.626,
+        8.974
+      ],
+      "rotation": [
+        0,
+        151.8,
+        0
+      ],
+      "scale": [
+        0.806,
+        0.806,
+        0.806
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-08",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        18.528,
+        1.29,
+        -37.512
+      ],
+      "rotation": [
+        0,
+        356,
+        0
+      ],
+      "scale": [
+        0.826,
+        0.826,
+        0.826
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-09",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        47.026,
+        1.725,
+        -14.606
+      ],
+      "rotation": [
+        0,
+        239.3,
+        0
+      ],
+      "scale": [
+        1.108,
+        1.108,
+        1.108
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-09",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        -14.646,
+        5.384,
+        4.422
+      ],
+      "rotation": [
+        0,
+        342.4,
+        0
+      ],
+      "scale": [
+        0.887,
+        0.887,
+        0.887
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-10",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        37.399,
+        4.156,
+        -2.425
+      ],
+      "rotation": [
+        0,
+        229.3,
+        0
+      ],
+      "scale": [
+        0.813,
+        0.813,
+        0.813
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-10",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        31.233,
+        1.864,
+        6.753
+      ],
+      "rotation": [
+        0,
+        250.7,
+        0
+      ],
+      "scale": [
+        1.061,
+        1.061,
+        1.061
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-11",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        38.947,
+        3.831,
+        -6.198
+      ],
+      "rotation": [
+        0,
+        218.6,
+        0
+      ],
+      "scale": [
+        0.827,
+        0.827,
+        0.827
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-11",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        40.89,
+        2.005,
+        -6.04
+      ],
+      "rotation": [
+        0,
+        280.3,
+        0
+      ],
+      "scale": [
+        0.869,
+        0.869,
+        0.869
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-12",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        35.636,
+        2.363,
+        7.966
+      ],
+      "rotation": [
+        0,
+        177.8,
+        0
+      ],
+      "scale": [
+        0.969,
+        0.969,
+        0.969
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-13",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        42.67,
+        6.269,
+        -14.551
+      ],
+      "rotation": [
+        0,
+        288.9,
+        0
+      ],
+      "scale": [
+        0.815,
+        0.815,
+        0.815
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-14",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        20.21,
+        6.815,
+        -32.029
+      ],
+      "rotation": [
+        0,
+        80.6,
+        0
+      ],
+      "scale": [
+        1.111,
+        1.111,
+        1.111
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-12",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        23.856,
+        1.996,
+        -25.109
+      ],
+      "rotation": [
+        0,
+        238.5,
+        0
+      ],
+      "scale": [
+        0.816,
+        0.816,
+        0.816
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-13",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        -16.158,
+        2.59,
+        9.996
+      ],
+      "rotation": [
+        0,
+        158.4,
+        0
+      ],
+      "scale": [
+        0.973,
+        0.973,
+        0.973
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-14",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        29.389,
+        1.962,
+        12.24
+      ],
+      "rotation": [
+        0,
+        47.4,
+        0
+      ],
+      "scale": [
+        1.148,
+        1.148,
+        1.148
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-15",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        30.831,
+        1.937,
+        8.883
+      ],
+      "rotation": [
+        0,
+        295.5,
+        0
+      ],
+      "scale": [
+        0.888,
+        0.888,
+        0.888
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-16",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        45.229,
+        1.912,
+        -13.804
+      ],
+      "rotation": [
+        0,
+        110,
+        0
+      ],
+      "scale": [
+        0.842,
+        0.842,
+        0.842
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-plumes-17",
+      "name": "Beach grass with plumes",
+      "model": "beach-grass-plumes",
+      "group": "Flowers and grasses",
+      "position": [
+        29.791,
+        1.936,
+        10.397
+      ],
+      "rotation": [
+        0,
+        80.5,
+        0
+      ],
+      "scale": [
+        1.123,
+        1.123,
+        1.123
+      ],
+      "visible": true
+    },
+    {
+      "id": "beach-grass-green-15",
+      "name": "Beach grass",
+      "model": "beach-grass-green",
+      "group": "Flowers and grasses",
+      "position": [
+        18.354,
+        3.46,
+        -32.986
+      ],
+      "rotation": [
+        0,
+        108.8,
+        0
+      ],
+      "scale": [
+        0.869,
+        0.869,
+        0.869
+      ],
+      "visible": true
+    },
+    {
+      "id": "mouth-islet",
+      "name": "Islet in the harbor mouth",
+      "model": "wooded-coastal-islet",
+      "group": "Islets and rocks",
+      "position": [
+        18.385,
+        -0.3,
+        22.284
+      ],
+      "rotation": [
+        0,
+        65,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "visible": true
+    },
+    {
+      "id": "west-islet",
+      "name": "West islet",
+      "model": "mixed-trees-islet",
+      "group": "Islets and rocks",
+      "position": [
+        -38.184,
+        -0.3,
+        30.77
+      ],
+      "rotation": [
+        0,
+        85,
+        0
+      ],
+      "scale": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "visible": true
+    },
+    {
+      "id": "north-west-islet",
+      "name": "North-west islet",
+      "model": "pine-flower-islet",
+      "group": "Islets and rocks",
+      "position": [
+        -54.447,
+        -0.3,
+        1.778
+      ],
+      "rotation": [
+        0,
+        145,
+        0
+      ],
+      "scale": [
+        1.7,
+        1.7,
+        1.7
+      ],
+      "visible": true
+    },
+    {
+      "id": "north-east-islet",
+      "name": "North-east islet",
+      "model": "wooded-granite-islet",
+      "group": "Islets and rocks",
+      "position": [
+        -6.364,
+        -0.3,
+        -54.79
+      ],
+      "rotation": [
+        0,
+        15,
+        0
+      ],
+      "scale": [
+        1.8,
+        1.8,
+        1.8
+      ],
+      "visible": true
+    },
+    {
+      "id": "east-islet",
+      "name": "East islet",
+      "model": "pine-flower-islet",
+      "group": "Islets and rocks",
+      "position": [
+        55.861,
+        -0.3,
+        -32.163
+      ],
+      "rotation": [
+        0,
+        245,
+        0
+      ],
+      "scale": [
+        1.9,
+        1.9,
+        1.9
+      ],
+      "visible": true
+    },
+    {
+      "id": "south-east-islet",
+      "name": "South-east islet",
+      "model": "mixed-trees-islet",
+      "group": "Islets and rocks",
+      "position": [
+        60.104,
+        -0.3,
+        -9.536
+      ],
+      "rotation": [
+        0,
+        195,
+        0
+      ],
+      "scale": [
+        1.6,
+        1.6,
+        1.6
+      ],
+      "visible": true
+    },
+    {
+      "id": "south-west-islet",
+      "name": "South-west islet",
+      "model": "low-shrub-islet",
+      "group": "Islets and rocks",
+      "position": [
+        0.707,
+        -0.3,
+        51.276
+      ],
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        1.7,
+        1.7,
+        1.7
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-01",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -45.548,
+        -0.3,
+        26.895
+      ],
+      "rotation": [
+        0,
+        191.6,
+        0
+      ],
+      "scale": [
+        0.662,
+        0.662,
+        0.662
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-02",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        14.706,
+        -0.3,
+        -50.66
+      ],
+      "rotation": [
+        0,
+        8.1,
+        0
+      ],
+      "scale": [
+        0.707,
+        0.707,
+        0.707
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-03",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        40.307,
+        -0.3,
+        -39.238
+      ],
+      "rotation": [
+        0,
+        91.1,
+        0
+      ],
+      "scale": [
+        1.019,
+        1.019,
+        1.019
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-04",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        45.58,
+        -0.3,
+        13.986
+      ],
+      "rotation": [
+        0,
+        81.9,
+        0
+      ],
+      "scale": [
+        0.904,
+        0.904,
+        0.904
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-05",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -43.316,
+        -0.3,
+        -29.074
+      ],
+      "rotation": [
+        0,
+        330.7,
+        0
+      ],
+      "scale": [
+        1.354,
+        1.354,
+        1.354
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-06",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -49.95,
+        -0.3,
+        -16.067
+      ],
+      "rotation": [
+        0,
+        292,
+        0
+      ],
+      "scale": [
+        1.016,
+        1.016,
+        1.016
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-07",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        30.531,
+        -0.3,
+        -59.031
+      ],
+      "rotation": [
+        0,
+        293.2,
+        0
+      ],
+      "scale": [
+        1.38,
+        1.38,
+        1.38
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-08",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -16.691,
+        -0.3,
+        -60.331
+      ],
+      "rotation": [
+        0,
+        128.5,
+        0
+      ],
+      "scale": [
+        1.291,
+        1.291,
+        1.291
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-09",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        8.11,
+        -0.3,
+        14.279
+      ],
+      "rotation": [
+        0,
+        130.3,
+        0
+      ],
+      "scale": [
+        0.785,
+        0.785,
+        0.785
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-10",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -27.465,
+        -0.3,
+        25.509
+      ],
+      "rotation": [
+        0,
+        231.7,
+        0
+      ],
+      "scale": [
+        1.443,
+        1.443,
+        1.443
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-11",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -43.188,
+        -0.3,
+        -38.428
+      ],
+      "rotation": [
+        0,
+        195.2,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-12",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        18.91,
+        -0.3,
+        10.412
+      ],
+      "rotation": [
+        0,
+        143.2,
+        0
+      ],
+      "scale": [
+        0.955,
+        0.955,
+        0.955
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-13",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        47.148,
+        -0.3,
+        -25.452
+      ],
+      "rotation": [
+        0,
+        101.1,
+        0
+      ],
+      "scale": [
+        0.644,
+        0.644,
+        0.644
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-14",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        6.779,
+        -0.3,
+        -54.233
+      ],
+      "rotation": [
+        0,
+        55.9,
+        0
+      ],
+      "scale": [
+        1.323,
+        1.323,
+        1.323
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-15",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        46.305,
+        -0.3,
+        -45.669
+      ],
+      "rotation": [
+        0,
+        290.7,
+        0
+      ],
+      "scale": [
+        1.152,
+        1.152,
+        1.152
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-16",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        25.531,
+        -0.3,
+        33.457
+      ],
+      "rotation": [
+        0,
+        192.9,
+        0
+      ],
+      "scale": [
+        1.375,
+        1.375,
+        1.375
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-17",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -48.014,
+        -0.3,
+        -8.452
+      ],
+      "rotation": [
+        0,
+        103.3,
+        0
+      ],
+      "scale": [
+        1.433,
+        1.433,
+        1.433
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-18",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        12.597,
+        -0.3,
+        32.842
+      ],
+      "rotation": [
+        0,
+        214.2,
+        0
+      ],
+      "scale": [
+        1.289,
+        1.289,
+        1.289
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-19",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -58.932,
+        -0.3,
+        12.623
+      ],
+      "rotation": [
+        0,
+        229,
+        0
+      ],
+      "scale": [
+        1.091,
+        1.091,
+        1.091
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-20",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        9.173,
+        -0.3,
+        53.323
+      ],
+      "rotation": [
+        0,
+        140.8,
+        0
+      ],
+      "scale": [
+        0.764,
+        0.764,
+        0.764
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-21",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -19.369,
+        -0.3,
+        -49.917
+      ],
+      "rotation": [
+        0,
+        319.8,
+        0
+      ],
+      "scale": [
+        1.312,
+        1.312,
+        1.312
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-22",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -41.358,
+        -0.3,
+        2.148
+      ],
+      "rotation": [
+        0,
+        275.9,
+        0
+      ],
+      "scale": [
+        0.63,
+        0.63,
+        0.63
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-23",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -15,
+        -0.3,
+        24.056
+      ],
+      "rotation": [
+        0,
+        185.2,
+        0
+      ],
+      "scale": [
+        1.492,
+        1.492,
+        1.492
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-24",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        6.374,
+        -0.3,
+        24.781
+      ],
+      "rotation": [
+        0,
+        320.8,
+        0
+      ],
+      "scale": [
+        1.424,
+        1.424,
+        1.424
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-25",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        52.969,
+        -0.3,
+        -43.844
+      ],
+      "rotation": [
+        0,
+        24.7,
+        0
+      ],
+      "scale": [
+        0.723,
+        0.723,
+        0.723
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-26",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        53.088,
+        -0.3,
+        -13.51
+      ],
+      "rotation": [
+        0,
+        172.2,
+        0
+      ],
+      "scale": [
+        0.626,
+        0.626,
+        0.626
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-27",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        38.483,
+        -0.3,
+        -52.72
+      ],
+      "rotation": [
+        0,
+        101.8,
+        0
+      ],
+      "scale": [
+        0.688,
+        0.688,
+        0.688
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-28",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -37.283,
+        -0.3,
+        -2.538
+      ],
+      "rotation": [
+        0,
+        325.8,
+        0
+      ],
+      "scale": [
+        1.085,
+        1.085,
+        1.085
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-29",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        47.163,
+        -0.3,
+        -35.655
+      ],
+      "rotation": [
+        0,
+        312.2,
+        0
+      ],
+      "scale": [
+        1.001,
+        1.001,
+        1.001
+      ],
+      "visible": true
+    },
+    {
+      "id": "skerry-30",
+      "name": "Granite boulder",
+      "model": "granite-rock-islet-bare",
+      "group": "Islets and rocks",
+      "position": [
+        -33.283,
+        -0.3,
+        21.507
+      ],
+      "rotation": [
+        0,
+        36.1,
+        0
+      ],
+      "scale": [
+        0.772,
+        0.772,
+        0.772
+      ],
+      "visible": true
+    }
+  ]
+}
