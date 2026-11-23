@@ -1,11 +1,9 @@
 'use server'
 
 import { auth } from '@/lib/auth/auth'
-import { Resend } from 'resend'
+import { resend } from '@/lib/resend/resend'
 import { memberMessageTemplate } from '@/lib/email/member-message.template'
 import { createLog } from '@/lib/utils/api/createLog'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendMemberEmail({ to, from, message }: { to: string; from: string; message: string }) {
   const session = await auth()

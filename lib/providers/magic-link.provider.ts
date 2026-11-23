@@ -1,9 +1,7 @@
 import type { EmailConfig } from 'next-auth/providers/email'
-import { Resend } from 'resend'
+import { authResend as resend } from '@/lib/resend/resend'
 import magicLinkTemplate from '@/lib/email/magic-link'
 import { createLog } from '@/lib/utils/api/createLog'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export const magicLinkConfig: EmailConfig = {
   id: 'email',

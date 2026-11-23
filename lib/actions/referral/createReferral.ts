@@ -4,10 +4,8 @@ import prisma from '@/prisma/client'
 import { createLog } from '@/lib/utils/api/createLog'
 import { auth } from '@/lib/auth/auth'
 import { chapterId } from '@/lib/constants/api/chapterId'
-import { Resend } from 'resend'
+import { resend } from '@/lib/resend/resend'
 import referralNotificationTemplate from '@/lib/email/referral-notificiation.template'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://coastalreferralxchange.com'
 

@@ -1,8 +1,10 @@
 import changelogTemplate from '../app/lib/email-templates/changelog.ts'
 import prisma from '../prisma/client.ts'
 import { Resend } from 'resend'
+import { guardResend } from '../lib/email/delivery.ts'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// outside production this sends nothing unless EMAIL_DELIVERY=live (and never to fake or seeded addresses)
+const resend = guardResend(new Resend(process.env.RESEND_API_KEY))
 
 export default async function sendChangelog() {
   console.log('🚀 Sending changelog emails...')

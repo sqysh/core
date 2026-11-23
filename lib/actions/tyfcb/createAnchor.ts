@@ -1,13 +1,11 @@
 'use server'
 
-import { Resend } from 'resend'
+import { resend } from '@/lib/resend/resend'
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { closedBusinessNotificationTemplate } from '@/lib/email/closed-business.template'
 import { createLog } from '@/lib/utils/api/createLog'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function createClosedBusiness(data: {
   businessValue: number

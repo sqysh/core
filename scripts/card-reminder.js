@@ -1,8 +1,10 @@
-import { cardReminderTemplate } from './../app/lib/email-templates/card-reminder.template.ts'
+import { cardReminderTemplate } from '../lib/email/card-reminder.template.ts'
 import prisma from '../prisma/client.ts'
 import { Resend } from 'resend'
+import { guardResend } from '../lib/email/delivery.ts'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// outside production this sends nothing unless EMAIL_DELIVERY=live (and never to fake or seeded addresses)
+const resend = guardResend(new Resend(process.env.RESEND_API_KEY))
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Members who already have a card on file — they won't get the reminder.
