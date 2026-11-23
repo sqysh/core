@@ -1,0 +1,71 @@
+{
+  "design": "scripts/environment/terrain-lab/island.json",
+  "voxel": 0.07,
+  "grid": [
+    745,
+    162,
+    659
+  ],
+  "foundation": {
+    "highTriangles": 1969448,
+    "triangles": 420000,
+    "file": "foundation.glb"
+  },
+  "hybrid": {
+    "highTriangles": 2029612,
+    "triangles": 480000,
+    "file": "hybrid.glb",
+    "foliage": "hybrid-foliage.glb",
+    "foliageTriangles": 1647309,
+    "scattered": 95,
+    "blend": 0.8,
+    "fromPieces": 0.033
+  },
+  "atlas": 4096,
+  "pieces": [
+    {
+      "id": "lighthouse-platform",
+      "file": "/models/environment/terrain-test/core-terrain-foundations-01-large-square-plateau.glb",
+      "position": [
+        -9.5,
+        5.8915,
+        -6.5
+      ],
+      "yaw": 0,
+      "scale": 6.5
+    },
+    {
+      "id": "terrace-steps",
+      "file": "/models/environment/terrain-test/core-terrain-corners-05-raised-l-terrace.glb",
+      "position": [
+        -6,
+        2.52,
+        9.8
+      ],
+      "yaw": 0,
+      "scale": 6.5
+    },
+    {
+      "id": "cove-wall",
+      "file": "/models/environment/terrain-test/core-terrain-shorelines-02-concave-shoreline.glb",
+      "position": [
+        9.5,
+        1.545,
+        5.4
+      ],
+      "yaw": 90,
+      "scale": 6.5
+    },
+    {
+      "id": "headland-crag",
+      "file": "/models/environment/terrain-test/core-terrain-elevations-03-tall-stepped-cliff.glb",
+      "position": [
+        16,
+        2.975,
+        -4.5
+      ],
+      "yaw": 0,
+      "scale": 6.5
+    }
+  ]
+}

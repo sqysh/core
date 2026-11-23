@@ -1,0 +1,41 @@
+{
+  "output": "public/models/environment-derived/sculpted/back-cliffs-merged-01.glb",
+  "sources": [
+    {
+      "file": "granite-cliff-stepped-tall-01.glb",
+      "size": 11.0,
+      "x": -5.0,
+      "z": 0.0,
+      "sink": 0.22,
+      "scale": 5.780729591621945,
+      "height": 9.097081503206523,
+      "triangles": 1246058
+    },
+    {
+      "file": "sheer-granite-cliff-tall-01.glb",
+      "size": 12.0,
+      "x": 5.3,
+      "z": 0.3,
+      "sink": 0.22,
+      "scale": 6.306558631282263,
+      "height": 5.795563300213185,
+      "triangles": 912492
+    }
+  ],
+  "voxelSize": 0.03,
+  "seaFloorCut": -0.6,
+  "fillet": {
+    "reach": 0.9,
+    "passes": 24,
+    "vertices": 24301
+  },
+  "trianglesBeforeDecimation": 1295138,
+  "triangles": 500000,
+  "atlas": {
+    "color": 4096,
+    "normal": 4096,
+    "roughness": 2048
+  },
+  "bytes": 22507112,
+  "seconds": 48
+}

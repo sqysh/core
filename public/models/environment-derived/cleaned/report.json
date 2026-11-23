@@ -1,0 +1,366 @@
+[
+  {
+    "file": "islands/granite-rock-islet-bare-01.glb",
+    "source": {
+      "bytes": 10795904,
+      "sha256": "28e235404b395e2b3d01c954e2e4ead509cd23d1b51af1488fc4adc801c8f585",
+      "triangles": 178848
+    },
+    "cleaned": {
+      "bytes": 6364884,
+      "triangles": 105298
+    },
+    "removed": {
+      "triangles": 73550,
+      "share": 0.4112,
+      "water": 43286,
+      "foam": 12874,
+      "underside": 17316,
+      "specks": 74
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.1955,
+      "min": -0.2569,
+      "max": 0.255
+    }
+  },
+  {
+    "file": "islands/low-shrub-islet-01.glb",
+    "source": {
+      "bytes": 28563980,
+      "sha256": "682790457287ccbff6b7fdad071736e567cf6cb96a5e042974afee0c94f48b6c",
+      "triangles": 742692
+    },
+    "cleaned": {
+      "bytes": 11825156,
+      "triangles": 649296
+    },
+    "removed": {
+      "triangles": 93396,
+      "share": 0.1258,
+      "water": 59103,
+      "foam": 21494,
+      "underside": 12681,
+      "specks": 118
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.2436,
+      "min": -0.3201,
+      "max": 0.3176
+    }
+  },
+  {
+    "file": "islands/mixed-trees-islet-01.glb",
+    "source": {
+      "bytes": 29761320,
+      "sha256": "3c2c53929bebc64c69657642656434f9dc861c8eed761c699b5c185190720fb8",
+      "triangles": 790768
+    },
+    "cleaned": {
+      "bytes": 11932388,
+      "triangles": 678805
+    },
+    "removed": {
+      "triangles": 111963,
+      "share": 0.1416,
+      "water": 64462,
+      "foam": 23002,
+      "underside": 24429,
+      "specks": 70
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.4009,
+      "min": -0.5274,
+      "max": 0.5269
+    }
+  },
+  {
+    "file": "islands/pine-flower-islet-01.glb",
+    "source": {
+      "bytes": 22558260,
+      "sha256": "2d52c25abd6712fd8e837ba979093081b01f4145d0190f3190ec4dae3931e511",
+      "triangles": 670842
+    },
+    "cleaned": {
+      "bytes": 7181496,
+      "triangles": 541006
+    },
+    "removed": {
+      "triangles": 129836,
+      "share": 0.1935,
+      "water": 69635,
+      "foam": 38708,
+      "underside": 21350,
+      "specks": 143
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.4861,
+      "min": -0.6393,
+      "max": 0.637
+    }
+  },
+  {
+    "file": "islands/wooded-coastal-islet-01.glb",
+    "source": {
+      "bytes": 43303272,
+      "sha256": "b91a57ef807fc590f885d184cbdbc4dfed7b45aea6eced5365ba536d57a542f0",
+      "triangles": 1227968
+    },
+    "cleaned": {
+      "bytes": 16167212,
+      "triangles": 1132773
+    },
+    "removed": {
+      "triangles": 95195,
+      "share": 0.0775,
+      "water": 48321,
+      "foam": 22816,
+      "underside": 23649,
+      "specks": 409
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.2315,
+      "min": -0.304,
+      "max": 0.3
+    }
+  },
+  {
+    "file": "islands/wooded-granite-islet-01.glb",
+    "source": {
+      "bytes": 32683436,
+      "sha256": "16c0ba8dff0947fe83a984b46eb90031fc2161fdc5a722b4a9882aad91fd668b",
+      "triangles": 896666
+    },
+    "cleaned": {
+      "bytes": 12672036,
+      "triangles": 800494
+    },
+    "removed": {
+      "triangles": 96172,
+      "share": 0.1073,
+      "water": 65559,
+      "foam": 17382,
+      "underside": 13098,
+      "specks": 133
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.4312,
+      "min": -0.5695,
+      "max": 0.5827
+    }
+  },
+  {
+    "file": "terrain/granite-cliff-overhang-01.glb",
+    "source": {
+      "bytes": 38145180,
+      "sha256": "515adefb6bde8d2e78efc3f51c7de358c16a64d775d5f74e5bb664c80b447dd4",
+      "triangles": 1050782
+    },
+    "cleaned": {
+      "bytes": 15088824,
+      "triangles": 998607
+    },
+    "removed": {
+      "triangles": 52175,
+      "share": 0.0497,
+      "water": 0,
+      "foam": 7597,
+      "underside": 44334,
+      "specks": 244
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.3678,
+      "min": -0.484,
+      "max": 0.484
+    }
+  },
+  {
+    "file": "terrain/granite-cliff-shoreline-low-01.glb",
+    "source": {
+      "bytes": 33149016,
+      "sha256": "8dd960f978c70b9bada694074755351fb5e45341a38acdbb4e50adf0989c3b77",
+      "triangles": 884224
+    },
+    "cleaned": {
+      "bytes": 13376812,
+      "triangles": 788413
+    },
+    "removed": {
+      "triangles": 95811,
+      "share": 0.1084,
+      "water": 46060,
+      "foam": 13485,
+      "underside": 35950,
+      "specks": 316
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.1833,
+      "min": -0.2411,
+      "max": 0.2407
+    }
+  },
+  {
+    "file": "terrain/granite-cliff-stepped-tall-01.glb",
+    "source": {
+      "bytes": 43144900,
+      "sha256": "45dcd71358be77533219644c54632a364fafa5b65f34a47e46391e3448c435df",
+      "triangles": 1246058
+    },
+    "cleaned": {
+      "bytes": 15859716,
+      "triangles": 1180774
+    },
+    "removed": {
+      "triangles": 65284,
+      "share": 0.0524,
+      "water": 29208,
+      "foam": 16670,
+      "underside": 19278,
+      "specks": 128
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.5957,
+      "min": -0.7845,
+      "max": 0.7892
+    }
+  },
+  {
+    "file": "terrain/granite-ridge-long-01.glb",
+    "source": {
+      "bytes": 29540108,
+      "sha256": "06be6935426491f3e73758aea225bba664a8a6f843b97d3ba8ecd31f44a0fdb7",
+      "triangles": 774390
+    },
+    "cleaned": {
+      "bytes": 11825980,
+      "triangles": 633492
+    },
+    "removed": {
+      "triangles": 140898,
+      "share": 0.1819,
+      "water": 88213,
+      "foam": 33570,
+      "underside": 18767,
+      "specks": 348
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.2768,
+      "min": -0.364,
+      "max": 0.3625
+    }
+  },
+  {
+    "file": "terrain/granite-shoreline-wall-long-01.glb",
+    "source": {
+      "bytes": 36082556,
+      "sha256": "4ed64ef5f04b55f5bd80d8913776b3c360f96b36824d989441439151e9070146",
+      "triangles": 965904
+    },
+    "cleaned": {
+      "bytes": 14876764,
+      "triangles": 907904
+    },
+    "removed": {
+      "triangles": 58000,
+      "share": 0.06,
+      "water": 24279,
+      "foam": 5425,
+      "underside": 28206,
+      "specks": 90
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.174,
+      "min": -0.2282,
+      "max": 0.2235
+    }
+  },
+  {
+    "file": "terrain/sheer-granite-cliff-tall-01.glb",
+    "source": {
+      "bytes": 33483508,
+      "sha256": "33f66ab7f40c161326589c4b54c2014bf04da24d5541e08e78937205a51bcc34",
+      "triangles": 912492
+    },
+    "cleaned": {
+      "bytes": 13142316,
+      "triangles": 810727
+    },
+    "removed": {
+      "triangles": 101765,
+      "share": 0.1115,
+      "water": 58236,
+      "foam": 22712,
+      "underside": 20679,
+      "specks": 138
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.349,
+      "min": -0.4593,
+      "max": 0.4597
+    }
+  },
+  {
+    "file": "terrain/shoreline-spit-rocks-trees-01.glb",
+    "source": {
+      "bytes": 34171848,
+      "sha256": "d00c189a48e9771b9f244a315454d564a39d873a65b028510ab8353567599ddd",
+      "triangles": 891232
+    },
+    "cleaned": {
+      "bytes": 13958860,
+      "triangles": 745867
+    },
+    "removed": {
+      "triangles": 145365,
+      "share": 0.1631,
+      "water": 79161,
+      "foam": 23029,
+      "underside": 42769,
+      "specks": 406
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.1866,
+      "min": -0.2451,
+      "max": 0.243
+    }
+  },
+  {
+    "file": "terrain/terraced-pine-cliff-islet-01.glb",
+    "source": {
+      "bytes": 50473696,
+      "sha256": "15d927a924638c81ec51a41e8206aed92d268fcffc81c9de8a02cf57d2446580",
+      "triangles": 1454134
+    },
+    "cleaned": {
+      "bytes": 18298608,
+      "triangles": 1342743
+    },
+    "removed": {
+      "triangles": 111391,
+      "share": 0.0766,
+      "water": 66877,
+      "foam": 18934,
+      "underside": 25443,
+      "specks": 137
+    },
+    "band": {
+      "share": 0.12,
+      "height": -0.3336,
+      "min": -0.4392,
+      "max": 0.4404
+    }
+  }
+]
