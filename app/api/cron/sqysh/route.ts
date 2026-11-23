@@ -6,15 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prepareCampaign } from '@/lib/email/cronCampaign'
 import { requireCron } from '@/lib/email/requireCron'
 import { resend } from '@/lib/resend/resend'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Members who've already left a Google review — they won't get the reminder.
-// Add emails here as people leave reviews, then redeploy. Lowercased + trimmed
-// on compare, so casing/whitespace here doesn't matter.
-// ─────────────────────────────────────────────────────────────────────────────
-const ALREADY_REVIEWED: string[] = ['kcasey@ccm.com', 'aturpin@zellikinsurance.com', 'ejonah@c21ne.com']
-
-const reviewedSet = new Set(ALREADY_REVIEWED.map((e) => e.trim().toLowerCase()))
+import { splitReviewed } from '@/lib/email/sqyshReviewed'
 
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
@@ -30,14 +22,30 @@ async function sendSqyshGoogleReviewReminders(req: NextRequest) {
 
   let release = async () => {}
   try {
-    const activeUsers = await prisma.user.findMany({ where: { membershipStatus: 'ACTIVE' } })
+    // Alternate sign-in addresses come along so a member who has already reviewed is excluded under every address
+    const activeUsers = await prisma.user.findMany({
+      where: { membershipStatus: 'ACTIVE' },
+      include: { alternateEmails: { select: { email: true } } }
+    })
 
-    // Drop anyone who already left a review.
-    const notYetReviewed = activeUsers.filter((u) => !reviewedSet.has(u.email.trim().toLowerCase()))
-    const skipped = activeUsers.length - notYetReviewed.length
+    // Members who already left a review (lib/email/sqyshReviewed.ts), set aside before anything is planned or queued
+    const { remaining, reviewed, notInRoster, unresolved } = splitReviewed(activeUsers)
+    const skipped = reviewed.length
+    if (unresolved.length)
+      console.warn(
+        `[sqysh] already-reviewed with no address or id on record, so not excluded: ${unresolved.join(', ')}`
+      )
 
     // authorized, planned (seeded and other undeliverable addresses dropped), and the day's run claimed, or answered here
-    const prep = await prepareCampaign(req, { campaign: 'sqysh', recipients: notYetReviewed })
+    const prep = await prepareCampaign(req, {
+      campaign: 'sqysh',
+      recipients: remaining,
+      suppressed: reviewed.map((r) => ({
+        recipient: r.member,
+        because: `already reviewed (${r.person}, via ${r.via})`
+      })),
+      notes: { alreadyReviewedNotInRoster: notInRoster, alreadyReviewedUnresolved: unresolved }
+    })
     if ('response' in prep) return prep.response
     release = prep.release
     const { plan } = prep
@@ -101,6 +109,7 @@ async function sendSqyshGoogleReviewReminders(req: NextRequest) {
         eligible: users.length,
         skippedAlreadyReviewed: skipped,
         skippedNonDeliverable: nonDeliverable,
+        alreadyReviewedUnresolved: unresolved,
         successfulEmails: successful,
         failedEmails: failed,
         presenter: 'Sqysh',
