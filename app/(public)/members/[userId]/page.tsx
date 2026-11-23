@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import PublicMemberClient from '@/app/(public)/members/[userId]/PublicMemberClient'
 import { getEileenListings } from '@/lib/actions/external/getEileenListings'
 import { getMemberProfile } from '@/lib/actions/user/getMemberProfile'
@@ -15,7 +16,10 @@ export default async function PublicMemberPage({ params }: { params: Promise<{ u
     userId === EILEEN_USER_ID ? getEileenListings() : Promise.resolve(null)
   ])
 
+  // an id that isn't a member of this chapter is a 404, not a crash
+  if (!user) notFound()
+
   const eileenListings = listingsResult?.success ? listingsResult.data : []
 
-  return <PublicMemberClient user={user} users={users?.data} eileenListings={eileenListings} />
+  return <PublicMemberClient user={user} users={users?.data ?? []} eileenListings={eileenListings} />
 }

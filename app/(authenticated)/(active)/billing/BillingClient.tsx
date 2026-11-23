@@ -6,6 +6,7 @@ import { fmtDate } from '@/lib/utils/date.utils'
 import { capitalize } from '@/lib/utils/string.utils'
 import { useState } from 'react'
 import { AttendanceCorrectionModal } from '@/components/member/attendance/AttendanceCorrectionModal'
+import { EditCardModal } from '@/components/member/billing/EditCardModal'
 import { isPaid } from '@/lib/utils/billing.utils'
 import { Section } from '@/app/(authenticated)/(active)/billing/_components/Section'
 import { OutstandingRow } from '@/app/(authenticated)/(active)/billing/_components/OutstandingRow'
@@ -13,7 +14,6 @@ import { SubscriptionRow } from '@/app/(authenticated)/(active)/billing/_compone
 import { CorrectionRow } from '@/app/(authenticated)/(active)/billing/_components/CorrectionRow'
 import { LinkBody } from '@/components/_shared/LinkBody'
 import { BillingClientProps } from '@/types/billing.types'
-import { useAppStore } from '@/lib/store/appStore'
 
 export default function BillingClient({
   subscriptions,
@@ -33,10 +33,11 @@ export default function BillingClient({
 
   const nextUpcomingCharge = upcomingCharges[0] ?? null
 
-  const { openMembershipPaymentSetupModal } = useAppStore()
+  const [editCardOpen, setEditCardOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-bg-light dark:bg-bg-dark">
+      <EditCardModal open={editCardOpen} onClose={() => setEditCardOpen(false)} currentPaymentMethod={paymentMethod} />
       <AttendanceCorrectionModal
         open={correctionRow !== null}
         onClose={() => setCorrectionRow(null)}
@@ -79,7 +80,7 @@ export default function BillingClient({
               {paymentMethod.expYear}
             </p>
             <button
-              onClick={openMembershipPaymentSetupModal}
+              onClick={() => setEditCardOpen(true)}
               aria-label="Update payment method"
               className="shrink-0 inline-flex items-center justify-center gap-1.5 h-11 px-3 -mr-3 text-[14px] font-mono text-primary-light dark:text-primary-dark hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light dark:focus-visible:ring-primary-dark"
             >

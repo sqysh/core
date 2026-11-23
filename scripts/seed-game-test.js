@@ -14,7 +14,7 @@
 // Run from inside the CORE project so it uses the project's generated Prisma
 // client and your real schema.
 import prisma from '../prisma/client.ts'
-import { chapterId } from '../app/lib/constants/api/chapterId.ts'
+import { chapterId } from '../lib/constants/api/chapterId.ts'
 
 // ── Your chapterId — must match app/lib/constants/api/chapterId ──────────────
 // Paste the same value your app uses. The script can't import the TS constant,
