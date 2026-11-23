@@ -1,0 +1,432 @@
+{
+  "_": "The terrain lab's island, in world units (glTF axes: x east, z south toward the isometric camera, y up; the sea at y = 0). Edit and rebuild with build.py.",
+  "voxel": 0.07,
+  "grid": {
+    "x": [
+      -27,
+      25
+    ],
+    "y": [
+      -2.4,
+      8.8
+    ],
+    "z": [
+      -22,
+      24
+    ]
+  },
+  "seaFloor": -2.0,
+  "coast": {
+    "polygon": [
+      [
+        -23,
+        1
+      ],
+      [
+        -22,
+        -6
+      ],
+      [
+        -20,
+        -14
+      ],
+      [
+        -12,
+        -18.5
+      ],
+      [
+        -2,
+        -17.5
+      ],
+      [
+        8,
+        -15.5
+      ],
+      [
+        16,
+        -10.5
+      ],
+      [
+        20.5,
+        -3
+      ],
+      [
+        19.5,
+        6
+      ],
+      [
+        16,
+        11
+      ],
+      [
+        10,
+        14
+      ],
+      [
+        4,
+        16
+      ],
+      [
+        -4,
+        16.5
+      ],
+      [
+        -14,
+        13.5
+      ],
+      [
+        -20,
+        8.5
+      ]
+    ],
+    "peninsula": {
+      "from": [
+        8.5,
+        10
+      ],
+      "to": [
+        19,
+        19.5
+      ],
+      "radius": 3.0,
+      "blend": 5.0
+    },
+    "cove": {
+      "centre": [
+        16.5,
+        2.4
+      ],
+      "radius": 4.6,
+      "blend": 1.5,
+      "mouth": {
+        "to": [
+          24,
+          3.2
+        ],
+        "radius": 2.6
+      }
+    },
+    "noise": {
+      "amplitude": 0.9,
+      "scale": 7,
+      "seed": 11
+    },
+    "round": 1.0
+  },
+  "levels": [
+    {
+      "name": "shelf",
+      "height": 0.35,
+      "inset": 0
+    },
+    {
+      "name": "lowland",
+      "height": 2.0,
+      "inset": 1.6,
+      "insetNoise": {
+        "amplitude": 2.2,
+        "scale": 8,
+        "seed": 13
+      },
+      "undulate": 0.25
+    },
+    {
+      "name": "knoll",
+      "height": 3.1,
+      "polygon": [
+        [
+          -22,
+          5.0
+        ],
+        [
+          -16.5,
+          4.8
+        ],
+        [
+          -13.2,
+          8.0
+        ],
+        [
+          -15.2,
+          11.4
+        ],
+        [
+          -20.8,
+          11.0
+        ]
+      ],
+      "noise": {
+        "amplitude": 0.8,
+        "scale": 6,
+        "seed": 47
+      },
+      "undulate": 0.15
+    },
+    {
+      "name": "middle",
+      "height": 4.2,
+      "polygon": [
+        [
+          -25,
+          -10
+        ],
+        [
+          -14,
+          -16
+        ],
+        [
+          -4,
+          -16.5
+        ],
+        [
+          6,
+          -14.5
+        ],
+        [
+          13.5,
+          -8.5
+        ],
+        [
+          12,
+          -4.5
+        ],
+        [
+          13.5,
+          -1.2
+        ],
+        [
+          8,
+          1.5
+        ],
+        [
+          5,
+          4.0
+        ],
+        [
+          -1,
+          4.9
+        ],
+        [
+          -3.5,
+          6.4
+        ],
+        [
+          -9,
+          4.6
+        ],
+        [
+          -13,
+          6.6
+        ],
+        [
+          -17,
+          4.4
+        ],
+        [
+          -25,
+          3.5
+        ]
+      ],
+      "noise": {
+        "amplitude": 2.0,
+        "scale": 11,
+        "seed": 23
+      },
+      "undulate": 0.25
+    },
+    {
+      "name": "summit",
+      "height": 6.4,
+      "polygon": [
+        [
+          -21,
+          -12.5
+        ],
+        [
+          -15,
+          -17
+        ],
+        [
+          -6,
+          -17.5
+        ],
+        [
+          -1,
+          -15.5
+        ],
+        [
+          4,
+          -11.5
+        ],
+        [
+          3,
+          -7
+        ],
+        [
+          -0.5,
+          -6.2
+        ],
+        [
+          -3,
+          -2.5
+        ],
+        [
+          -8,
+          -0.8
+        ],
+        [
+          -11.5,
+          -3.2
+        ],
+        [
+          -14.5,
+          -1.4
+        ],
+        [
+          -20,
+          -4.5
+        ]
+      ],
+      "noise": {
+        "amplitude": 1.6,
+        "scale": 10,
+        "seed": 31
+      },
+      "undulate": 0.15,
+      "flat": {
+        "centre": [
+          -9,
+          -9
+        ],
+        "radius": 7
+      }
+    }
+  ],
+  "path": {
+    "width": 2.4,
+    "step": 0.3,
+    "points": [
+      [
+        3.4,
+        14.6,
+        2.0
+      ],
+      [
+        1.6,
+        9.5,
+        2.0
+      ],
+      [
+        0.6,
+        6.1,
+        2.0
+      ],
+      [
+        6.6,
+        4.3,
+        4.2
+      ],
+      [
+        9.6,
+        0.5,
+        4.2
+      ],
+      [
+        4.6,
+        -3.8,
+        4.2
+      ],
+      [
+        5.0,
+        -10.6,
+        6.4
+      ],
+      [
+        1.8,
+        -12.6,
+        6.4
+      ]
+    ]
+  },
+  "blocks": {
+    "column": 2.0,
+    "groove": 0.3,
+    "grooveWidth": 0.36,
+    "course": 2.1,
+    "courseGroove": 0.26,
+    "courseWidth": 0.3,
+    "jut": 0.2,
+    "rim": 0.14,
+    "batter": 0.05,
+    "round": 0.45,
+    "seed": 5
+  },
+  "boulders": {
+    "count": 30,
+    "size": [
+      0.55,
+      1.35
+    ],
+    "seed": 41
+  },
+  "meshy": {
+    "_": "Meshy kit pieces placed on the foundation: each scaled, turned (degrees about y) and lifted so one of its own flat tops (native height) sits at a world height",
+    "dir": "public/models/environment/terrain-test",
+    "scale": 6.5,
+    "blend": 0.8,
+    "instances": [
+      {
+        "id": "lighthouse-platform",
+        "piece": "core-terrain-foundations-01-large-square-plateau",
+        "at": [
+          -9.5,
+          -6.5
+        ],
+        "yaw": 0,
+        "align": [
+          0.109,
+          6.6
+        ]
+      },
+      {
+        "id": "terrace-steps",
+        "piece": "core-terrain-corners-05-raised-l-terrace",
+        "at": [
+          -6,
+          9.8
+        ],
+        "yaw": 0,
+        "align": [
+          -0.08,
+          2.0
+        ]
+      },
+      {
+        "id": "cove-wall",
+        "piece": "core-terrain-shorelines-02-concave-shoreline",
+        "at": [
+          9.5,
+          5.4
+        ],
+        "yaw": 90,
+        "align": [
+          0.07,
+          2.0
+        ]
+      },
+      {
+        "id": "headland-crag",
+        "piece": "core-terrain-elevations-03-tall-stepped-cliff",
+        "at": [
+          16,
+          -4.5
+        ],
+        "yaw": 0,
+        "align": [
+          -0.55,
+          -0.6
+        ]
+      }
+    ]
+  }
+}

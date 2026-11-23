@@ -45,3 +45,15 @@ next-env.d.ts
 src/generated/
 # local HTTPS dev certificates and keys (mkcert)
 /certificates/
+
+# environment master models: hundreds of MB each, kept outside Git (see assets/environment/masters/README.md)
+/assets/environment/masters/**/*.glb
+
+# draft-quality GLBs: regenerable from public/models/environment/ via scripts/environment/draft-decimator.mjs
+/public/models/environment-derived/draft/
+
+# LOD variants: regenerable from public/models/environment/ via scripts/environment/lod-generator.mjs
+/public/models/environment-derived/lod/
+
+# terrain lab build stages (scripts/environment/terrain-lab/build.py): intermediate meshes and bakes, regenerable
+/scripts/environment/terrain-lab/work/
