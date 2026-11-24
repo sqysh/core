@@ -13,13 +13,6 @@ import { at } from '@/app/dev/lighthouse/_lib/world'
 
 const DEG = Math.PI / 180
 
-export type BuilderSettings = {
-  wireframe: boolean
-  lessGloss: boolean
-  shadows: boolean
-  finish: boolean
-}
-
 /** The orthographic isometric view, like the TV's: 45° round, 35° down, the scenery left of centre and open water right */
 export const ISO = { azimuth: 45, elevation: 35, target: at(1, 0), width: 62 }
 

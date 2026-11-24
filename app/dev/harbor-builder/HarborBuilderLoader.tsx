@@ -3,8 +3,8 @@
 import dynamic from 'next/dynamic'
 
 // WebGL and the GLB loader only exist in the browser
-const HarborBuilder = dynamic(() => import('./HarborBuilder'), { ssr: false })
+const HarborEditor = dynamic(() => import('./HarborEditor'), { ssr: false })
 
 export default function HarborBuilderLoader() {
-  return <HarborBuilder />
+  return <HarborEditor />
 }

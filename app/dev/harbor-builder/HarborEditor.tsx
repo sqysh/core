@@ -3,11 +3,22 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NeutralToneMapping, PCFShadowMap } from 'three'
-import { FrameStats } from '@/app/dev/environment-kit/_components/RenderStats'
+import { FrameStats } from './_components/RenderStats'
 import { AssetBrowser } from './_components/AssetBrowser'
 import { DrawStats } from './_components/Batches'
 import { EditorScene, EditorSettings, Gizmo, LODMap, SceneApi, Transformed } from './_components/EditorScene'
-import { BenchmarkOverlay, chip, count, FrameBar, label, mb, NumberField, panel, Section, Slider } from './_components/ui'
+import {
+  BenchmarkOverlay,
+  chip,
+  count,
+  FrameBar,
+  label,
+  mb,
+  NumberField,
+  panel,
+  Section,
+  Slider
+} from './_components/ui'
 import { fileOf, lodFileOf, modelById, MODELS, Source } from './_lib/catalog'
 import { baseScale, droppedPosition, Models, settledPosition } from './_lib/editor'
 import { LoadedModel, loadModel, setLessGloss } from './_lib/models'
@@ -137,7 +148,9 @@ export default function HarborEditor() {
   useEffect(() => {
     fetch('/dev/harbor-builder/api/scenes')
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d?.scenes?.length) setScenes(d.scenes) })
+      .then((d) => {
+        if (d?.scenes?.length) setScenes(d.scenes)
+      })
       .catch(() => {})
   }, [])
 
@@ -377,7 +390,10 @@ export default function HarborEditor() {
     if (!o) return
     const copy: SceneObject = {
       ...o,
-      id: freshId(o.id, sceneRef.current!.objects.map((x) => x.id)),
+      id: freshId(
+        o.id,
+        sceneRef.current!.objects.map((x) => x.id)
+      ),
       // a step to the right on screen, so the copy shows
       position: [+(o.position[0] + 1.06).toFixed(3), o.position[1], +(o.position[2] - 1.06).toFixed(3)]
     }
@@ -412,7 +428,10 @@ export default function HarborEditor() {
       const s = sceneRef.current
       if (!s) return
       const obj: SceneObject = {
-        id: freshId(modelId, s.objects.map((o) => o.id)),
+        id: freshId(
+          modelId,
+          s.objects.map((o) => o.id)
+        ),
         name: def.name,
         model: modelId,
         group: current?.group ?? 'Other',
@@ -427,7 +446,8 @@ export default function HarborEditor() {
       setSelected(obj.id)
     })
   }
-  const focusOn = (o: SceneObject) => setFocus((f) => ({ nonce: (f?.nonce ?? 0) + 1, point: [o.position[0], o.position[1], o.position[2]] }))
+  const focusOn = (o: SceneObject) =>
+    setFocus((f) => ({ nonce: (f?.nonce ?? 0) + 1, point: [o.position[0], o.position[1], o.position[2]] }))
   const onTransform = useCallback(
     (id: string, t: Transformed) =>
       commit((s) => ({ ...s, objects: s.objects.map((o) => (o.id === id ? { ...o, ...t } : o)) })),
@@ -464,8 +484,7 @@ export default function HarborEditor() {
     } else if (k === 'arrowright') {
       e.preventDefault()
       api.current.rotateBy?.(WORLD_BUILDER_CAMERA.rotate.keyStep)
-    }
-    else if (k === 'escape') setSelected(null)
+    } else if (k === 'escape') setSelected(null)
     else if (k === 'f' && current) focusOn(current)
     else if (k === 'g' && selected) drop(selected)
     else if ((k === 'delete' || k === 'backspace') && selected) {
@@ -511,7 +530,10 @@ export default function HarborEditor() {
         body: JSON.stringify({ name: n })
       })
       const data = await r.json()
-      if (!r.ok) { window.alert(data.error ?? 'Could not create scene'); return }
+      if (!r.ok) {
+        window.alert(data.error ?? 'Could not create scene')
+        return
+      }
       setScenes((prev) => [...prev, n])
       setNewSceneName('')
       window.location.search = `?scene=${n}`
@@ -561,7 +583,10 @@ export default function HarborEditor() {
   }, [objects, models])
 
   const groups = useMemo(() => {
-    const names = [...GROUPS, ...new Set(objects.map((o) => o.group).filter((g) => !(GROUPS as readonly string[]).includes(g)))]
+    const names = [
+      ...GROUPS,
+      ...new Set(objects.map((o) => o.group).filter((g) => !(GROUPS as readonly string[]).includes(g)))
+    ]
     const f = filter.trim().toLowerCase()
     return names
       .map((g) => ({
@@ -588,7 +613,8 @@ export default function HarborEditor() {
     if (!scene) return null
     const iso = { ...scene.camera, elevation: WORLD_BUILDER_CAMERA.elevation }
     const v = (query().get('camera') ?? '').split(',').map(Number)
-    if (v.length !== 5 || v.some((n) => !Number.isFinite(n))) return { ...iso, azimuth: WORLD_BUILDER_CAMERA.defaultAzimuth }
+    if (v.length !== 5 || v.some((n) => !Number.isFinite(n)))
+      return { ...iso, azimuth: WORLD_BUILDER_CAMERA.defaultAzimuth }
     return { ...iso, azimuth: v[0], target: [v[2], 0, v[3]] as Vec3, width: v[4] }
     // opening once is all it's for: later changes to the approved view don't move the camera
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -617,7 +643,12 @@ export default function HarborEditor() {
           shadows={{ type: PCFShadowMap }}
           dpr={1}
           frameloop="demand"
-          camera={{ position: [100, 100, 100], zoom: 20, near: WORLD_BUILDER_CAMERA.near, far: WORLD_BUILDER_CAMERA.far }}
+          camera={{
+            position: [100, 100, 100],
+            zoom: 20,
+            near: WORLD_BUILDER_CAMERA.near,
+            far: WORLD_BUILDER_CAMERA.far
+          }}
           gl={{ antialias: false }}
           onCreated={({ gl }) => {
             gl.toneMapping = NeutralToneMapping
@@ -654,8 +685,12 @@ export default function HarborEditor() {
             style={{ aspectRatio: `${frameAspect}`, width: `min(100vw, ${100 * frameAspect}dvh)` }}
           >
             {scene.reference && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={scene.reference} alt="" className="absolute inset-0 h-full w-full" style={{ opacity: overlay.opacity }} />
+              <img
+                src={scene.reference}
+                alt=""
+                className="absolute inset-0 h-full w-full"
+                style={{ opacity: overlay.opacity }}
+              />
             )}
           </div>
         </div>
@@ -673,12 +708,19 @@ export default function HarborEditor() {
                   ['scale', 'Scale', 'R']
                 ] as const
               ).map(([mode, name, key]) => (
-                <button key={mode} className={chip(gizmo.mode === mode)} onClick={() => setGizmo((g) => ({ ...g, mode }))}>
+                <button
+                  key={mode}
+                  className={chip(gizmo.mode === mode)}
+                  onClick={() => setGizmo((g) => ({ ...g, mode }))}
+                >
                   {name} <span className="text-white/40">{key}</span>
                 </button>
               ))}
               <span className="mx-1 h-4 w-px bg-white/15" />
-              <button className={chip(false)} onClick={() => setGizmo((g) => ({ ...g, space: g.space === 'world' ? 'local' : 'world' }))}>
+              <button
+                className={chip(false)}
+                onClick={() => setGizmo((g) => ({ ...g, space: g.space === 'world' ? 'local' : 'world' }))}
+              >
                 {gizmo.space === 'world' ? 'World axes' : 'Local axes'} <span className="text-white/40">Q</span>
               </button>
               <button className={chip(gizmo.snap)} onClick={() => setGizmo((g) => ({ ...g, snap: !g.snap }))}>
@@ -737,7 +779,8 @@ export default function HarborEditor() {
                       onClick={() => switchScene(name)}
                       className={`w-full rounded-lg px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-white/10 ${name === sceneName ? 'font-semibold text-sky-300' : 'text-white/80'}`}
                     >
-                      {name === sceneName ? '→ ' : ''}{name}
+                      {name === sceneName ? '→ ' : ''}
+                      {name}
                     </button>
                   ))}
                   <div className="mt-2 flex gap-1.5 border-t border-white/10 pt-2">
@@ -757,9 +800,15 @@ export default function HarborEditor() {
 
               {/* File actions */}
               <div className="mt-2 flex flex-wrap gap-1.5">
-                <button className={chip(false)} onClick={exportJson}>Export JSON</button>
-                <button className={chip(false)} onClick={() => importer.current?.click()}>Import</button>
-                <button className={chip(false)} onClick={revert}>Revert to baseline</button>
+                <button className={chip(false)} onClick={exportJson}>
+                  Export JSON
+                </button>
+                <button className={chip(false)} onClick={() => importer.current?.click()}>
+                  Import
+                </button>
+                <button className={chip(false)} onClick={revert}>
+                  Revert to baseline
+                </button>
                 <input
                   ref={importer}
                   type="file"
@@ -783,100 +832,103 @@ export default function HarborEditor() {
                 <div className="mt-4 flex-1">
                   <AssetBrowser
                     models={models}
-                    onAdd={(id) => { add(id); setLibrary(false) }}
+                    onAdd={(id) => {
+                      add(id)
+                      setLibrary(false)
+                    }}
                     onClose={() => setLibrary(false)}
                   />
                 </div>
               ) : (
-              <Section
-                title={`Objects (${objects.length})`}
-                right={
-                  <button className={chip(library)} onClick={() => setLibrary((v) => !v)}>
-                    + Add model
-                  </button>
-                }
-              >
-                <input
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
-                  placeholder="Filter"
-                  className="mb-2 w-full rounded-md border border-white/10 bg-black/25 px-2 py-1 text-[11px] text-white outline-none placeholder:text-white/30 focus:border-sky-300/60"
-                />
-                {groups.map((g) => {
-                  const shown = g.items.some((o) => o.visible)
-                  const open = !collapsed[g.name] || !!filter
-                  return (
-                    <div key={g.name} className="mb-1">
-                      <div className="flex items-center gap-1.5 rounded-md px-1 py-0.5 hover:bg-white/5">
-                        <button
-                          className="w-4 text-[10px] text-white/50"
-                          onClick={() => setCollapsed((c) => ({ ...c, [g.name]: !c[g.name] }))}
-                        >
-                          {open ? '▾' : '▸'}
-                        </button>
-                        <button
-                          title={shown ? 'Hide all' : 'Show all'}
-                          className="text-[11px] text-white/60 hover:text-white"
-                          onClick={() =>
-                            commit((s) => ({
-                              ...s,
-                              objects: s.objects.map((o) => (o.group === g.name ? { ...o, visible: !shown } : o))
-                            }))
-                          }
-                        >
-                          {shown ? '●' : '○'}
-                        </button>
-                        <span className="flex-1 text-[11px] font-semibold text-white/85">{g.name}</span>
-                        <button
-                          title="Drop everything in this group that stands on the ground onto it"
-                          className="text-[10px] text-white/40 hover:text-white"
-                          onClick={() => dropGroup(g.name)}
-                        >
-                          ⤓
-                        </button>
-                        <span className="font-mono text-[10px] text-white/35">{g.items.length}</span>
-                      </div>
-                      {open && (
-                        <ul className="ml-5 space-y-px text-[11px]">
-                          {g.items.map((o) => {
-                            const def = modelById(o.model)
-                            const st = def ? loads[fileOf(def, source)] : undefined
-                            return (
-                              <li
-                                key={o.id}
-                                onClick={() => setSelected(o.id)}
-                                onDoubleClick={() => focusOn(o)}
-                                className={`flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-0.5 ${selected === o.id ? 'bg-sky-400/25' : 'hover:bg-white/5'} ${o.visible ? '' : 'opacity-40'}`}
-                              >
-                                <button
-                                  title={o.visible ? 'Hide' : 'Show'}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    updateObject(o.id, { visible: !o.visible })
-                                  }}
-                                  className="text-white/60 hover:text-white"
+                <Section
+                  title={`Objects (${objects.length})`}
+                  right={
+                    <button className={chip(library)} onClick={() => setLibrary((v) => !v)}>
+                      + Add model
+                    </button>
+                  }
+                >
+                  <input
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    placeholder="Filter"
+                    className="mb-2 w-full rounded-md border border-white/10 bg-black/25 px-2 py-1 text-[11px] text-white outline-none placeholder:text-white/30 focus:border-sky-300/60"
+                  />
+                  {groups.map((g) => {
+                    const shown = g.items.some((o) => o.visible)
+                    const open = !collapsed[g.name] || !!filter
+                    return (
+                      <div key={g.name} className="mb-1">
+                        <div className="flex items-center gap-1.5 rounded-md px-1 py-0.5 hover:bg-white/5">
+                          <button
+                            className="w-4 text-[10px] text-white/50"
+                            onClick={() => setCollapsed((c) => ({ ...c, [g.name]: !c[g.name] }))}
+                          >
+                            {open ? '▾' : '▸'}
+                          </button>
+                          <button
+                            title={shown ? 'Hide all' : 'Show all'}
+                            className="text-[11px] text-white/60 hover:text-white"
+                            onClick={() =>
+                              commit((s) => ({
+                                ...s,
+                                objects: s.objects.map((o) => (o.group === g.name ? { ...o, visible: !shown } : o))
+                              }))
+                            }
+                          >
+                            {shown ? '●' : '○'}
+                          </button>
+                          <span className="flex-1 text-[11px] font-semibold text-white/85">{g.name}</span>
+                          <button
+                            title="Drop everything in this group that stands on the ground onto it"
+                            className="text-[10px] text-white/40 hover:text-white"
+                            onClick={() => dropGroup(g.name)}
+                          >
+                            ⤓
+                          </button>
+                          <span className="font-mono text-[10px] text-white/35">{g.items.length}</span>
+                        </div>
+                        {open && (
+                          <ul className="ml-5 space-y-px text-[11px]">
+                            {g.items.map((o) => {
+                              const def = modelById(o.model)
+                              const st = def ? loads[fileOf(def, source)] : undefined
+                              return (
+                                <li
+                                  key={o.id}
+                                  onClick={() => setSelected(o.id)}
+                                  onDoubleClick={() => focusOn(o)}
+                                  className={`flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-0.5 ${selected === o.id ? 'bg-sky-400/25' : 'hover:bg-white/5'} ${o.visible ? '' : 'opacity-40'}`}
                                 >
-                                  {o.visible ? '●' : '○'}
-                                </button>
-                                <span className="flex-1 truncate text-white/90">{o.name}</span>
-                                <span className="font-mono text-[10px] text-white/35">
-                                  {!def
-                                    ? 'unknown model'
-                                    : st?.status === 'failed'
-                                      ? 'failed'
-                                      : st?.status === 'loading'
-                                        ? `${Math.round(st.progress * 100)}%`
-                                        : ''}
-                                </span>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      )}
-                    </div>
-                  )
-                })}
-              </Section>
+                                  <button
+                                    title={o.visible ? 'Hide' : 'Show'}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      updateObject(o.id, { visible: !o.visible })
+                                    }}
+                                    className="text-white/60 hover:text-white"
+                                  >
+                                    {o.visible ? '●' : '○'}
+                                  </button>
+                                  <span className="flex-1 truncate text-white/90">{o.name}</span>
+                                  <span className="font-mono text-[10px] text-white/35">
+                                    {!def
+                                      ? 'unknown model'
+                                      : st?.status === 'failed'
+                                        ? 'failed'
+                                        : st?.status === 'loading'
+                                          ? `${Math.round(st.progress * 100)}%`
+                                          : ''}
+                                  </span>
+                                </li>
+                              )
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    )
+                  })}
+                </Section>
               )}
             </div>
 
@@ -894,7 +946,11 @@ export default function HarborEditor() {
                   <input
                     key={`name-${current.id}`}
                     defaultValue={current.name}
-                    onBlur={(e) => e.target.value.trim() && e.target.value !== current.name && updateObject(current.id, { name: e.target.value.trim() })}
+                    onBlur={(e) =>
+                      e.target.value.trim() &&
+                      e.target.value !== current.name &&
+                      updateObject(current.id, { name: e.target.value.trim() })
+                    }
                     onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
                     className="w-full rounded-md border border-white/10 bg-black/25 px-2 py-1 text-xs font-semibold text-white outline-none focus:border-sky-300/60"
                   />
@@ -904,7 +960,11 @@ export default function HarborEditor() {
                       key={`group-${current.id}`}
                       list="harbor-groups"
                       defaultValue={current.group}
-                      onBlur={(e) => e.target.value.trim() && e.target.value !== current.group && updateObject(current.id, { group: e.target.value.trim() })}
+                      onBlur={(e) =>
+                        e.target.value.trim() &&
+                        e.target.value !== current.group &&
+                        updateObject(current.id, { group: e.target.value.trim() })
+                      }
                       onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
                       className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-2 py-0.5 text-[11px] text-white outline-none focus:border-sky-300/60"
                     />
@@ -915,7 +975,9 @@ export default function HarborEditor() {
                     </datalist>
                   </div>
                   <p className="mt-1.5 text-[10px] leading-relaxed text-white/45">
-                    {currentDef ? fileOf(currentDef, source).replace(/^\/models\//, '') : `unknown model ${current.model}`}
+                    {currentDef
+                      ? fileOf(currentDef, source).replace(/^\/models\//, '')
+                      : `unknown model ${current.model}`}
                     {currentModel && currentDef && (
                       <>
                         <br />
@@ -982,7 +1044,10 @@ export default function HarborEditor() {
                     <button className={chip(false)} onClick={() => duplicate(current.id)} title="⌘D">
                       Duplicate
                     </button>
-                    <button className={chip(false)} onClick={() => updateObject(current.id, { visible: !current.visible })}>
+                    <button
+                      className={chip(false)}
+                      onClick={() => updateObject(current.id, { visible: !current.visible })}
+                    >
                       {current.visible ? 'Hide' : 'Show'}
                     </button>
                     <button
@@ -997,28 +1062,43 @@ export default function HarborEditor() {
               ) : (
                 <Section title="Selected">
                   <p className="text-[11px] leading-relaxed text-white/45">
-                    Click a model, or pick one from the list. W / E / R move, turn and scale it; G drops it to the ground;
-                    ⌘D duplicates; ⌫ deletes; ⌘Z undoes.
+                    Click a model, or pick one from the list. W / E / R move, turn and scale it; G drops it to the
+                    ground; ⌘D duplicates; ⌫ deletes; ⌘Z undoes.
                   </p>
                 </Section>
               )}
 
               <Section title="Camera">
                 <div className="flex flex-wrap gap-1.5">
-                  <button className={chip(false)} onClick={() => api.current.rotateBy?.(-WORLD_BUILDER_CAMERA.rotate.buttonStep)} title="Turn left (←)">
+                  <button
+                    className={chip(false)}
+                    onClick={() => api.current.rotateBy?.(-WORLD_BUILDER_CAMERA.rotate.buttonStep)}
+                    title="Turn left (←)"
+                  >
                     ↺ 45°
                   </button>
-                  <button className={chip(false)} onClick={() => api.current.rotateBy?.(WORLD_BUILDER_CAMERA.rotate.buttonStep)} title="Turn right (→)">
+                  <button
+                    className={chip(false)}
+                    onClick={() => api.current.rotateBy?.(WORLD_BUILDER_CAMERA.rotate.buttonStep)}
+                    title="Turn right (→)"
+                  >
                     ↻ 45°
                   </button>
-                  <button className={chip(false)} onClick={() => api.current.resetCamera?.()} title="Reset camera (Home)">
+                  <button
+                    className={chip(false)}
+                    onClick={() => api.current.resetCamera?.()}
+                    title="Reset camera (Home)"
+                  >
                     Reset camera
                   </button>
                   <button
                     className={chip(false)}
                     onClick={() => {
                       const v = api.current.currentView?.()
-                      if (v && window.confirm('Make this framing the approved view? (It is kept at the default direction.)'))
+                      if (
+                        v &&
+                        window.confirm('Make this framing the approved view? (It is kept at the default direction.)')
+                      )
                         commit((s) => ({ ...s, camera: v }))
                     }}
                   >
@@ -1026,14 +1106,18 @@ export default function HarborEditor() {
                   </button>
                 </div>
                 <p className="mt-1.5 text-[10px] leading-relaxed text-white/45">
-                  True isometric: the tilt is fixed at {WORLD_BUILDER_CAMERA.elevation.toFixed(2)}°, orthographic.
-                  Drag to pan · scroll or pinch to zoom · right-drag, ⌥-drag, ← → or a two-finger twist to turn.
+                  True isometric: the tilt is fixed at {WORLD_BUILDER_CAMERA.elevation.toFixed(2)}°, orthographic. Drag
+                  to pan · scroll or pinch to zoom · right-drag, ⌥-drag, ← → or a two-finger twist to turn.
                 </p>
               </Section>
 
               <Section title="Reference">
                 <div className="flex flex-wrap gap-1.5">
-                  <button className={chip(overlay.on)} onClick={() => setOverlay((o: { on: boolean; opacity: number }) => ({ ...o, on: !o.on }))} title="O">
+                  <button
+                    className={chip(overlay.on)}
+                    onClick={() => setOverlay((o: { on: boolean; opacity: number }) => ({ ...o, on: !o.on }))}
+                    title="O"
+                  >
                     Overlay {overlay.on ? 'on' : 'off'}
                   </button>
                 </div>
@@ -1068,7 +1152,11 @@ export default function HarborEditor() {
                       ['lessGloss', 'Matte']
                     ] as [keyof EditorSettings, string][]
                   ).map(([k, name]) => (
-                    <button key={k} className={chip(settings[k])} onClick={() => setSettings((s) => ({ ...s, [k]: !s[k] }))}>
+                    <button
+                      key={k}
+                      className={chip(settings[k])}
+                      onClick={() => setSettings((s) => ({ ...s, [k]: !s[k] }))}
+                    >
                       {name}
                     </button>
                   ))}
@@ -1080,21 +1168,33 @@ export default function HarborEditor() {
                   <button className={chip(source === 'original')} onClick={() => setSource('original')}>
                     As exported
                   </button>
-                  <button className={chip(source === 'draft')} onClick={() => setSource('draft')} title="~10% triangles — run scripts/environment/draft-decimator.mjs first">
+                  <button
+                    className={chip(source === 'draft')}
+                    onClick={() => setSource('draft')}
+                    title="~10% triangles — run scripts/environment/draft-decimator.mjs first"
+                  >
                     Draft quality
                   </button>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  <button className={chip(settings.lod)} onClick={() => setSettings((s) => ({ ...s, lod: !s.lod }))} title="Screen-space LOD: swap to lower geometry at distance">
+                  <button
+                    className={chip(settings.lod)}
+                    onClick={() => setSettings((s) => ({ ...s, lod: !s.lod }))}
+                    title="Screen-space LOD: swap to lower geometry at distance"
+                  >
                     LOD
                   </button>
                   {settings.lod && (
-                    <button className={chip(settings.lodDebug)} onClick={() => setSettings((s) => ({ ...s, lodDebug: !s.lodDebug }))} title="Color wireframe overlay by LOD level">
+                    <button
+                      className={chip(settings.lodDebug)}
+                      onClick={() => setSettings((s) => ({ ...s, lodDebug: !s.lodDebug }))}
+                      title="Color wireframe overlay by LOD level"
+                    >
                       LOD debug
                     </button>
                   )}
                 </div>
-                {settings.lod && (lodStats.high + lodStats.medium + lodStats.low > 0) && (
+                {settings.lod && lodStats.high + lodStats.medium + lodStats.low > 0 && (
                   <div className="mt-1.5 flex gap-3 text-[10px] font-mono">
                     <span style={{ color: '#6ee7b7' }}>H {lodStats.high}</span>
                     <span style={{ color: '#fbbf24' }}>M {lodStats.medium}</span>
@@ -1144,11 +1244,7 @@ export default function HarborEditor() {
 
               <Section title="Profiler">
                 <div className="flex flex-wrap gap-1.5">
-                  <button
-                    className={chip(benchmarking)}
-                    onClick={runBenchmark}
-                    disabled={benchmarking || !allReady}
-                  >
+                  <button className={chip(benchmarking)} onClick={runBenchmark} disabled={benchmarking || !allReady}>
                     {benchmarking ? `Testing: ${benchPhase}` : 'Run benchmark'}
                   </button>
                   {benchResults && !benchmarking && (

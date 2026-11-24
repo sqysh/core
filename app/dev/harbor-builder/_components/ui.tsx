@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useRef, useState } from 'react'
-import { FrameStats } from '@/app/dev/environment-kit/_components/RenderStats'
+import { FrameStats } from './RenderStats'
 import { type BenchmarkMeta, formatReport, type SampleReport } from '../_lib/profiler'
 
 export const panel =

@@ -17,7 +17,7 @@ import { landBVH, LoadedModel } from './models'
 
 const DEG = Math.PI / 180
 
-export type Transform = {
+type Transform = {
   position: Vector3
   yaw: number
   scale: number
