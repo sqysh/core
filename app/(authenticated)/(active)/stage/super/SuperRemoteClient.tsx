@@ -51,7 +51,7 @@ import { notifyTreasurer } from '@/lib/actions/treasury/notifyTreasurer'
 import { RemoteHarbor } from '@/app/(authenticated)/(active)/stage/_components/RemoteHarbor'
 import { glassPanel } from '@/components/_shared/LiquidGlass'
 import { GlassMenu } from '@/app/(authenticated)/(active)/stage/_components/GlassMenu'
-import type { HarborData } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
+import type { HarborData } from '@/lib/harbor/loadHarbor'
 import { PollPicker } from '@/app/(authenticated)/(active)/stage/_components/controls/PollPicker'
 
 type Screen = { key: string; label: string; icon: typeof Tv; cmd: StageCommand }

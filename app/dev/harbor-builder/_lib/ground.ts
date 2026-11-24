@@ -9,7 +9,7 @@ import {
   UnsignedByteType,
   Vector3
 } from 'three'
-import { MAP } from '@/app/dev/checkin-voyage/_lib/seaSurface'
+import { MAP } from '@/lib/harbor/seaSurface'
 import { landBVH, LoadedModel } from './models'
 
 // Where things stand: the ground under any point (cast down onto the land models' real surfaces), and the sea's depth

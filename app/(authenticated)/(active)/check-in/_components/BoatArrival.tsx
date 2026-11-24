@@ -9,7 +9,7 @@ import { GlassButton, glassButton, glassPanel } from '@/components/_shared/Liqui
 import { holdForMeeting } from '@/lib/actions/attendance/holdForMeeting'
 import { honkHorn } from '@/lib/actions/attendance/honkHorn'
 import { HONK_COOLDOWN_MS } from '@/lib/constants/honk.constants'
-import type { HarborData } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
+import type { HarborData } from '@/lib/harbor/loadHarbor'
 import { useCheckInChime } from '../_hooks/useCheckInChime'
 import { LIFT, delay } from '../_lib/motion'
 
@@ -18,7 +18,7 @@ import { LIFT, delay } from '../_lib/motion'
 // behind the first two cards so it's ready by the time they turn. Phones that won't rotate (locked orientation, a
 // desktop) can show it upright instead.
 
-const PhoneHarbor = dynamic(() => import('@/app/dev/checkin-voyage/PhoneHarbor'), { ssr: false })
+const PhoneHarbor = dynamic(() => import('@/components/harbor/PhoneHarbor'), { ssr: false })
 
 type Stage = 'thanks' | 'rotate' | 'boat'
 

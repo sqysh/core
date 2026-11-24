@@ -6,7 +6,7 @@ import { getPresenterSchedule } from '@/lib/actions/presenter-queue/getPresenter
 import { getAttendanceHistory } from '@/lib/actions/attendance/getAttendanceHistory'
 import { chapterId } from '@/lib/constants/api/chapterId'
 import { SQYSH_UPDATES } from '@/lib/constants/member/sqysh-updates.constants'
-import { loadHarbor } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
+import { loadHarbor } from '@/lib/harbor/loadHarbor'
 import CheckInClient from './CheckInClient'
 import { BoatArrival } from './_components/BoatArrival'
 import { REMOTE_HREF, SUPER_HREF } from './_lib/roles'

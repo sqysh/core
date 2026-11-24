@@ -1,6 +1,6 @@
 import { BufferAttribute, Color, IcosahedronGeometry, MeshStandardMaterial, Vector3 } from 'three'
 import { mergeVertices, toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
-import { fbm3, noise3, rng, smoothstep } from '@/app/dev/lighthouse/_lib/noise'
+import { fbm3, noise3, rng, smoothstep } from '@/lib/lighthouse/noise'
 
 // North Shore granite, as a miniature: a weathered mass of rock like the ledges along Marblehead, Gloucester and
 // Rockport. A lumpy body is cut across by a few fracture planes (mostly the near-horizontal sheeting and near-vertical

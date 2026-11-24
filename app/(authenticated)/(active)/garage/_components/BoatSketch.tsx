@@ -1,5 +1,5 @@
 import { ART_H, ART_W, BOATS, Palette } from '@/app/(authenticated)/(active)/attendance/_lib/boats'
-import { VesselLook } from '@/app/dev/checkin-voyage/_lib/vessel/look'
+import { VesselLook } from '@/lib/harbor/vessel/look'
 import { HeritageClassId, VesselClassId } from '@/lib/vessel/catalog'
 
 // The boat drawn flat, in the member's colours, for a phone that can't run the 3D preview: the same illustrations the

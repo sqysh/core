@@ -13,8 +13,8 @@ import {
   RGBAFormat,
   UnsignedByteType
 } from 'three'
-import { MAP, seaSurfaceMaterial } from '@/app/dev/checkin-voyage/_lib/seaSurface'
-import { PALETTE } from '@/app/dev/lighthouse/_lib/materials'
+import { MAP, seaSurfaceMaterial } from '@/lib/harbor/seaSurface'
+import { PALETTE } from '@/lib/lighthouse/materials'
 
 // The check-in harbor's own animated sea (its turquoise palette, ripples, foam, sparkle and swell), driven by a depth
 // map baked from the builder's land rather than the harbor's: shallows and foam follow the coast the models make. A

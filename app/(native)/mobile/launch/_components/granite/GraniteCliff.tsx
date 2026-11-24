@@ -2,9 +2,9 @@
 
 import { useFrame } from '@react-three/fiber'
 import { useMemo } from 'react'
-import { hydrangea, roundedRock } from '@/app/dev/checkin-voyage/_lib/landscapeKit'
-import { duneGrass, duneGrassMaterial } from '@/app/dev/checkin-voyage/_lib/vegetationKit'
-import { materials } from '@/app/dev/lighthouse/_lib/materials'
+import { hydrangea, roundedRock } from '@/lib/harbor/landscapeKit'
+import { duneGrass, duneGrassMaterial } from '@/lib/harbor/vegetationKit'
+import { materials } from '@/lib/lighthouse/materials'
 import { CLIFF } from './cliffLayout'
 import { graniteMass, graniteMaterial } from './granite'
 

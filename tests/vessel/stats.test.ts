@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import { defaultVesselConfig, STAGE_IDS, STAGES, StageId, VesselConfig } from '@/lib/vessel/catalog'
 import { ABILITIES, ACCESSORY_IDS, effectsOf, ITEM_IDS, itemDef, setStage } from '@/lib/vessel/items'
 import { statChanges, vesselStats } from '@/lib/vessel/stats'
-import { specOf } from '@/app/dev/checkin-voyage/_lib/vessel/modular'
+import { specOf } from '@/lib/harbor/vessel/modular'
 
 let passed = 0
 const test = (name: string, fn: () => void) => { fn(); passed++; console.log('  ✓', name) }

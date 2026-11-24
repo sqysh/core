@@ -4,13 +4,13 @@ import dynamic from 'next/dynamic'
 import { LocateFixed } from 'lucide-react'
 import { GlassButton, glassButton, glassPanel } from '@/components/_shared/LiquidGlass'
 import { STAGES } from '@/lib/vessel/catalog'
-import { lookOf } from '@/app/dev/checkin-voyage/_lib/vessel/look'
+import { lookOf } from '@/lib/harbor/vessel/look'
 import { useGarageContext } from '../_hooks/GarageContext'
 import { BoatSketch } from './BoatSketch'
 import { GarageLoading } from './GarageLoading'
 
 // the 3D preview's code (three, the boat models, the sea shader) only loads here, never in the page's first load
-const BoatPreview = dynamic(() => import('@/app/dev/checkin-voyage/BoatPreview'), { ssr: false, loading: () => null })
+const BoatPreview = dynamic(() => import('@/components/harbor/BoatPreview'), { ssr: false, loading: () => null })
 
 /** The sea and the boat (or the next level, previewed on her), the whole screen, and the controls that sit on it */
 export function GarageScene() {

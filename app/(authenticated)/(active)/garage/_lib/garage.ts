@@ -2,7 +2,7 @@ import { STAGE_IDS, STAGES, VesselConfig, VesselDetails } from '@/lib/vessel/cat
 import { ACCESSORY_IDS, itemDef } from '@/lib/vessel/items'
 import { ACCENT, BOTTOM, CABIN, DECK, EQUIPMENT, HULL, ROOF, SEATS, Swatch, TRIM } from './swatches'
 
-export type SceneLoad = import('@/app/dev/checkin-voyage/BoatPreview').SceneLoad
+export type SceneLoad = import('@/components/harbor/BoatPreview').SceneLoad
 /** What the 3D scene has reported so far */
 export type LoadState = { engine: boolean; built: boolean; assets: { loaded: number; total: number } }
 export const NOT_LOADED: LoadState = { engine: false, built: false, assets: { loaded: 0, total: 0 } }

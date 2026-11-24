@@ -46,7 +46,7 @@ import { PhonePrompter, type PrompterState } from '@/app/(authenticated)/(active
 import { RemoteHarbor } from '@/app/(authenticated)/(active)/stage/_components/RemoteHarbor'
 import { glassButton, glassPane, glassPanel } from '@/components/_shared/LiquidGlass'
 import { GlassMenu } from '@/app/(authenticated)/(active)/stage/_components/GlassMenu'
-import type { HarborData } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
+import type { HarborData } from '@/lib/harbor/loadHarbor'
 
 // Each run-of-show step maps to the ONE screen command that should land on the TV
 // for that step. This is what the Jump menu uses, so "jump to Treasurer" actually

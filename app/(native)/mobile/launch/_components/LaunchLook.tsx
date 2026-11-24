@@ -3,8 +3,8 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { DirectionalLight, HemisphereLight } from 'three'
-import { sunDirection } from '@/app/dev/checkin-voyage/_lib/lightLook'
-import { applySea, SEA_DEFAULTS } from '@/app/dev/checkin-voyage/_lib/seaLook'
+import { sunDirection } from '@/lib/harbor/lightLook'
+import { applySea, SEA_DEFAULTS } from '@/lib/harbor/seaLook'
 import { LAUNCH_LIGHT as L, LAUNCH_SEA } from './launchSettings'
 
 /**

@@ -1,4 +1,4 @@
-import { specOf } from '@/app/dev/checkin-voyage/_lib/vessel/modular'
+import { specOf } from '@/lib/harbor/vessel/modular'
 import { partsOf, stageOf, VesselConfig } from './catalog'
 import { abilitiesOf, AbilityId, roomUsed } from './items'
 

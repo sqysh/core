@@ -15,8 +15,8 @@ import {
   Stats
 } from '@/lib/vessel/items'
 import { vesselStats } from '@/lib/vessel/stats'
-import type { PreviewFrame } from '@/app/dev/checkin-voyage/BoatPreview'
-import { lookOf } from '@/app/dev/checkin-voyage/_lib/vessel/look'
+import type { PreviewFrame } from '@/components/harbor/BoatPreview'
+import { lookOf } from '@/lib/harbor/vessel/look'
 import { LoadState, NOT_LOADED, PAINT_PARTS, same, SceneLoad, Section } from '../_lib/garage'
 import { useLandscape } from './useLandscape'
 

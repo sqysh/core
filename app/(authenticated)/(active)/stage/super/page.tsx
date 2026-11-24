@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { loadHarbor } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
+import { loadHarbor } from '@/lib/harbor/loadHarbor'
 import { auth } from '@/lib/auth/auth'
 import prisma from '@/prisma/client'
 import { chapterId } from '@/lib/constants/api/chapterId'

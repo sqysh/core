@@ -3,11 +3,11 @@
 import assert from 'node:assert/strict'
 import { defaultVesselConfig, StageId } from '@/lib/vessel/catalog'
 import { fitAccessory, setStage } from '@/lib/vessel/items'
-import { identityOf } from '@/app/dev/checkin-voyage/_lib/identity'
-import { createStore, createVessel } from '@/app/dev/checkin-voyage/_lib/store'
-import { stepVessel } from '@/app/dev/checkin-voyage/_lib/vessel/motion'
-import { seabed } from '@/app/dev/checkin-voyage/_lib/coast'
-import { FIELD_CENTER } from '@/app/dev/checkin-voyage/_lib/harbor'
+import { identityOf } from '@/lib/harbor/identity'
+import { createStore, createVessel } from '@/lib/harbor/store'
+import { stepVessel } from '@/lib/harbor/vessel/motion'
+import { seabed } from '@/lib/harbor/coast'
+import { FIELD_CENTER } from '@/lib/harbor/harbor'
 
 let passed = 0
 const test = (name: string, fn: () => void) => { fn(); passed++; console.log('  ✓', name) }

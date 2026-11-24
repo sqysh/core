@@ -6,7 +6,7 @@ import { Bloom, EffectComposer, N8AO, SMAA, ToneMapping, Vignette } from '@react
 import { ToneMappingMode } from 'postprocessing'
 import { useLayoutEffect, useMemo } from 'react'
 import { MeshBasicMaterial, OrthographicCamera, Vector3 } from 'three'
-import { at } from '@/app/dev/lighthouse/_lib/world'
+import { at } from '@/lib/lighthouse/world'
 
 // Pieces the builder's comparison and the terrain lab share: the orbiting isometric camera, the world's finish, and the
 // wireframe overlay. (The harbor editor has its own camera, framed on the reference image: _components/EditorScene.)

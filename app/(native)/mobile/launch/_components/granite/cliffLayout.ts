@@ -1,4 +1,4 @@
-import { at } from '@/app/dev/lighthouse/_lib/world'
+import { at } from '@/lib/lighthouse/world'
 
 // Where the granite dresses the island: the back face of the lighthouse shelf, under the tower, facing the inlet
 // behind the island (the cliff the sign-in camera looks at), with sand at its foot. Everything is laid out in the

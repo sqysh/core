@@ -1,5 +1,5 @@
-import { APPROVED_LIGHT, LightParams } from '@/app/dev/checkin-voyage/_lib/lightLook'
-import { SEA_DEFAULTS, SeaParams } from '@/app/dev/checkin-voyage/_lib/seaLook'
+import { APPROVED_LIGHT, LightParams } from '@/lib/harbor/lightLook'
+import { SEA_DEFAULTS, SeaParams } from '@/lib/harbor/seaLook'
 
 // The launch screen's own look: warmer, lower sun, richer colour and a brighter, more inviting sea. These are applied
 // to this scene's own lights and, for the sea, only while the screen is mounted (see LaunchLook); the Check-in Voyage's

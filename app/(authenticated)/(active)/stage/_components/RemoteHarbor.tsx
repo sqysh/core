@@ -2,14 +2,14 @@
 
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import type { Frame } from '@/app/dev/checkin-voyage/_components/FollowCamera'
-import type { HarborData } from '@/app/dev/checkin-voyage/_lib/loadHarbor'
+import type { Frame } from '@/components/harbor/FollowCamera'
+import type { HarborData } from '@/lib/harbor/loadHarbor'
 
 // The harbor behind a remote, full screen, the same small copy of the TV harbor members see on their phones: on the
 // person holding the remote's own boat (or the whole harbor until they've checked in), everyone's boats sailing in
 // live. The remote's controls come out over it as a full-screen glass menu (GlassMenu).
 
-const PhoneHarbor = dynamic(() => import('@/app/dev/checkin-voyage/PhoneHarbor'), { ssr: false })
+const PhoneHarbor = dynamic(() => import('@/components/harbor/PhoneHarbor'), { ssr: false })
 
 /** Their boat a little below the middle, clear of the corner button and the label */
 export const REMOTE_FRAME: Frame = { landscape: [0.5, 0.55], portrait: [0.5, 0.55] }

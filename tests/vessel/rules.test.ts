@@ -7,8 +7,8 @@ import {
   needsProblem, NO_STATS, removeAccessory, roomUsed, setStage, settle, stagePrice
 } from '@/lib/vessel/items'
 import { readVessel } from '@/lib/vessel/persistence'
-import { layoutOf, specOf } from '@/app/dev/checkin-voyage/_lib/vessel/modular'
-import { VESSEL_CLASS_SPECS } from '@/app/dev/checkin-voyage/_lib/vessel/classes'
+import { layoutOf, specOf } from '@/lib/harbor/vessel/modular'
+import { VESSEL_CLASS_SPECS } from '@/lib/harbor/vessel/classes'
 
 let passed = 0
 const test = (name: string, fn: () => void) => { fn(); passed++; console.log('  ✓', name) }

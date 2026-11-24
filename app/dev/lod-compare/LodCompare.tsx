@@ -5,7 +5,7 @@ import { OrbitControls } from '@react-three/drei'
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { Material, NeutralToneMapping, OrthographicCamera, PCFShadowMap, Vector3 } from 'three'
 import { FrameStats, RenderStats } from '@/app/dev/harbor-builder/_components/RenderStats'
-import { StudioLighting } from '@/app/dev/lighthouse/_components/StudioLighting'
+import { StudioLighting } from '@/components/lighthouse/StudioLighting'
 import { LoadedModel, loadModel } from '@/app/dev/harbor-builder/_lib/models'
 
 type LODLevel = 'high' | 'medium' | 'low'

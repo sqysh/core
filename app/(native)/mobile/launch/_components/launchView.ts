@@ -1,6 +1,6 @@
-import { groundHeight } from '@/app/dev/checkin-voyage/_lib/terrain'
-import { LIGHTHOUSE } from '@/app/dev/lighthouse/_lib/lighthouseTile'
-import { at } from '@/app/dev/lighthouse/_lib/world'
+import { groundHeight } from '@/lib/harbor/terrain'
+import { LIGHTHOUSE } from '@/lib/lighthouse/lighthouseTile'
+import { at } from '@/lib/lighthouse/world'
 import { easeInOutSine, Journey, Pose, Safety } from '../../_lib/cameraChoreography'
 
 // The launch screen's two views of the harbor and the journey between them, independent of the TV's meeting view.
