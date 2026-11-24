@@ -1,4 +1,4 @@
-import { AddEquation, Color, CustomBlending, OneFactor, OneMinusSrcAlphaFactor, DataTexture, LinearFilter, MeshStandardMaterial, RGBAFormat, UnsignedByteType } from 'three'
+import { AddEquation, Color, CustomBlending, OneFactor, OneMinusSrcAlphaFactor, DataTexture, LinearFilter, MeshStandardMaterial, PlaneGeometry, RGBAFormat, UnsignedByteType } from 'three'
 import { coastShore, seabed } from './coast'
 import { SEA_LOOK, seaRefs, seaUniforms } from './seaLook'
 import { SEA_CENTER, SEA_FADE, SEA_GLSL, SEA_LEVEL } from './waves'
@@ -6,8 +6,6 @@ import { SEA_CENTER, SEA_FADE, SEA_GLSL, SEA_LEVEL } from './waves'
 // The sea surface for the whole coastal world: the lighthouse diorama's own water (its turquoise palette, fine
 // glittering ripples, lace foam and swash) with the real depth under it deciding how transparent it is. Any scene that
 // has a seabed baked with bakeSeabed() can drive it, and the swell is the shared one the boats ride.
-
-export { SEA_LOOK }
 
 /** The depth map covers the harbor at this resolution; outside it the water is simply deep */
 export const MAP = { minX: -64, minZ: -70, size: 128, res: 1024, lo: -5, hi: 1 }
@@ -85,6 +83,16 @@ float swellMask(float d) {
 ${SEA_GLSL}
 `
 
+/**
+ * The water surface both seas draw: 300 units square with a vertex every unit (the shortest swell is 5.9 units long, so
+ * it is still a smooth wave, not facets; measured, half as many vertices is visibly coarser and no faster)
+ */
+export function seaSurfaceGeometry() {
+  const g = new PlaneGeometry(300, 300, 300, 300)
+  g.rotateX(-Math.PI / 2)
+  return g
+}
+
 export function seaSurfaceMaterial(map: DataTexture, time: { value: number }, px: { value: number }) {
   // premultiplied blending, so the sun's glints and the foam keep their full strength over see-through shallows
   const mat = new MeshStandardMaterial({ color: '#ffffff', roughness: 0.12, metalness: 0, transparent: true, depthWrite: false })
@@ -102,7 +110,6 @@ export function seaSurfaceMaterial(map: DataTexture, time: { value: number }, px
       uMap: { value: map },
       uMapMin: { value: [MAP.minX, MAP.minZ] },
       uMapSize: { value: MAP.size },
-      // the diorama's own water colours, with a glassier aqua right over the sand and ocean blue in the deep
       // the diorama's own three water colours, plus a glassier aqua over the sand and a touch more ocean far out
       uTurq: { value: new Color('#3dbac0') },
       uTealMix: { value: new Color('#2fb0b4') },

@@ -13,7 +13,7 @@ import {
   RGBAFormat,
   UnsignedByteType
 } from 'three'
-import { MAP, seaSurfaceMaterial } from '@/lib/harbor/seaSurface'
+import { MAP, seaSurfaceGeometry, seaSurfaceMaterial } from '@/lib/harbor/seaSurface'
 import { PALETTE } from '@/lib/lighthouse/materials'
 
 // The check-in harbor's own animated sea (its turquoise palette, ripples, foam, sparkle and swell), driven by a depth
@@ -21,7 +21,6 @@ import { PALETTE } from '@/lib/lighthouse/materials'
 // sand floor shelves away under it, so the shallows read through the water.
 
 const RES = 192
-const SIZE = 300
 
 const smooth = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
@@ -76,11 +75,7 @@ export function Sea({ bake }: { bake: SeaBake | null }) {
     return t
   }, [])
   const water = useMemo(() => seaSurfaceMaterial(map, time, px), [map, time, px])
-  const surface = useMemo(() => {
-    const g = new PlaneGeometry(SIZE, SIZE, 300, 300)
-    g.rotateX(-Math.PI / 2)
-    return g
-  }, [])
+  const surface = useMemo(() => seaSurfaceGeometry(), [])
   const floor = useMemo(() => {
     const g = new PlaneGeometry(MAP.size, MAP.size, RES - 1, RES - 1)
     g.rotateX(-Math.PI / 2)

@@ -67,16 +67,9 @@ export function applySea(p: SeaParams) {
 applySea(SEA_DEFAULTS)
 
 export const SEA_LOOK = {
-  /** Speed of the surface's flow (1 = a gentle drift; the fine ripples stream along the wind) and how much the flow wanders (breaks up the repeating pattern) */
-  flowSpeed: 1.6,
-  flowWarp: 1.8,
-  /** Rolling waves: slope strength and speed of the broad directional ripples */
-  waveSlope: 1.0,
-  waveSpeed: 1.0,
   /** How fast the sun's glints shimmer across the patches */
   glintSpeed: 0.35,
-  /** Underwater caustics: brightness and speed, independent of the surface */
-  causticStrength: 0.06,
+  /** Underwater caustics: their speed, independent of the surface */
   causticSpeed: 0.55,
   /** How far submerged sand shifts to turquoise with depth (0-1), and how irregular the underwater shelf is (world units) */
   sandTurquoise: 0.9,
@@ -89,21 +82,13 @@ export const SEA_LOOK = {
   /** Submerged sand: how quickly it cools from tan to aqua with depth (world units of depth) */
   sandCoolDepth: [0.08, 1.4] as const,
   shelfIrregularity: 1.1,
-  /** Fine surface texture / normal intensity (the diorama's was 1; 0.4 is 60% calmer) */
-  fineRipple: 0.4,
-  /** Large, soft, directional ripples: slope strength, and the wavelength scale (bigger = broader) */
-  broadRipple: 1.0,
-  broadScale: 1.0,
-  /** Sun glints: 1 = every ripple sparkles, lower = only where a broad patch catches the sun; patch size in world units */
-  sparkleStrength: 1.0,
-  sparkleSelect: 0.7,
+  /** Size of the patches the sun's glints come and go in, in world units */
   sparklePatch: 9.0,
   /** Broad colour variation across the open sea (0 = none) and its size in world units */
   tintVariation: 0.3,
   tintScale: 22.0,
   /** Distance over which shallow turns to deep: shore distance (colour) and real depth (colour, clarity) */
   shoreBlend: [0.0, 2.8] as const,
-  depthBlend: [1.5, 9.0] as const,
-  clarityDepth: 3.4
+  depthBlend: [1.5, 9.0] as const
 }
 

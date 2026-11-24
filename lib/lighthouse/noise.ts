@@ -17,11 +17,10 @@ export function noise3(x: number, y: number, z: number, seed = 0) {
   const u = fade(x - xi)
   const v = fade(y - yi)
   const w = fade(z - zi)
-  const c = (dx: number, dy: number, dz: number) => hash(xi + dx, yi + dy, zi + dz, seed)
-  const x00 = lerp(c(0, 0, 0), c(1, 0, 0), u)
-  const x10 = lerp(c(0, 1, 0), c(1, 1, 0), u)
-  const x01 = lerp(c(0, 0, 1), c(1, 0, 1), u)
-  const x11 = lerp(c(0, 1, 1), c(1, 1, 1), u)
+  const x00 = lerp(hash(xi, yi, zi, seed), hash(xi + 1, yi, zi, seed), u)
+  const x10 = lerp(hash(xi, yi + 1, zi, seed), hash(xi + 1, yi + 1, zi, seed), u)
+  const x01 = lerp(hash(xi, yi, zi + 1, seed), hash(xi + 1, yi, zi + 1, seed), u)
+  const x11 = lerp(hash(xi, yi + 1, zi + 1, seed), hash(xi + 1, yi + 1, zi + 1, seed), u)
   return lerp(lerp(x00, x10, v), lerp(x01, x11, v), w) * 2 - 1
 }
 

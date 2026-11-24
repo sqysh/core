@@ -9,15 +9,13 @@ import { grainBump, sandMap } from '../../lib/lighthouse/textures'
 import { coastShore, seabed } from '../../lib/harbor/coast'
 import { SEA_CENTER } from '../../lib/harbor/waves'
 import { SEA_LOOK, seaUniforms } from '../../lib/harbor/seaLook'
-import { bakeSeabed, MAP, NOISE, seaSurfaceMaterial } from '../../lib/harbor/seaSurface'
+import { bakeSeabed, MAP, NOISE, seaSurfaceGeometry, seaSurfaceMaterial } from '../../lib/harbor/seaSurface'
 
 // The sea, in the diorama's colours: a real sea floor underneath (sand shelving down from the beaches, rocks lying in
 // the shallows, dancing caustics), and a water surface whose colour and transparency follow the true depth below —
 // glass-clear turquoise over the shallows, deepening through saturated turquoise to ocean blue, delicate foam where
 // the swell meets rock and sand, and the sun's sparkle across it. The same four swells roll it that the boats ride.
 
-const SIZE = 300
-const SEGMENTS = 300
 /** The sea floor: sand shelving down from the beaches, rocks in the shallows, caustics playing over it under water */
 function seabedMaterial(time: { value: number }) {
   // the very same sand as the island's beach: its speckle map, grain and roughness, tinted by the vertex colours
@@ -112,11 +110,7 @@ function seabedGeometry() {
 export function HarborWater() {
   const time = useMemo(() => ({ value: 0 }), [])
   const px = useMemo(() => ({ value: 1 / 34 }), [])
-  const geo = useMemo(() => {
-    const g = new PlaneGeometry(SIZE, SIZE, SEGMENTS, SEGMENTS)
-    g.rotateX(-Math.PI / 2)
-    return g
-  }, [])
+  const geo = useMemo(() => seaSurfaceGeometry(), [])
   const floorGeo = useMemo(() => seabedGeometry(), [])
   const { water, floor } = useMemo(() => ({ water: seaSurfaceMaterial(bakeSeabed(), time, px), floor: seabedMaterial(time) }), [time, px])
   // the uniforms are shared with the materials above; the frame loop reaches them through a ref
